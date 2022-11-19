@@ -1,0 +1,29 @@
+Package: ClusterGVis
+Title: One-step to Cluster and Visualize Gene Expression Data
+Version: 0.0.1
+Authors@R: 
+    person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Imports: 
+    Biobase,
+    ComplexHeatmap,
+    dplyr,
+    e1071,
+    factoextra,
+    ggplot2,
+    grid,
+    jjAnno,
+    magrittr,
+    Mfuzz,
+    purrr,
+    reshape2,
+    scales,
+    stats
