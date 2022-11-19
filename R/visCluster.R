@@ -28,6 +28,7 @@
 #' @param add.point whether add point, default FALSE.
 #' @param point.arg this is related to point shape,fill,color and size, default c(19,"orange","orange",1).
 #' @param add.line whether add line, default TRUE.
+#' @param line.side the line annotation side, default "right".
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -75,6 +76,7 @@ visCluster <- function(object = NULL,
                        # shape,fill,color,size
                        point.arg = c(19,"orange","orange",1),
                        add.line = TRUE,
+                       line.side = "right",
                        ...){
   plot.type <- match.arg(plot.type)
 
@@ -287,6 +289,7 @@ visCluster <- function(object = NULL,
                                        size = grid::unit(as.numeric(panel.arg[1]), "cm"),
                                        gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
                                        width = grid::unit(as.numeric(panel.arg[3]), "cm"),
+                                       side = line.side,
                                        link_gp = grid::gpar(fill = panel.arg[4],col = panel.arg[5]))
 
       # =====================================
@@ -311,11 +314,25 @@ visCluster <- function(object = NULL,
                                                background_gp = grid::gpar(fill = termAnno.arg[1],termAnno.arg[2]))
 
         # final row annotation
-        right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
-                                                          line = anno,
-                                                          textbox = textbox)
+        if(line.side == "right"){
+          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+                                                            line = anno,
+                                                            textbox = textbox)
+          left_annotation = NULL
+        }else{
+          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+                                                            textbox = textbox)
+          left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+        }
+
       }else{
-        right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,line = anno)
+        if(line.side == "right"){
+          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,line = anno)
+          left_annotation = NULL
+        }else{
+          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block)
+          left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+        }
       }
 
       # save
@@ -325,6 +342,7 @@ visCluster <- function(object = NULL,
                               cluster_columns = FALSE,
                               show_row_names = FALSE,
                               right_annotation = right_annotation2,
+                              left_annotation = left_annotation,
                               column_names_side = "top",
                               row_split = subgroup,
                               ...)

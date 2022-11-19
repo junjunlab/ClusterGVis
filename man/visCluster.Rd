@@ -51,6 +51,8 @@ default c("grey95","grey50").}
 
 \item{add.line}{whether add line, default TRUE.}
 
+\item{line.side}{the line annotation side, default "right".}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
