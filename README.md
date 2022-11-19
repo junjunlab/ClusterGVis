@@ -1,4 +1,4 @@
-# ClusterGVis <img src="man/ClusterGVis.svg" align="right" height="200" />
+# ClusterGVis <img src="man/clusterGVis.svg" align="right" height="200" />
 
 <!-- badges: start -->
 
