@@ -21,6 +21,14 @@
 #' @param annoTerm.data the GO term annotation for the clusters, default NULL.
 #' @param termAnno.arg the settings for GO term panel annotations which are fill and col,
 #' default c("grey95","grey50").
+#'
+#' @param add.box whether add boxplot, default FALSE.
+#' @param boxcol the box fill colors, default NULL.
+#' @param box.arg this is related to boxplot width and border color, default c(0.1,"grey50").
+#' @param add.point whether add point, default FALSE.
+#' @param point.arg this is related to point shape,fill,color and size, default c(19,"orange","orange",1).
+#' @param add.line whether add line, default TRUE.
+#'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
 #' @return a ggplot2 or Heatmap object.
@@ -40,7 +48,6 @@
 #' visCluster(object = cm,
 #'            plot.type = "line")
 #' }
-
 globalVariables(c('cell_type', 'cluster.num', 'gene', 'membership', 'norm_value'))
 visCluster <- function(object = NULL,
                        plot.type = c("line","heatmap","both"),
@@ -60,6 +67,14 @@ visCluster <- function(object = NULL,
                        annoTerm.data = NULL,
                        # textbox fill and col
                        termAnno.arg = c("grey95","grey50"),
+                       add.box = FALSE,
+                       boxcol = NULL,
+                       # box with and border color
+                       box.arg = c(0.1,"grey50"),
+                       add.point = FALSE,
+                       # shape,fill,color,size
+                       point.arg = c(19,"orange","orange",1),
+                       add.line = TRUE,
                        ...){
   plot.type <- match.arg(plot.type)
 
@@ -156,9 +171,51 @@ visCluster <- function(object = NULL,
       #====================== heatmap + line
       rg = range(mat)
 
+      # # panel_fun for line plot
+      # panel_fun = function(index, nm) {
+      #   grid::pushViewport(grid::viewport(xscale = c(1,ncol(mat)), yscale = rg))
+      #   grid::grid.rect()
+      #
+      #   # grid.xaxis(gp = gpar(fontsize = 8))
+      #   # grid.annotation_axis(side = 'right',gp = gpar(fontsize = 8))
+      #
+      #   # choose method
+      #   if(set.md == "mean"){
+      #     mdia <- colMeans(mat[index, ])
+      #   }else if(set.md == "median"){
+      #     mdia <- apply(mat[index, ], 2, stats::median)
+      #   }else{
+      #     print("supply mean/median !")
+      #   }
+      #
+      #   # get gene numbers
+      #   text <- paste("Gene Size:",nrow(mat[index, ]),sep = ' ')
+      #   ComplexHeatmap::grid.textbox(text,x = textbox.pos[1],y = textbox.pos[2],
+      #                                gp = grid::gpar(fontsize = textbox.size,fontface = "italic"))
+      #
+      #   # grid.points(x = 1:ncol(m),y = mdia,
+      #   #             pch = 19,
+      #   #             gp = gpar(col = 'orange'))
+      #
+      #   grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
+      #                    y = scales::rescale(mdia,to = c(0,1),from = rg),
+      #                    gp = grid::gpar(lwd = 3,col = mline.col))
+      #
+      #   grid::popViewport()
+      # }
+
+      # ====================================================================
       # panel_fun for line plot
       panel_fun = function(index, nm) {
-        grid::pushViewport(grid::viewport(xscale = c(1,ncol(mat)), yscale = rg))
+
+        # whether add boxplot
+        if(add.box == TRUE & add.line != TRUE){
+          xscale = c(-0.1,1.1)
+        }else{
+          xscale = c(0,1)
+        }
+
+        grid::pushViewport(grid::viewport(xscale = xscale, yscale = c(0,1)))
         grid::grid.rect()
 
         # grid.xaxis(gp = gpar(fontsize = 8))
@@ -173,18 +230,52 @@ visCluster <- function(object = NULL,
           print("supply mean/median !")
         }
 
+        # boxplot xpos
+        pos = scales::rescale(1:ncol(mat),to = c(0,1))
+
+        # boxcol
+        if(is.null(boxcol)){
+          boxcol <- rep("grey90",ncol(mat))
+        }else{
+          boxcol <- boxcol
+        }
+
+        # boxplot grobs
+        if(add.box == TRUE){
+          lapply(1:ncol(mat), function(x){
+            ComplexHeatmap::grid.boxplot(scales::rescale(mat[index, ][,x],
+                                                         to = c(0,1),
+                                                         from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                                         pos = pos[x],
+                                         direction = "vertical",
+                                         box_width = as.numeric(box.arg[1]),
+                                         outline = FALSE,
+                                         gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
+          })
+        }
+
+        # points grob
+        if(add.point == TRUE){
+          grid::grid.points(x = scales::rescale(1:ncol(mat),to = c(0,1)),
+                            y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                            pch = as.numeric(point.arg[1]),
+                            gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
+                            size = grid::unit(as.numeric(point.arg[4]), "char"))
+        }
+
+        # lines
+        if(add.line == TRUE){
+          grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
+                           y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                           gp = grid::gpar(lwd = 3,col = mline.col))
+        }
+
         # get gene numbers
         text <- paste("Gene Size:",nrow(mat[index, ]),sep = ' ')
         ComplexHeatmap::grid.textbox(text,x = textbox.pos[1],y = textbox.pos[2],
-                                     gp = grid::gpar(fontsize = textbox.size,fontface = "italic"))
-
-        # grid.points(x = 1:ncol(m),y = mdia,
-        #             pch = 19,
-        #             gp = gpar(col = 'orange'))
-
-        grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-                         y = scales::rescale(mdia,to = c(0,1),from = rg),
-                         gp = grid::gpar(lwd = 3,col = mline.col))
+                                     gp = grid::gpar(fontsize = textbox.size,
+                                                     fontface = "italic",
+                                                     ...))
 
         grid::popViewport()
       }
@@ -193,9 +284,9 @@ visCluster <- function(object = NULL,
       anno = ComplexHeatmap::anno_link(align_to = subgroup,
                                        which = "row",
                                        panel_fun = panel_fun,
-                                       size = grid::unit(panel.arg[1], "cm"),
-                                       gap = grid::unit(panel.arg[2], "cm"),
-                                       width = grid::unit(panel.arg[3], "cm"),
+                                       size = grid::unit(as.numeric(panel.arg[1]), "cm"),
+                                       gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
+                                       width = grid::unit(as.numeric(panel.arg[3]), "cm"),
                                        link_gp = grid::gpar(fill = panel.arg[4],col = panel.arg[5]))
 
       # =====================================

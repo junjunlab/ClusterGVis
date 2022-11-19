@@ -39,6 +39,18 @@ panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
 \item{termAnno.arg}{the settings for GO term panel annotations which are fill and col,
 default c("grey95","grey50").}
 
+\item{add.box}{whether add boxplot, default FALSE.}
+
+\item{boxcol}{the box fill colors, default NULL.}
+
+\item{box.arg}{this is related to boxplot width and border color, default c(0.1,"grey50").}
+
+\item{add.point}{whether add point, default FALSE.}
+
+\item{point.arg}{this is related to point shape,fill,color and size, default c(19,"orange","orange",1).}
+
+\item{add.line}{whether add line, default TRUE.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
