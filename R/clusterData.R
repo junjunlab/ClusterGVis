@@ -8,7 +8,8 @@
 #' in ComplexHeatmap::Heatmap function.
 #' @param min.std min std for filter genes, this argument is in mfuzz function, default 0.
 #' @param cluster.num the number clusters, default NULL.
-#' @param seed set a seed for cluster analysis in mfuzz or Heatmap function, default 123.
+#' @param seed set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.
+#' @param scaleData whether do Z-score for expression data, default TRUE.
 #'
 #' @return clusterData return a list including wide-shape and long-shape clustered results.
 #' @export
@@ -29,10 +30,11 @@
 
 globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name'))
 clusterData <- function(exp = NULL,
+                        scaleData = TRUE,
                         cluster.method = c("mfuzz","kmeans"),
                         min.std = 0,
                         cluster.num = NULL,
-                        seed = 123){
+                        seed = 5201314){
   # choose method
   cluster.method <- match.arg(cluster.method)
 
@@ -42,7 +44,13 @@ clusterData <- function(exp = NULL,
     # myset <- methods::new("ExpressionSet",exprs = as.matrix(exp))
     myset <- Biobase::ExpressionSet(assayData = as.matrix(exp))
     myset <- Mfuzz::filter.std(myset,min.std = min.std,visu = FALSE)
-    myset <- Mfuzz::standardise(myset)
+
+    # whether zsocre data
+    if(scaleData == TRUE){
+      myset <- Mfuzz::standardise(myset)
+    }else{
+      myset <- myset
+    }
 
     cluster_number <- cluster.num
     m <- Mfuzz::mestimate(myset)
@@ -109,7 +117,13 @@ clusterData <- function(exp = NULL,
   }else if(cluster.method == "kmeans"){
     # ==========================================================================
     # using complexheatmap cluster genes
-    hclust_matrix <- exp %>% t() %>% scale() %>% t()
+
+    # whether zsocre data
+    if(scaleData == TRUE){
+      hclust_matrix <- exp %>% t() %>% scale() %>% t()
+    }else{
+      hclust_matrix <- exp
+    }
 
     # plot
     set.seed(seed)

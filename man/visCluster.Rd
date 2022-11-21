@@ -53,6 +53,24 @@ default c("grey95","grey50").}
 
 \item{line.side}{the line annotation side, default "right".}
 
+\item{markGenes}{the gene names to be added on plot, default NULL.}
+
+\item{markGenes.side}{the gene label side, default "right".}
+
+\item{genes.gp}{gene labels graphics settings, default c('italic',8,"black").}
+
+\item{go.col}{the GO term text colors, default NULL.}
+
+\item{go.size}{the GO term text size(numeric or "pval"), default NULL.}
+
+\item{mulGroup}{to draw multipe lines annotation, supply the groups numbers with vector, default NULL.}
+
+\item{lgd.label}{the lines annotation legend labels, default NULL.}
+
+\item{show_row_names}{whether to show rownames, default FALSE.}
+
+\item{term.text.limit}{the GO term text size limit, default c(5,18).}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{

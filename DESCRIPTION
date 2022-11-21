@@ -1,6 +1,6 @@
 Package: ClusterGVis
 Title: One-step to Cluster and Visualize Gene Expression Data
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -14,6 +14,8 @@ Depends:
 LazyData: true
 Imports: 
     Biobase,
+    circlize,
+    clusterProfiler,
     ComplexHeatmap,
     dplyr,
     e1071,
@@ -23,6 +25,7 @@ Imports:
     jjAnno,
     magrittr,
     Mfuzz,
+    org.Mm.eg.db,
     purrr,
     reshape2,
     scales,

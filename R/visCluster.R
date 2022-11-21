@@ -30,6 +30,16 @@
 #' @param add.line whether add line, default TRUE.
 #' @param line.side the line annotation side, default "right".
 #'
+#' @param markGenes the gene names to be added on plot, default NULL.
+#' @param markGenes.side the gene label side, default "right".
+#' @param genes.gp gene labels graphics settings, default c('italic',8,"black").
+#' @param go.col the GO term text colors, default NULL.
+#' @param go.size the GO term text size(numeric or "pval"), default NULL.
+#' @param mulGroup to draw multipe lines annotation, supply the groups numbers with vector, default NULL.
+#' @param lgd.label the lines annotation legend labels, default NULL.
+#' @param show_row_names whether to show rownames, default FALSE.
+#' @param term.text.limit the GO term text size limit, default c(5,18).
+#'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
 #' @return a ggplot2 or Heatmap object.
@@ -77,6 +87,15 @@ visCluster <- function(object = NULL,
                        point.arg = c(19,"orange","orange",1),
                        add.line = TRUE,
                        line.side = "right",
+                       markGenes = NULL,
+                       markGenes.side = "right",
+                       genes.gp = c('italic',8,"black"),
+                       go.col = NULL,
+                       go.size = NULL,
+                       term.text.limit = c(5,18),
+                       mulGroup = NULL,
+                       lgd.label = NULL,
+                       show_row_names = FALSE,
                        ...){
   plot.type <- match.arg(plot.type)
 
@@ -145,7 +164,7 @@ visCluster <- function(object = NULL,
     }) %>% unlist()
 
     # plot
-    # =================== annotation for clusters
+    # =================== bar annotation for clusters
     if(is.null(ctAnno.col)){
       colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
     }else{
@@ -154,7 +173,33 @@ visCluster <- function(object = NULL,
 
     names(colanno) <- 1:cluster.num
     anno.block <- ComplexHeatmap::anno_block(gp = grid::gpar(fill = colanno,col = NA),which = "row")
-    right_annotation = ComplexHeatmap::rowAnnotation(cluster = anno.block)
+
+    # =================== gene annotation for heatmap
+    # whether mark your genes on plot
+    if(!is.null(markGenes)){
+      # all genes
+      rowGene <- rownames(mat)
+
+      # tartget gene
+      annoGene <- markGenes
+
+      # get target gene index
+      index <- match(annoGene,rowGene)
+
+      # some genes annotation
+      geneMark = gene = ComplexHeatmap::anno_mark(at = index,
+                                                  labels = annoGene,
+                                                  which = "row",
+                                                  side = markGenes.side,
+                                                  labels_gp = grid::gpar(fontface = genes.gp[1],
+                                                                         fontsize = as.numeric(genes.gp[2]),
+                                                                         col = genes.gp[3]))
+    }else{
+      geneMark = NULL
+    }
+
+    # final annotation for heatmap
+    right_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark,cluster = anno.block)
 
     # =======================================================
     # return plot according to plot type
@@ -223,54 +268,128 @@ visCluster <- function(object = NULL,
         # grid.xaxis(gp = gpar(fontsize = 8))
         # grid.annotation_axis(side = 'right',gp = gpar(fontsize = 8))
 
-        # choose method
-        if(set.md == "mean"){
-          mdia <- colMeans(mat[index, ])
-        }else if(set.md == "median"){
-          mdia <- apply(mat[index, ], 2, stats::median)
+        # # choose method
+        # if(set.md == "mean"){
+        #   mdia <- colMeans(mat[index, ])
+        # }else if(set.md == "median"){
+        #   mdia <- apply(mat[index, ], 2, stats::median)
+        # }else{
+        #   print("supply mean/median !")
+        # }
+        #
+        # # boxplot xpos
+        # pos = scales::rescale(1:ncol(mat),to = c(0,1))
+        #
+        # # boxcol
+        # if(is.null(boxcol)){
+        #   boxcol <- rep("grey90",ncol(mat))
+        # }else{
+        #   boxcol <- boxcol
+        # }
+        #
+        # # boxplot grobs
+        # if(add.box == TRUE){
+        #   lapply(1:ncol(mat), function(x){
+        #     ComplexHeatmap::grid.boxplot(scales::rescale(mat[index, ][,x],
+        #                                                  to = c(0,1),
+        #                                                  from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                                  pos = pos[x],
+        #                                  direction = "vertical",
+        #                                  box_width = as.numeric(box.arg[1]),
+        #                                  outline = FALSE,
+        #                                  gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
+        #   })
+        # }
+        #
+        # # points grobs
+        # if(add.point == TRUE){
+        #   grid::grid.points(x = scales::rescale(1:ncol(mat),to = c(0,1)),
+        #                     y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                     pch = as.numeric(point.arg[1]),
+        #                     gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
+        #                     size = grid::unit(as.numeric(point.arg[4]), "char"))
+        # }
+        #
+        # # lines grobs
+        # if(add.line == TRUE){
+        #   grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
+        #                    y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                    gp = grid::gpar(lwd = 3,col = mline.col))
+        # }
+
+        # whether given multiple groups
+        if(is.null(mulGroup)){
+          mulGroup <- ncol(mat)
+
+          # ================ calculate group columns index
+          seqn <- data.frame(st = 1,
+                             sp = ncol(mat))
         }else{
-          print("supply mean/median !")
+          mulGroup <- mulGroup
+
+          grid::grid.lines(x = c(0,1),y = rep(0.5,2),
+                           gp = grid::gpar(col = "black",lty = "dashed"))
+
+          # ================ calculate group columns index
+          cu <- cumsum(mulGroup)
+          seqn <- data.frame(st = c(1,cu[1:(length(cu) - 1)] + 1),
+                             sp = c(cu[1],cu[2:length(cu)]))
         }
 
-        # boxplot xpos
-        pos = scales::rescale(1:ncol(mat),to = c(0,1))
+        # loop for multiple groups to create grobs
+        lapply(1:nrow(seqn), function(x){
+          tmp <- seqn[x,]
+          tmpmat <- mat[index, c(tmp$st:tmp$sp)]
 
-        # boxcol
-        if(is.null(boxcol)){
-          boxcol <- rep("grey90",ncol(mat))
-        }else{
-          boxcol <- boxcol
-        }
+          # choose method
+          if(set.md == "mean"){
+            mdia <- colMeans(tmpmat)
+          }else if(set.md == "median"){
+            mdia <- apply(tmpmat, 2, stats::median)
+          }else{
+            print("supply mean/median !")
+          }
 
-        # boxplot grobs
-        if(add.box == TRUE){
-          lapply(1:ncol(mat), function(x){
-            ComplexHeatmap::grid.boxplot(scales::rescale(mat[index, ][,x],
-                                                         to = c(0,1),
-                                                         from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                                         pos = pos[x],
-                                         direction = "vertical",
-                                         box_width = as.numeric(box.arg[1]),
-                                         outline = FALSE,
-                                         gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
-          })
-        }
+          # boxplot xpos
+          pos = scales::rescale(1:ncol(tmpmat),to = c(0,1))
 
-        # points grob
-        if(add.point == TRUE){
-          grid::grid.points(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-                            y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                            pch = as.numeric(point.arg[1]),
-                            gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
-                            size = grid::unit(as.numeric(point.arg[4]), "char"))
-        }
+          # boxcol
+          if(is.null(boxcol)){
+            boxcol <- rep("grey90",ncol(tmpmat))
+          }else{
+            boxcol <- boxcol
+          }
 
-        # lines
-        if(add.line == TRUE){
-          grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-                           y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                           gp = grid::gpar(lwd = 3,col = mline.col))
-        }
+          # boxplot grobs
+          if(add.box == TRUE){
+            lapply(1:ncol(tmpmat), function(x){
+              ComplexHeatmap::grid.boxplot(scales::rescale(tmpmat[,x],
+                                                           to = c(0,1),
+                                                           from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                                           pos = pos[x],
+                                           direction = "vertical",
+                                           box_width = as.numeric(box.arg[1]),
+                                           outline = FALSE,
+                                           gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
+            })
+          }
+
+          # points grobs
+          if(add.point == TRUE){
+            grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+                              y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                              pch = as.numeric(point.arg[1]),
+                              gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
+                              size = grid::unit(as.numeric(point.arg[4]), "char"))
+          }
+
+          # lines grobs
+          if(add.line == TRUE){
+            grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+                             y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                             gp = grid::gpar(lwd = 3,col = mline.col[x]))
+          }
+        })
 
         # get gene numbers
         text <- paste("Gene Size:",nrow(mat[index, ]),sep = ' ')
@@ -297,11 +416,43 @@ visCluster <- function(object = NULL,
       if(!is.null(annoTerm.data)){
         # load term info
         termanno <- annoTerm.data
-        colnames(termanno) <- c("id","term")
+        if(ncol(termanno) == 2){
+          colnames(termanno) <- c("id","term")
+        }else if(ncol(termanno) == 3){
+          colnames(termanno) <- c("id","term","pval")
+        }else{
+          print("No more than 3 columns!")
+        }
 
+        # term colors
+        if(is.null(go.col)){
+          gocol <- circlize::rand_color(n = nrow(termanno))
+        }else{
+          gocol <- go.col
+        }
+
+        # term text size
+        if(is.null(go.size)){
+          gosize <- rep(12,nrow(termanno))
+        }else{
+          if(go.size == "pval"){
+            gosize <- scales::rescale(-log10(termanno$pval),to = term.text.limit)
+          }else{
+            gosize <- go.size
+          }
+        }
+
+        # add to termanno
+        termanno <- termanno %>%
+          dplyr::mutate(col = gocol,fontsize = gosize)
+
+        # to list
         lapply(1:length(unique(termanno$id)), function(x){
           tmp = termanno[which(termanno$id == unique(termanno$id)[x]),]
-          tmp$term
+          df <- data.frame(text = tmp$term,
+                           col = tmp$col,
+                           fontsize = tmp$fontsize)
+          return(df)
         }) -> term.list
 
         # add names
@@ -311,41 +462,93 @@ visCluster <- function(object = NULL,
         textbox = ComplexHeatmap::anno_textbox(subgroup, term.list,
                                                word_wrap = TRUE,
                                                add_new_line = TRUE,
-                                               background_gp = grid::gpar(fill = termAnno.arg[1],termAnno.arg[2]))
+                                               background_gp = grid::gpar(fill = termAnno.arg[1],
+                                                                          termAnno.arg[2]))
 
         # final row annotation
-        if(line.side == "right"){
-          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+        # if(line.side == "right"){
+        #   right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+        #                                                     line = anno,
+        #                                                     textbox = textbox)
+        #   left_annotation = NULL
+        # }else{
+        #   right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+        #                                                     textbox = textbox)
+        #   left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+        # }
+
+      }else{
+        # ======================================================
+        # no GO annotation
+        # if(line.side == "right"){
+        #   right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,line = anno)
+        #   left_annotation = NULL
+        # }else{
+        #   right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block)
+        #   left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+        # }
+        textbox = NULL
+      }
+
+      # ====================================================
+      # final row annotations
+      if(line.side == "right"){
+        if(markGenes.side == "right"){
+          right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
+                                                            cluster = anno.block,
                                                             line = anno,
                                                             textbox = textbox)
           left_annotation = NULL
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+                                                            line = anno,
                                                             textbox = textbox)
-          left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+          left_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark)
         }
 
       }else{
-        if(line.side == "right"){
-          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,line = anno)
-          left_annotation = NULL
-        }else{
-          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block)
+        if(markGenes.side == "right"){
+          right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
+                                                            cluster = anno.block,
+                                                            textbox = textbox)
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+        }else{
+          right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+                                                            textbox = textbox)
+          left_annotation = ComplexHeatmap::rowAnnotation(line = anno,
+                                                          gene = geneMark)
         }
       }
 
       # save
       # pdf('test.pdf',height = 10,width = 10)
-      ComplexHeatmap::Heatmap(as.matrix(mat),
-                              name = "Z-score",
-                              cluster_columns = FALSE,
-                              show_row_names = FALSE,
-                              right_annotation = right_annotation2,
-                              left_annotation = left_annotation,
-                              column_names_side = "top",
-                              row_split = subgroup,
-                              ...)
+      htf <- ComplexHeatmap::Heatmap(as.matrix(mat),
+                                     name = "Z-score",
+                                     cluster_columns = FALSE,
+                                     show_row_names = show_row_names,
+                                     right_annotation = right_annotation2,
+                                     left_annotation = left_annotation,
+                                     column_names_side = "top",
+                                     row_split = subgroup,
+                                     ...)
+
+      # draw lines legend
+      if(is.null(mulGroup)){
+        ComplexHeatmap::draw(htf)
+      }else{
+        if(is.null(lgd.label)){
+          lgd.label <- paste("group",1:length(mulGroup),sep = '')
+        }else{
+          lgd.label <- lgd.label
+        }
+
+        lgd_list = list(
+          ComplexHeatmap::Legend(labels = lgd.label,
+                                 type = "lines",
+                                 legend_gp = grid::gpar(col = mline.col, lty = 1)))
+
+        ComplexHeatmap::draw(htf,annotation_legend_list = lgd_list,merge_legend = TRUE)
+      }
       # dev.off()
     }
 
@@ -362,3 +565,10 @@ visCluster <- function(object = NULL,
 #' @author Junjun Lao
 "termanno"
 
+#' This is a test data for this package
+#' test data describtion
+#'
+#' @name termanno2
+#' @docType data
+#' @author Junjun Lao
+"termanno2"

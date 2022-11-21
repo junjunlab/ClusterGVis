@@ -14,7 +14,9 @@ in ComplexHeatmap::Heatmap function.}
 
 \item{cluster.num}{the number clusters, default NULL.}
 
-\item{seed}{set a seed for cluster analysis in mfuzz or Heatmap function, default 123.}
+\item{seed}{set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.}
+
+\item{scaleData}{whether do Z-score for expression data, default TRUE.}
 }
 \value{
 clusterData return a list including wide-shape and long-shape clustered results.
