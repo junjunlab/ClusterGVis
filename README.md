@@ -23,7 +23,7 @@ devtools::install_github("junjunlab/ClusterGVis")
 
 ## Figures
 
-![1669110741968](https://user-images.githubusercontent.com/64965509/203282865-f737a007-b2b5-4670-8335-7153fe00806b.png)
+![1669110823991](https://user-images.githubusercontent.com/64965509/203283283-185bb150-55e5-4e6d-ac82-c922b77ae66a.png)
 
 ## Document
 
