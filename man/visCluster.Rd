@@ -71,6 +71,8 @@ default c("grey95","grey50").}
 
 \item{term.text.limit}{the GO term text size limit, default c(5,18).}
 
+\item{subgroup.anno}{the sub-cluster for annotation, supply sub-cluster id, default NULL.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{

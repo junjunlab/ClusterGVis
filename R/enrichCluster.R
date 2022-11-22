@@ -5,7 +5,7 @@
 #' @param object clusterData object, default NULL.
 #' @param type which type to choose for enrichment "BP","MF","CC" or "KEGG".
 #' @param OrgDb the annotation data for enrichment, default NULL.
-#' @param organism the organism name for kegg enrichment, default NULL.
+#' @param organism the organism name for kegg enrichment,mouse("mmu"), human("hsa"), default NULL.
 #' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
 #' @param topn the top enrichment results to extract, default 5.
 #' @param seed the enrichment seed, default 5201314.
@@ -36,7 +36,7 @@ globalVariables(c('Description', 'group', 'pvalue'))
 enrichCluster <- function(object = NULL,
                           type = c("BP","MF","CC","KEGG"),
                           OrgDb = NULL,
-                          # for kegg
+                          # for kegg mouse(mmu)
                           organism = "hsa",
                           pvalueCutoff  = 0.05,
                           topn = 5,
@@ -82,7 +82,7 @@ enrichCluster <- function(object = NULL,
                                          qvalueCutoff  = 0.2)
 
       # transform gene id
-      ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb)
+      ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb,keyType = "ENTREZID")
     }
 
     # to data.frame

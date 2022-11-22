@@ -10,7 +10,7 @@
 
 \item{OrgDb}{the annotation data for enrichment, default NULL.}
 
-\item{organism}{the organism name for kegg enrichment, default NULL.}
+\item{organism}{the organism name for kegg enrichment,mouse("mmu"), human("hsa"), default NULL.}
 
 \item{pvalueCutoff}{pvalueCutoff for enrichment, default 0.05.}
 

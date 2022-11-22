@@ -39,6 +39,7 @@
 #' @param lgd.label the lines annotation legend labels, default NULL.
 #' @param show_row_names whether to show rownames, default FALSE.
 #' @param term.text.limit the GO term text size limit, default c(5,18).
+#' @param subgroup.anno the sub-cluster for annotation, supply sub-cluster id, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -96,6 +97,7 @@ visCluster <- function(object = NULL,
                        mulGroup = NULL,
                        lgd.label = NULL,
                        show_row_names = FALSE,
+                       subgroup.anno = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
   plot.type <- match.arg(plot.type)
@@ -404,8 +406,16 @@ visCluster <- function(object = NULL,
         grid::popViewport()
       }
 
+      # whether annotate subgroups
+      if(!is.null(subgroup.anno)){
+        align_to = split(1:nrow(mat), subgroup)
+        align_to = align_to[subgroup.anno]
+      }else{
+        align_to = subgroup
+      }
+
       # anno link annotation
-      anno = ComplexHeatmap::anno_link(align_to = subgroup,
+      anno = ComplexHeatmap::anno_link(align_to = align_to,
                                        which = "row",
                                        panel_fun = panel_fun,
                                        size = grid::unit(as.numeric(panel.arg[1]), "cm"),
@@ -461,8 +471,19 @@ visCluster <- function(object = NULL,
         # add names
         names(term.list) <- unique(termanno$id)
 
+        # whether annotate subgroups
+        if(!is.null(subgroup.anno)){
+          align_to2 = split(seq_along(subgroup), subgroup)
+          align_to2 = align_to2[subgroup.anno]
+
+          term.list = term.list[subgroup.anno]
+        }else{
+          align_to2 = subgroup
+          term.list = term.list
+        }
+
         # textbox annotations
-        textbox = ComplexHeatmap::anno_textbox(subgroup, term.list,
+        textbox = ComplexHeatmap::anno_textbox(align_to2, term.list,
                                                word_wrap = TRUE,
                                                add_new_line = TRUE,
                                                background_gp = grid::gpar(fill = termAnno.arg[1],
