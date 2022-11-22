@@ -3,6 +3,7 @@
 export("%>%")
 export(clusterData)
 export(enrichCluster)
+export(filter.std)
 export(getClusters)
 export(visCluster)
 import(org.Mm.eg.db)

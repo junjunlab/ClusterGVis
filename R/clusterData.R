@@ -35,6 +35,8 @@ clusterData <- function(exp = NULL,
                         min.std = 0,
                         cluster.num = NULL,
                         seed = 5201314){
+  ComplexHeatmap::ht_opt(message = FALSE)
+
   # choose method
   cluster.method <- match.arg(cluster.method)
 
@@ -67,7 +69,9 @@ clusterData <- function(exp = NULL,
     mfuzz_res <- mfuzz1(myset, c = cluster_number, m = m)
     # ========================
     # get clustered data
-    raw_cluster_anno <- cbind(exp,cluster = mfuzz_res$cluster)
+    mtx <- Biobase::assayData(myset)
+    mtx <- mtx$exprs
+    raw_cluster_anno <- cbind(mtx,cluster = mfuzz_res$cluster)
 
     # membership
     mem <- cbind(mfuzz_res$membership,cluster2 = mfuzz_res$cluster) %>%
@@ -117,6 +121,7 @@ clusterData <- function(exp = NULL,
   }else if(cluster.method == "kmeans"){
     # ==========================================================================
     # using complexheatmap cluster genes
+    exp <- filter.std(exp,min.std = min.std,visu = FALSE)
 
     # whether zsocre data
     if(scaleData == TRUE){

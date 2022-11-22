@@ -97,6 +97,7 @@ visCluster <- function(object = NULL,
                        lgd.label = NULL,
                        show_row_names = FALSE,
                        ...){
+  ComplexHeatmap::ht_opt(message = FALSE)
   plot.type <- match.arg(plot.type)
 
   # choose plot type
@@ -392,11 +393,13 @@ visCluster <- function(object = NULL,
         })
 
         # get gene numbers
+        grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
+
         text <- paste("Gene Size:",nrow(mat[index, ]),sep = ' ')
-        ComplexHeatmap::grid.textbox(text,x = textbox.pos[1],y = textbox.pos[2],
-                                     gp = grid::gpar(fontsize = textbox.size,
-                                                     fontface = "italic",
-                                                     ...))
+        grid.textbox(text,x = textbox.pos[1],y = textbox.pos[2],
+                     gp = grid::gpar(fontsize = textbox.size,
+                                     fontface = "italic",
+                                     ...))
 
         grid::popViewport()
       }
