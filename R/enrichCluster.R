@@ -69,7 +69,7 @@ enrichCluster <- function(object = NULL,
                                        OrgDb         = OrgDb,
                                        ont           = type,
                                        pAdjustMethod = "BH",
-                                       pvalueCutoff  = pvalueCutoff,
+                                       pvalueCutoff  = 1,
                                        qvalueCutoff  = 0.2,
                                        readable      = TRUE)
     }else{
@@ -77,7 +77,7 @@ enrichCluster <- function(object = NULL,
       ego <- clusterProfiler::enrichKEGG(gene          = gene.ent$ENTREZID,
                                          keyType       = "kegg",
                                          organism      = organism,
-                                         pvalueCutoff  = pvalueCutoff,
+                                         pvalueCutoff  = 1,
                                          pAdjustMethod = "BH",
                                          qvalueCutoff  = 0.2)
 
@@ -87,6 +87,7 @@ enrichCluster <- function(object = NULL,
 
     # to data.frame
     df <- data.frame(ego) %>%
+      dplyr::filter(pvalue < pvalueCutoff) %>%
       dplyr::mutate(group = paste("C",x,sep = '')) %>%
       dplyr::arrange(pvalue)
 
