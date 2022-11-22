@@ -94,13 +94,25 @@ enrichCluster <- function(object = NULL,
     # whether save all res
     if(!is.null(topn)){
       df <- df %>%
-        dplyr::select(group,Description,pvalue) %>%
+        # dplyr::select(group,Description,pvalue) %>%
         dplyr::slice_head(n = topn)
+
+      # add gene enrich ratio
+      df1 <- purrr::map_df(1:nrow(df),function(x){
+        tmp1 <- df[x,]
+        size = unlist(strsplit(as.character(tmp1$GeneRatio),split = '/'))
+        tmp1$ratio <- (as.numeric(size[1])/as.numeric(size[2]))*100
+        return(tmp1)
+      })
+
+      # select columns
+      df2 <- df1 %>%
+        dplyr::select(group,Description,pvalue,ratio)
     }else{
-      df <- df
+      df2 <- df
     }
 
     # results
-    return(df)
+    return(df2)
   })
 }

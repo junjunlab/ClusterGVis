@@ -3,6 +3,7 @@
 #' @title using visCluster to visualize cluster results from clusterData output
 #'
 #' @param object clusterData object, default NULL.
+#' @param ht.col heatmap colors, default c("blue", "white", "red").
 #' @param plot.type the plot type to choose which incuding "line","heatmap" and "both".
 #' @param ms.col membership line color form Mfuzz cluster method results,
 #' default c('#0099CC','grey90','#CC3333').
@@ -19,6 +20,7 @@
 #' @param panel.arg the settings for the left-line panel which are
 #' panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).
 #' @param annoTerm.data the GO term annotation for the clusters, default NULL.
+#' @param annoTerm.mside the wider GO term annotation box side, default "right".
 #' @param termAnno.arg the settings for GO term panel annotations which are fill and col,
 #' default c("grey95","grey50").
 #'
@@ -38,8 +40,11 @@
 #' @param mulGroup to draw multipe lines annotation, supply the groups numbers with vector, default NULL.
 #' @param lgd.label the lines annotation legend labels, default NULL.
 #' @param show_row_names whether to show rownames, default FALSE.
-#' @param term.text.limit the GO term text size limit, default c(5,18).
+#' @param term.text.limit the GO term text size limit, default c(10,18).
 #' @param subgroup.anno the sub-cluster for annotation, supply sub-cluster id, default NULL.
+#' @param add.bar whether add bar plot for GO enrichment, default FALSE.
+#' @param bar.width the GO enrichment bar width, default 8.
+#' @param textbar.pos the barplot text relative position, default c(0.8,0.8).
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -60,8 +65,10 @@
 #' visCluster(object = cm,
 #'            plot.type = "line")
 #' }
-globalVariables(c('cell_type', 'cluster.num', 'gene', 'membership', 'norm_value'))
+globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio",
+                  'membership', 'norm_value','id', 'log10P', 'pval'))
 visCluster <- function(object = NULL,
+                       ht.col = c("blue", "white", "red"),
                        plot.type = c("line","heatmap","both"),
                        ms.col = c('#0099CC','grey90','#CC3333'),
                        line.size = 0.1,
@@ -77,6 +84,7 @@ visCluster <- function(object = NULL,
                        # panel size,gap,width,fill,col
                        panel.arg = c(2,0.25,4,"grey90",NA),
                        annoTerm.data = NULL,
+                       annoTerm.mside = "right",
                        # textbox fill and col
                        termAnno.arg = c("grey95","grey50"),
                        add.box = FALSE,
@@ -93,13 +101,17 @@ visCluster <- function(object = NULL,
                        genes.gp = c('italic',8,"black"),
                        go.col = NULL,
                        go.size = NULL,
-                       term.text.limit = c(5,18),
+                       term.text.limit = c(10,18),
                        mulGroup = NULL,
                        lgd.label = NULL,
                        show_row_names = FALSE,
                        subgroup.anno = NULL,
+                       add.bar = FALSE,
+                       bar.width = 8,
+                       textbar.pos = c(0.8,0.8),
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
+  col_fun = circlize::colorRamp2(c(-2, 0, 2), ht.col)
   plot.type <- match.arg(plot.type)
 
   # choose plot type
@@ -216,6 +228,7 @@ visCluster <- function(object = NULL,
                               column_names_side = "top",
                               border = TRUE,
                               right_annotation = right_annotation,
+                              col = col_fun,
                               ...)
     }else{
       #====================== heatmap + line
@@ -433,8 +446,10 @@ visCluster <- function(object = NULL,
           colnames(termanno) <- c("id","term")
         }else if(ncol(termanno) == 3){
           colnames(termanno) <- c("id","term","pval")
+        }else if(ncol(termanno) == 4){
+          colnames(termanno) <- c("id","term","pval","ratio")
         }else{
-          print("No more than 3 columns!")
+          print("No more than 4 columns!")
         }
 
         # term colors
@@ -449,7 +464,14 @@ visCluster <- function(object = NULL,
           gosize <- rep(12,nrow(termanno))
         }else{
           if(go.size == "pval"){
-            gosize <- scales::rescale(-log10(termanno$pval),to = term.text.limit)
+            # loop for re-scaling pvalue
+            purrr::map_df(unique(termanno$id),function(x){
+              tmp <- termanno %>%
+                dplyr::filter(id == x) %>%
+                dplyr::mutate(size = scales::rescale(-log10(pval),to = term.text.limit))
+            }) -> termanno.tmp
+
+            gosize <- termanno.tmp$size
           }else{
             gosize <- go.size
           }
@@ -483,11 +505,18 @@ visCluster <- function(object = NULL,
         }
 
         # textbox annotations
+        # if(add.bar == TRUE){
+        #   box.side = "left"
+        # }else{
+        #   box.side = "right"
+        # }
+
         textbox = ComplexHeatmap::anno_textbox(align_to2, term.list,
                                                word_wrap = TRUE,
                                                add_new_line = TRUE,
+                                               side = annoTerm.mside,
                                                background_gp = grid::gpar(fill = termAnno.arg[1],
-                                                                          termAnno.arg[2]))
+                                                                          col = termAnno.arg[2]))
 
         # final row annotation
         # if(line.side == "right"){
@@ -500,6 +529,88 @@ visCluster <- function(object = NULL,
         #                                                     textbox = textbox)
         #   left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         # }
+
+        # GO bar anno function
+        anno_gobar <- function(data = NULL,
+                               bar.width = 0.1,
+                               # col = NA,
+                               align_to = NULL,
+                               panel.arg = panel.arg,
+                               ...){
+          # process data
+          if(ncol(data) == 3){
+            data <- data %>%
+              dplyr::mutate(bary = -log10(pval))
+          }else{
+            data <- data %>%
+              dplyr::mutate(bary = ratio)
+          }
+
+          ComplexHeatmap::anno_zoom(align_to = align_to,
+                                    which = "row",
+
+                                    # =====================
+                                    panel_fun = function(index,nm){
+                                      grid::pushViewport(grid::viewport(xscale = c(0,1),yscale = c(0,1)))
+
+                                      grid::grid.rect()
+
+                                      # sub data
+                                      tmp <- data %>%
+                                        dplyr::filter(id == nm) %>%
+                                        dplyr::arrange(bary)
+
+                                      # bar grobs
+                                      # grid::grid.rect(x = rep(0,nrow(tmp)),
+                                      #                 y = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                      #                 width = scales::rescale(tmp$log10P,to = c(0,1)),
+                                      #                 height = bar.width,
+                                      #                 gp = grid::gpar(fill = tmp$col,col = col))
+
+                                      grid::grid.segments(x0 = rep(0,nrow(tmp)),
+                                                          x1 = scales::rescale(tmp$bary,to = c(0,1)),
+                                                          y0 = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                                          y1 = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                                          gp = grid::gpar(lwd = bar.width,
+                                                                          col = tmp$col,
+                                                                          lineend = "butt"))
+
+                                      # add cluster name
+                                      grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
+
+                                      text <- nm
+                                      grid.textbox(text,
+                                                   x = textbar.pos[1],y = textbar.pos[2],
+                                                   gp = grid::gpar(fontsize = textbox.size,
+                                                                   fontface = "italic",
+                                                                   col = unique(tmp$col),
+                                                                   ...))
+
+                                      grid::popViewport()
+                                    },
+
+                                    # =======================
+                                    size = grid::unit(as.numeric(panel.arg[1]), "cm"),
+                                    gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
+                                    width = grid::unit(as.numeric(panel.arg[3]), "cm"),
+                                    side = "right",
+                                    link_gp = grid::gpar(fill = termAnno.arg[1],col = termAnno.arg[2]),
+                                    ...)
+        }
+
+        # ================================
+        # bar anno
+        baranno = anno_gobar(data = termanno,
+                             align_to = align_to2,
+                             panel.arg = panel.arg,
+                             bar.width = bar.width)
+
+        # whether add bar annotation
+        if(add.bar == TRUE){
+          baranno
+        }else{
+          baranno = NULL
+        }
 
       }else{
         # ======================================================
@@ -521,12 +632,14 @@ visCluster <- function(object = NULL,
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
                                                             cluster = anno.block,
                                                             line = anno,
-                                                            textbox = textbox)
+                                                            textbox = textbox,
+                                                            bar = baranno)
           left_annotation = NULL
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             line = anno,
-                                                            textbox = textbox)
+                                                            textbox = textbox,
+                                                            bar = baranno)
           left_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark)
         }
 
@@ -534,11 +647,13 @@ visCluster <- function(object = NULL,
         if(markGenes.side == "right"){
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
                                                             cluster = anno.block,
-                                                            textbox = textbox)
+                                                            textbox = textbox,
+                                                            bar = baranno)
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
-                                                            textbox = textbox)
+                                                            textbox = textbox,
+                                                            bar = baranno)
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno,
                                                           gene = geneMark)
         }
@@ -554,6 +669,7 @@ visCluster <- function(object = NULL,
                                      left_annotation = left_annotation,
                                      column_names_side = "top",
                                      row_split = subgroup,
+                                     col = col_fun,
                                      ...)
 
       # draw lines legend

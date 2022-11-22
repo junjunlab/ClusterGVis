@@ -6,6 +6,8 @@
 \arguments{
 \item{object}{clusterData object, default NULL.}
 
+\item{ht.col}{heatmap colors, default c("blue", "white", "red").}
+
 \item{plot.type}{the plot type to choose which incuding "line","heatmap" and "both".}
 
 \item{ms.col}{membership line color form Mfuzz cluster method results,
@@ -35,6 +37,8 @@ default c('#0099CC','grey90','#CC3333').}
 panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
 
 \item{annoTerm.data}{the GO term annotation for the clusters, default NULL.}
+
+\item{annoTerm.mside}{the wider GO term annotation box side, default "right".}
 
 \item{termAnno.arg}{the settings for GO term panel annotations which are fill and col,
 default c("grey95","grey50").}
@@ -69,9 +73,15 @@ default c("grey95","grey50").}
 
 \item{show_row_names}{whether to show rownames, default FALSE.}
 
-\item{term.text.limit}{the GO term text size limit, default c(5,18).}
+\item{term.text.limit}{the GO term text size limit, default c(10,18).}
 
 \item{subgroup.anno}{the sub-cluster for annotation, supply sub-cluster id, default NULL.}
+
+\item{add.bar}{whether add bar plot for GO enrichment, default FALSE.}
+
+\item{bar.width}{the GO enrichment bar width, default 8.}
+
+\item{textbar.pos}{the barplot text relative position, default c(0.8,0.8).}
 
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
