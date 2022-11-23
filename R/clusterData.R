@@ -107,11 +107,15 @@ clusterData <- function(exp = NULL,
     df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:cluster.num,sep = ''))
 
     # add gene number
+    cltn <- table(final_res$cluster)
     purrr::map_df(unique(df$cluster_name),function(x){
       tmp <- df %>%
         dplyr::filter(cluster_name == x)
+
+      cn = as.numeric(unlist(strsplit(as.character(x),split = "cluster "))[2])
+
       tmp %>%
-        dplyr::mutate(cluster_name = paste(cluster_name," (",nrow(tmp),")",sep = ''))
+        dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn],")",sep = ''))
     }) -> df
 
     # return
@@ -170,11 +174,15 @@ clusterData <- function(exp = NULL,
     df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:cluster.num,sep = ''))
 
     # add gene number
+    cltn <- table(wide.r$cluster)
     purrr::map_df(unique(df$cluster_name),function(x){
       tmp <- df %>%
         dplyr::filter(cluster_name == x)
+
+      cn = as.numeric(unlist(strsplit(as.character(x),split = "cluster "))[2])
+
       tmp %>%
-        dplyr::mutate(cluster_name = paste(cluster_name," (",nrow(tmp),")",sep = ''))
+        dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn],")",sep = ''))
     }) -> df
 
     # return
