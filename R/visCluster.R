@@ -34,7 +34,7 @@
 #'
 #' @param markGenes the gene names to be added on plot, default NULL.
 #' @param markGenes.side the gene label side, default "right".
-#' @param genes.gp gene labels graphics settings, default c('italic',8,"black").
+#' @param genes.gp gene labels graphics settings, default c('italic',10,NA).
 #' @param go.col the GO term text colors, default NULL.
 #' @param go.size the GO term text size(numeric or "pval"), default NULL.
 #' @param mulGroup to draw multipe lines annotation, supply the groups numbers with vector, default NULL.
@@ -45,6 +45,12 @@
 #' @param add.bar whether add bar plot for GO enrichment, default FALSE.
 #' @param bar.width the GO enrichment bar width, default 8.
 #' @param textbar.pos the barplot text relative position, default c(0.8,0.8).
+#'
+#' @param annnoblock.text whether add cluster numers on right block annotation, default TRUE.
+#' @param annnoblock.gp right block annotation text color and size, default c("white",8).
+#' @param add.sampleanno whether add column annotation, default TRUE.
+#' @param sample.group the column sample groups, default NULL.
+#' @param sample.col column annotation colors, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -65,7 +71,7 @@
 #' visCluster(object = cm,
 #'            plot.type = "line")
 #' }
-globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio",
+globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval'))
 visCluster <- function(object = NULL,
                        ht.col = c("blue", "white", "red"),
@@ -98,7 +104,7 @@ visCluster <- function(object = NULL,
                        line.side = "right",
                        markGenes = NULL,
                        markGenes.side = "right",
-                       genes.gp = c('italic',8,"black"),
+                       genes.gp = c('italic',10,NA),
                        go.col = NULL,
                        go.size = NULL,
                        term.text.limit = c(10,18),
@@ -109,6 +115,11 @@ visCluster <- function(object = NULL,
                        add.bar = FALSE,
                        bar.width = 8,
                        textbar.pos = c(0.8,0.8),
+                       annnoblock.text = TRUE,
+                       annnoblock.gp = c("white",8),
+                       add.sampleanno = TRUE,
+                       sample.group = NULL,
+                       sample.col = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
   col_fun = circlize::colorRamp2(c(-2, 0, 2), ht.col)
@@ -179,6 +190,33 @@ visCluster <- function(object = NULL,
     }) %>% unlist()
 
     # plot
+    # =================== bar annotation for samples
+    # sample group info
+    if(is.null(sample.group)){
+      sample.info = colnames(mat)
+    }else{
+      sample.info = sample.group
+    }
+
+    # sample colors
+    if(is.null(sample.col)){
+      scol <- ggsci::pal_npg()(length(sample.info))
+      names(scol) <- sample.info
+    }else{
+      scol <- sample.col
+      names(scol) <- sample.info
+    }
+
+    # top anno
+    if(add.sampleanno == TRUE){
+      topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
+                                                  col = list(sample = scol),
+                                                  gp = grid::gpar(col = "white"),
+                                                  show_annotation_name = FALSE)
+    }else{
+      topanno = NULL
+    }
+
     # =================== bar annotation for clusters
     if(is.null(ctAnno.col)){
       colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
@@ -187,7 +225,26 @@ visCluster <- function(object = NULL,
     }
 
     names(colanno) <- 1:cluster.num
-    anno.block <- ComplexHeatmap::anno_block(gp = grid::gpar(fill = colanno,col = NA),which = "row")
+    # anno.block <- ComplexHeatmap::anno_block(gp = grid::gpar(fill = colanno,col = NA),
+    #                                          which = "row")
+
+    align_to = split(1:nrow(mat), subgroup)
+    anno.block <- ComplexHeatmap::anno_block(align_to = align_to,
+                                             panel_fun = function(index, nm) {
+                                               npos = as.numeric(unlist(strsplit(nm,split = "C"))[2])
+
+                                               # rect
+                                               grid::grid.rect(gp = grid::gpar(fill = colanno[npos],col = NA))
+
+                                               # text
+                                               if(annnoblock.text == TRUE){
+                                                 grid::grid.text(label = paste("n:",length(index),sep = ''),
+                                                                 rot = 90,
+                                                                 gp = grid::gpar(col = annnoblock.gp[1],
+                                                                                 fontsize = as.numeric(annnoblock.gp[2])))
+                                               }
+                                             },
+                                             which = "row")
 
     # =================== gene annotation for heatmap
     # whether mark your genes on plot
@@ -197,6 +254,25 @@ visCluster <- function(object = NULL,
 
       # tartget gene
       annoGene <- markGenes
+
+      # add color for gene
+      gene.col <- data %>%
+        dplyr::select(gene,cluster) %>%
+        dplyr::filter(gene %in% annoGene)
+
+      purrr::map_df(1:cluster.num,function(x){
+        tmp <- gene.col %>%
+          dplyr::filter(cluster == x) %>%
+          dplyr::mutate(col = colanno[x])
+      }) -> gene.col
+
+      gene.col <- gene.col[match(annoGene,gene.col$gene),]
+
+      if(is.na(genes.gp[3])){
+        gcol = gene.col$col
+      }else{
+        gcol = genes.gp[3]
+      }
 
       # get target gene index
       index <- match(annoGene,rowGene)
@@ -208,7 +284,7 @@ visCluster <- function(object = NULL,
                                                   side = markGenes.side,
                                                   labels_gp = grid::gpar(fontface = genes.gp[1],
                                                                          fontsize = as.numeric(genes.gp[2]),
-                                                                         col = genes.gp[3]))
+                                                                         col = gcol))
     }else{
       geneMark = NULL
     }
@@ -220,16 +296,21 @@ visCluster <- function(object = NULL,
     # return plot according to plot type
     if(plot.type == "heatmap"){
       # draw HT
-      ComplexHeatmap::Heatmap(as.matrix(mat),
-                              name = 'Z-score',
-                              cluster_columns = FALSE,
-                              show_row_names = FALSE,
-                              row_split = subgroup,
-                              column_names_side = "top",
-                              border = TRUE,
-                              right_annotation = right_annotation,
-                              col = col_fun,
-                              ...)
+      htf <-
+        ComplexHeatmap::Heatmap(as.matrix(mat),
+                                name = 'Z-score',
+                                cluster_columns = FALSE,
+                                show_row_names = FALSE,
+                                row_split = subgroup,
+                                column_names_side = "top",
+                                border = TRUE,
+                                top_annotation = topanno,
+                                right_annotation = right_annotation,
+                                col = col_fun,
+                                ...)
+
+      # draw
+      ComplexHeatmap::draw(htf,merge_legend = TRUE)
     }else{
       #====================== heatmap + line
       rg = range(mat)
@@ -665,6 +746,7 @@ visCluster <- function(object = NULL,
                                      name = "Z-score",
                                      cluster_columns = FALSE,
                                      show_row_names = show_row_names,
+                                     top_annotation = topanno,
                                      right_annotation = right_annotation2,
                                      left_annotation = left_annotation,
                                      column_names_side = "top",

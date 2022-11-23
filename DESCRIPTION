@@ -21,6 +21,7 @@ Imports:
     e1071,
     factoextra,
     ggplot2,
+    ggsci,
     grid,
     jjAnno,
     magrittr,

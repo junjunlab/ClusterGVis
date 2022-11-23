@@ -61,7 +61,7 @@ default c("grey95","grey50").}
 
 \item{markGenes.side}{the gene label side, default "right".}
 
-\item{genes.gp}{gene labels graphics settings, default c('italic',8,"black").}
+\item{genes.gp}{gene labels graphics settings, default c('italic',10,NA).}
 
 \item{go.col}{the GO term text colors, default NULL.}
 
@@ -82,6 +82,16 @@ default c("grey95","grey50").}
 \item{bar.width}{the GO enrichment bar width, default 8.}
 
 \item{textbar.pos}{the barplot text relative position, default c(0.8,0.8).}
+
+\item{annnoblock.text}{whether add cluster numers on right block annotation, default TRUE.}
+
+\item{annnoblock.gp}{right block annotation text color and size, default c("white",8).}
+
+\item{add.sampleanno}{whether add column annotation, default TRUE.}
+
+\item{sample.group}{the column sample groups, default NULL.}
+
+\item{sample.col}{column annotation colors, default NULL.}
 
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
