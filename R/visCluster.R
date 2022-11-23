@@ -704,6 +704,7 @@ visCluster <- function(object = NULL,
         #   left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         # }
         textbox = NULL
+        baranno = NULL
       }
 
       # ====================================================
