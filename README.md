@@ -2,9 +2,9 @@
 
 <!-- badges: start -->
 
-For better clusteing and visualizing the time series gene expression data of RNA-SEQ with ***fuzzy c-means*** algorithm from e1071 package or ***Kmeans*** from ComplexHeatmap package, here supply [**ClusterGVis**](https://github.com/junjunlab/ClusterGVis) package to cluster and visualize time-serie gene expression data in a more concise and elegant way with one-step operation. ClusterGVis allows you to create ***publication-quality figures***.
+For better clusteing and visualizing the time series gene expression data of RNA-SEQ with ***fuzzy c-means*** algorithm from e1071 package or ***Kmeans*** from ComplexHeatmap package, here supply [**ClusterGVis**](https://github.com/junjunlab/ClusterGVis) package to cluster and visualize time-serie gene expression data in a more concise and elegant way with one-step operation. You can also do enrichment analysis for each clusters with using **clusterProfiler** in [**enrichCluster**](https://github.com/junjunlab/ClusterGVis) function. ClusterGVis allows you to create ***publication-quality figures***.
 
-Thanks for the contributions for [**Mfuzz**](https://www.bioconductor.org/packages/release/bioc/html/Mfuzz.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
+Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), [**Mfuzz**](https://www.bioconductor.org/packages/release/bioc/html/Mfuzz.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
 
 <!-- badges: end -->
 
@@ -23,7 +23,7 @@ devtools::install_github("junjunlab/ClusterGVis")
 
 ## Figures
 
-![1669110823991](https://user-images.githubusercontent.com/64965509/203283283-185bb150-55e5-4e6d-ac82-c922b77ae66a.png)
+![1669186016128](https://user-images.githubusercontent.com/64965509/203486768-d21780ee-f8dc-4402-a6d8-5c292eae64b5.png)
 
 ## Document
 
