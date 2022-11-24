@@ -51,6 +51,7 @@
 #' @param add.sampleanno whether add column annotation, default TRUE.
 #' @param sample.group the column sample groups, default NULL.
 #' @param sample.col column annotation colors, default NULL.
+#' @param sample.order the orders for column samples, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -120,6 +121,7 @@ visCluster <- function(object = NULL,
                        add.sampleanno = TRUE,
                        sample.group = NULL,
                        sample.col = NULL,
+                       sample.order = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
   col_fun = circlize::colorRamp2(c(-2, 0, 2), ht.col)
@@ -129,6 +131,11 @@ visCluster <- function(object = NULL,
   if(plot.type == "line"){
     # process data
     data <- data.frame(object$long.res)
+
+    # sample orders
+    if(!is.null(sample.order)){
+      data$cell_type <- factor(data$cell_type,levels = sample.order)
+    }
 
     # basic plot
     line <-
@@ -179,6 +186,11 @@ visCluster <- function(object = NULL,
     }
 
     rownames(mat) <- data$gene
+
+    # sample orders
+    if(!is.null(sample.order)){
+      mat <- mat[,sample.order]
+    }
 
     # split info
     cl.info <- data.frame(table(data$cluster))
@@ -612,79 +624,82 @@ visCluster <- function(object = NULL,
         # }
 
         # GO bar anno function
-        anno_gobar <- function(data = NULL,
-                               bar.width = 0.1,
-                               # col = NA,
-                               align_to = NULL,
-                               panel.arg = panel.arg,
-                               ...){
-          # process data
-          if(ncol(data) == 3){
-            data <- data %>%
-              dplyr::mutate(bary = -log10(pval))
-          }else{
-            data <- data %>%
-              dplyr::mutate(bary = ratio)
+        if(ncol(termanno) - 2 > 2){
+          anno_gobar <- function(data = NULL,
+                                 bar.width = 0.1,
+                                 # col = NA,
+                                 align_to = NULL,
+                                 panel.arg = panel.arg,
+                                 ...){
+            # process data
+            if(ncol(data) - 2 == 3){
+              data <- data %>%
+                dplyr::mutate(bary = -log10(pval))
+            }else{
+              data <- data %>%
+                dplyr::mutate(bary = ratio)
+            }
+
+            ComplexHeatmap::anno_zoom(align_to = align_to,
+                                      which = "row",
+
+                                      # =====================
+                                      panel_fun = function(index,nm){
+                                        grid::pushViewport(grid::viewport(xscale = c(0,1),yscale = c(0,1)))
+
+                                        grid::grid.rect()
+
+                                        # sub data
+                                        tmp <- data %>%
+                                          dplyr::filter(id == nm) %>%
+                                          dplyr::arrange(bary)
+
+                                        # bar grobs
+                                        # grid::grid.rect(x = rep(0,nrow(tmp)),
+                                        #                 y = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                        #                 width = scales::rescale(tmp$log10P,to = c(0,1)),
+                                        #                 height = bar.width,
+                                        #                 gp = grid::gpar(fill = tmp$col,col = col))
+
+                                        grid::grid.segments(x0 = rep(0,nrow(tmp)),
+                                                            x1 = scales::rescale(tmp$bary,to = c(0,1)),
+                                                            y0 = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                                            y1 = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                                            gp = grid::gpar(lwd = bar.width,
+                                                                            col = tmp$col,
+                                                                            lineend = "butt"))
+
+                                        # add cluster name
+                                        grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
+
+                                        text <- nm
+                                        grid.textbox(text,
+                                                     x = textbar.pos[1],y = textbar.pos[2],
+                                                     gp = grid::gpar(fontsize = textbox.size,
+                                                                     fontface = "italic",
+                                                                     col = unique(tmp$col),
+                                                                     ...))
+
+                                        grid::popViewport()
+                                      },
+
+                                      # =======================
+                                      size = grid::unit(as.numeric(panel.arg[1]), "cm"),
+                                      gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
+                                      width = grid::unit(as.numeric(panel.arg[3]), "cm"),
+                                      side = "right",
+                                      link_gp = grid::gpar(fill = termAnno.arg[1],col = termAnno.arg[2]),
+                                      ...)
           }
 
-          ComplexHeatmap::anno_zoom(align_to = align_to,
-                                    which = "row",
+          # ================================
+          # bar anno
+          baranno = anno_gobar(data = termanno,
+                               align_to = align_to2,
+                               panel.arg = panel.arg,
+                               bar.width = bar.width)
 
-                                    # =====================
-                                    panel_fun = function(index,nm){
-                                      grid::pushViewport(grid::viewport(xscale = c(0,1),yscale = c(0,1)))
-
-                                      grid::grid.rect()
-
-                                      # sub data
-                                      tmp <- data %>%
-                                        dplyr::filter(id == nm) %>%
-                                        dplyr::arrange(bary)
-
-                                      # bar grobs
-                                      # grid::grid.rect(x = rep(0,nrow(tmp)),
-                                      #                 y = scales::rescale(1:nrow(tmp),to = c(0,1)),
-                                      #                 width = scales::rescale(tmp$log10P,to = c(0,1)),
-                                      #                 height = bar.width,
-                                      #                 gp = grid::gpar(fill = tmp$col,col = col))
-
-                                      grid::grid.segments(x0 = rep(0,nrow(tmp)),
-                                                          x1 = scales::rescale(tmp$bary,to = c(0,1)),
-                                                          y0 = scales::rescale(1:nrow(tmp),to = c(0,1)),
-                                                          y1 = scales::rescale(1:nrow(tmp),to = c(0,1)),
-                                                          gp = grid::gpar(lwd = bar.width,
-                                                                          col = tmp$col,
-                                                                          lineend = "butt"))
-
-                                      # add cluster name
-                                      grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
-
-                                      text <- nm
-                                      grid.textbox(text,
-                                                   x = textbar.pos[1],y = textbar.pos[2],
-                                                   gp = grid::gpar(fontsize = textbox.size,
-                                                                   fontface = "italic",
-                                                                   col = unique(tmp$col),
-                                                                   ...))
-
-                                      grid::popViewport()
-                                    },
-
-                                    # =======================
-                                    size = grid::unit(as.numeric(panel.arg[1]), "cm"),
-                                    gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
-                                    width = grid::unit(as.numeric(panel.arg[3]), "cm"),
-                                    side = "right",
-                                    link_gp = grid::gpar(fill = termAnno.arg[1],col = termAnno.arg[2]),
-                                    ...)
         }
-
-        # ================================
-        # bar anno
-        baranno = anno_gobar(data = termanno,
-                             align_to = align_to2,
-                             panel.arg = panel.arg,
-                             bar.width = bar.width)
 
         # whether add bar annotation
         if(add.bar == TRUE){
@@ -757,7 +772,7 @@ visCluster <- function(object = NULL,
 
       # draw lines legend
       if(is.null(mulGroup)){
-        ComplexHeatmap::draw(htf)
+        ComplexHeatmap::draw(htf,merge_legend = TRUE)
       }else{
         if(is.null(lgd.label)){
           lgd.label <- paste("group",1:length(mulGroup),sep = '')

@@ -93,6 +93,8 @@ default c("grey95","grey50").}
 
 \item{sample.col}{column annotation colors, default NULL.}
 
+\item{sample.order}{the orders for column samples, default NULL.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
