@@ -8,6 +8,8 @@
 
 \item{ht.col}{heatmap colors, default c("blue", "white", "red").}
 
+\item{border}{whether add border for heatmap, default TRUE.}
+
 \item{plot.type}{the plot type to choose which incuding "line","heatmap" and "both".}
 
 \item{ms.col}{membership line color form Mfuzz cluster method results,

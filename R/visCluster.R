@@ -4,6 +4,7 @@
 #'
 #' @param object clusterData object, default NULL.
 #' @param ht.col heatmap colors, default c("blue", "white", "red").
+#' @param border whether add border for heatmap, default TRUE.
 #' @param plot.type the plot type to choose which incuding "line","heatmap" and "both".
 #' @param ms.col membership line color form Mfuzz cluster method results,
 #' default c('#0099CC','grey90','#CC3333').
@@ -76,6 +77,7 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval'))
 visCluster <- function(object = NULL,
                        ht.col = c("blue", "white", "red"),
+                       border = TRUE,
                        plot.type = c("line","heatmap","both"),
                        ms.col = c('#0099CC','grey90','#CC3333'),
                        line.size = 0.1,
@@ -206,9 +208,18 @@ visCluster <- function(object = NULL,
     # sample group info
     if(is.null(sample.group)){
       sample.info = colnames(mat)
+
+      # split columns
+      column_split = NULL
     }else{
       sample.info = sample.group
+
+      # split columns
+      column_split = sample.group
     }
+
+    # order
+    sample.info <- factor(sample.info,levels = unique(sample.info))
 
     # sample colors
     if(is.null(sample.col)){
@@ -313,9 +324,11 @@ visCluster <- function(object = NULL,
                                 name = 'Z-score',
                                 cluster_columns = FALSE,
                                 show_row_names = show_row_names,
+                                border = border,
+                                column_split = column_split,
                                 row_split = subgroup,
                                 column_names_side = "top",
-                                border = TRUE,
+                                # border = TRUE,
                                 top_annotation = topanno,
                                 right_annotation = right_annotation,
                                 col = col_fun,
@@ -762,6 +775,8 @@ visCluster <- function(object = NULL,
                                      name = "Z-score",
                                      cluster_columns = FALSE,
                                      show_row_names = show_row_names,
+                                     border = border,
+                                     column_split = column_split,
                                      top_annotation = topanno,
                                      right_annotation = right_annotation2,
                                      left_annotation = left_annotation,
