@@ -140,6 +140,7 @@ clusterData <- function(exp = NULL,
     set.seed(seed)
     ht = ComplexHeatmap::Heatmap(hclust_matrix,
                                  show_row_names = F,
+                                 show_row_dend = F,
                                  row_km = cluster.num)
 
     # gene order
@@ -161,7 +162,8 @@ clusterData <- function(exp = NULL,
     wide.r <- m %>%
       data.frame() %>%
       dplyr::mutate(gene = rownames(.),
-                    cluster = od.res$id)
+                    cluster = od.res$id) %>%
+      dplyr::arrange(cluster)
 
     # wide to long
     df <- reshape2::melt(wide.r,
