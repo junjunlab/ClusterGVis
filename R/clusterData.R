@@ -3,9 +3,10 @@
 #' @title using clusterData to cluster genes
 #'
 #' @param exp the gene normalized expression data(fpkm/rpkm/tpm), default NULL.
-#' @param cluster.method which cluster method to choose, mfuzz or kmeans, default "mfuzz",
+#' @param cluster.method which cluster method to choose, mfuzz, kmeans or wgcna, default "mfuzz".
 #' details see package Mfuzz. If choose "kmeans", the row_km argument will be used to cluster genes
 #' in ComplexHeatmap::Heatmap function.
+#' @param object the WGCNA::blockwiseModules returned object, default NULL.
 #' @param min.std min std for filter genes, this argument is in mfuzz function, default 0.
 #' @param cluster.num the number clusters, default NULL.
 #' @param seed set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.
@@ -28,10 +29,11 @@
 #'                   cluster.num = 8)
 #'
 
-globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name'))
+globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol'))
 clusterData <- function(exp = NULL,
                         scaleData = TRUE,
-                        cluster.method = c("mfuzz","kmeans"),
+                        cluster.method = c("mfuzz","kmeans","wgcna"),
+                        object = NULL,
                         min.std = 0,
                         cluster.num = NULL,
                         seed = 5201314){
@@ -189,8 +191,50 @@ clusterData <- function(exp = NULL,
     return(list(wide.res = wide.r,
                 long.res = df,
                 type = cluster.method))
+  }else if(cluster.method == "wgcna"){
+    # =====================================
+    net <- object
+    cinfo <- data.frame(cluster = net$colors + 1,
+                        modulecol = WGCNA::labels2colors(net$colors))
+
+    expm <- data.frame(t(scale(exp)))
+    expm$gene <- rownames(expm)
+    final.res <- data.frame(cbind(expm,cinfo)) %>%
+      dplyr::arrange(cluster)
+
+    # =====================================
+    cl.info <- data.frame(table(final.res$cluster))
+
+    # wide to long
+    df <- reshape2::melt(final.res,
+                         id.vars = c('cluster','gene','modulecol'),
+                         variable.name = 'cell_type',
+                         value.name = 'norm_value')
+
+    # add cluster name
+    df$cluster_name <- paste('cluster ',df$cluster,sep = '')
+
+    # cluster order
+    df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:nrow(cl.info),sep = ''))
+
+    # add gene number
+    cltn <- table(final.res$cluster)
+    purrr::map_df(unique(df$cluster_name),function(x){
+      tmp <- df %>%
+        dplyr::filter(cluster_name == x)
+
+      cn = as.numeric(unlist(strsplit(as.character(x),split = "cluster "))[2])
+
+      tmp %>%
+        dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn]," ",unique(tmp$modulecol),")",sep = ''))
+    }) -> df
+
+    # return
+    return(list(wide.res = final.res,
+                long.res = df,
+                type = cluster.method))
   }else{
-    print("supply with mfuzz or kmeans !")
+    print("supply with mfuzz, kmeans or wgcna !")
   }
 }
 

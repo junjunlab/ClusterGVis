@@ -74,7 +74,8 @@
 #'            plot.type = "line")
 #' }
 globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
-                  'membership', 'norm_value','id', 'log10P', 'pval'))
+                  'membership', 'norm_value','id', 'log10P', 'pval',
+                  'Var1'))
 visCluster <- function(object = NULL,
                        ht.col = c("blue", "white", "red"),
                        border = TRUE,
@@ -156,10 +157,24 @@ visCluster <- function(object = NULL,
     }
 
     if(add.mline == TRUE){
-      line <- line +
-        # median line
-        ggplot2::geom_line(stat = "summary", fun = "median", colour = mline.col, size = mline.size,
-                           ggplot2::aes(group = 1))
+      if(object$type == "wgcna"){
+        # line colors
+        linec <- unique(data$modulecol)
+        names(linec) <- linec
+
+        line <- line +
+          # median line
+          ggplot2::geom_line(stat = "summary", fun = "median",
+                             # colour = "brown",
+                             size = mline.size,
+                             ggplot2::aes(group = 1,color = modulecol)) +
+          ggplot2::scale_color_manual(values = linec)
+      }else{
+        line <- line +
+          # median line
+          ggplot2::geom_line(stat = "summary", fun = "median", colour = mline.col, size = mline.size,
+                             ggplot2::aes(group = 1))
+      }
     }else{
       line <- line
     }
@@ -182,9 +197,17 @@ visCluster <- function(object = NULL,
 
     # prepare matrix
     if(object$type == "mfuzz"){
-      mat <- data %>% dplyr::select(-gene,-cluster,-membership)
+      mat <- data %>%
+        dplyr::arrange(cluster) %>%
+        dplyr::select(-gene,-cluster,-membership)
+    }else if(object$type == "wgcna"){
+      mat <- data %>%
+        dplyr::arrange(cluster) %>%
+        dplyr::select(-gene,-cluster,-modulecol)
     }else{
-      mat <- data %>% dplyr::select(-gene,-cluster)
+      mat <- data %>%
+        dplyr::arrange(cluster) %>%
+        dplyr::select(-gene,-cluster)
     }
 
     rownames(mat) <- data$gene
@@ -195,7 +218,8 @@ visCluster <- function(object = NULL,
     }
 
     # split info
-    cl.info <- data.frame(table(data$cluster))
+    cl.info <- data.frame(table(data$cluster)) %>%
+      dplyr::arrange(Var1)
     cluster.num <- nrow(cl.info)
 
     subgroup <- lapply(1:nrow(cl.info),function(x){

@@ -6,9 +6,11 @@
 \arguments{
 \item{exp}{the gene normalized expression data(fpkm/rpkm/tpm), default NULL.}
 
-\item{cluster.method}{which cluster method to choose, mfuzz or kmeans, default "mfuzz",
+\item{cluster.method}{which cluster method to choose, mfuzz, kmeans or wgcna, default "mfuzz".
 details see package Mfuzz. If choose "kmeans", the row_km argument will be used to cluster genes
 in ComplexHeatmap::Heatmap function.}
+
+\item{object}{the WGCNA::blockwiseModules returned object, default NULL.}
 
 \item{min.std}{min std for filter genes, this argument is in mfuzz function, default 0.}
 

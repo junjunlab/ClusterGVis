@@ -116,3 +116,11 @@ enrichCluster <- function(object = NULL,
     return(df2)
   })
 }
+
+#' This is a test data for this package
+#' test data describtion
+#'
+#' @name net
+#' @docType data
+#' @author Junjun Lao
+"net"
