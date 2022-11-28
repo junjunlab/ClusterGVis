@@ -105,11 +105,9 @@ clusterData <- function(exp = NULL,
     # add cluster name
     df$cluster_name <- paste('cluster ',df$cluster,sep = '')
 
-    # cluster order
-    df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:cluster.num,sep = ''))
-
     # add gene number
     cltn <- table(final_res$cluster)
+    cl.info <- data.frame(table(final_res$cluster))
     purrr::map_df(unique(df$cluster_name),function(x){
       tmp <- df %>%
         dplyr::filter(cluster_name == x)
@@ -119,6 +117,10 @@ clusterData <- function(exp = NULL,
       tmp %>%
         dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn],")",sep = ''))
     }) -> df
+
+    # cluster order
+    df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
+                                                             " (",cl.info$Freq,")",sep = ''))
 
     # return
     return(list(wide.res = final_res,
@@ -150,7 +152,7 @@ clusterData <- function(exp = NULL,
     # get index
     purrr::map_df(1:length(names(row.order)),function(x){
       data.frame(od = row.order[[x]],
-                 id = names(row.order)[x])
+                 id = as.numeric(names(row.order)[x]))
     }) -> od.res
 
     cl.info <- data.frame(table(od.res$id))
@@ -174,9 +176,6 @@ clusterData <- function(exp = NULL,
     # add cluster name
     df$cluster_name <- paste('cluster ',df$cluster,sep = '')
 
-    # cluster order
-    df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:cluster.num,sep = ''))
-
     # add gene number
     cltn <- table(wide.r$cluster)
     purrr::map_df(unique(df$cluster_name),function(x){
@@ -189,6 +188,9 @@ clusterData <- function(exp = NULL,
         dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn],")",sep = ''))
     }) -> df
 
+    # cluster order
+    df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
+                                                             " (",cl.info$Freq,")",sep = ''))
     # return
     return(list(wide.res = wide.r,
                 long.res = df,
@@ -217,7 +219,7 @@ clusterData <- function(exp = NULL,
     df$cluster_name <- paste('cluster ',df$cluster,sep = '')
 
     # cluster order
-    df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:nrow(cl.info),sep = ''))
+    # df$cluster_name <- factor(df$cluster_name,levels = paste('cluster ',1:nrow(cl.info),sep = ''))
 
     # add gene number
     cltn <- table(final.res$cluster)
@@ -230,6 +232,10 @@ clusterData <- function(exp = NULL,
       tmp %>%
         dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[cn]," ",unique(tmp$modulecol),")",sep = ''))
     }) -> df
+
+    # cluster order
+    df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
+                                                             " (",cl.info$Freq,")",sep = ''))
 
     # return
     return(list(wide.res = final.res,
