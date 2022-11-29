@@ -13,6 +13,7 @@ Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/
 You can install the development version of transPlotR like so:
 
 ``` r
+# Note: please update your ComplexHeatmap to the latest version!
 # install.packages("devtools")
 devtools::install_github("junjunlab/ClusterGVis")
 ```
