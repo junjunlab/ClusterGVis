@@ -247,7 +247,8 @@ visCluster <- function(object = NULL,
 
     # sample colors
     if(is.null(sample.col)){
-      scol <- ggsci::pal_npg()(length(sample.info))
+      # scol <- ggsci::pal_npg()(length(sample.info))
+      scol <- circlize::rand_color(n = length(sample.info))
       names(scol) <- sample.info
     }else{
       scol <- sample.col
