@@ -9,7 +9,7 @@
 #' @param toType the ID type for "bitr" function to transform, default c("ENTREZID").
 #' @param organism the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.
 #' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
-#' @param topn the top enrichment results to extract, default 5.
+#' @param topn the top enrichment results to extract, length one or same with cluster numbers, default 5.
 #' @param seed the enrichment seed, default 5201314.
 #'
 #' @import org.Mm.eg.db
@@ -98,9 +98,16 @@ enrichCluster <- function(object = NULL,
 
     # whether save all res
     if(!is.null(topn)){
+      # top n selection
+      if(length(topn) == 1){
+        top = topn
+      }else{
+        top = topn[x]
+      }
+
       df <- df %>%
         # dplyr::select(group,Description,pvalue) %>%
-        dplyr::slice_head(n = topn)
+        dplyr::slice_head(n = top)
 
       # add gene enrich ratio
       df1 <- purrr::map_df(1:nrow(df),function(x){

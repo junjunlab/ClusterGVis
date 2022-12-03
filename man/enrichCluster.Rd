@@ -18,7 +18,7 @@
 
 \item{pvalueCutoff}{pvalueCutoff for enrichment, default 0.05.}
 
-\item{topn}{the top enrichment results to extract, default 5.}
+\item{topn}{the top enrichment results to extract, length one or same with cluster numbers, default 5.}
 
 \item{seed}{the enrichment seed, default 5201314.}
 }
