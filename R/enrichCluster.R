@@ -5,7 +5,9 @@
 #' @param object clusterData object, default NULL.
 #' @param type which type to choose for enrichment "BP","MF","CC" or "KEGG".
 #' @param OrgDb the annotation data for enrichment, default NULL.
-#' @param organism the organism name for kegg enrichment,mouse("mmu"), human("hsa"), default NULL.
+#' @param fromType the input ID type, default "SYMBOL".
+#' @param toType the ID type for "bitr" function to transform, default c("ENTREZID").
+#' @param organism the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.
 #' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
 #' @param topn the top enrichment results to extract, default 5.
 #' @param seed the enrichment seed, default 5201314.
@@ -36,6 +38,8 @@ globalVariables(c('Description', 'group', 'pvalue'))
 enrichCluster <- function(object = NULL,
                           type = c("BP","MF","CC","KEGG"),
                           OrgDb = NULL,
+                          fromType = "SYMBOL",
+                          toType = c("ENTREZID"),
                           # for kegg mouse(mmu)
                           organism = "hsa",
                           pvalueCutoff  = 0.05,
@@ -57,15 +61,15 @@ enrichCluster <- function(object = NULL,
 
     # entriz id transformation
     gene.ent <- clusterProfiler::bitr(tmp$gene,
-                                      fromType = "SYMBOL",
-                                      toType = c("ENTREZID"),
+                                      fromType = fromType,
+                                      toType = toType,
                                       OrgDb = OrgDb)
 
     # GO enrich
     if(type != "KEGG"){
       set.seed(seed)
       ego <- clusterProfiler::enrichGO(gene          = gene.ent$ENTREZID,
-                                       keyType       = "ENTREZID",
+                                       keyType       = toType,
                                        OrgDb         = OrgDb,
                                        ont           = type,
                                        pAdjustMethod = "BH",
@@ -77,12 +81,13 @@ enrichCluster <- function(object = NULL,
       ego <- clusterProfiler::enrichKEGG(gene          = gene.ent$ENTREZID,
                                          keyType       = "kegg",
                                          organism      = organism,
+                                         universe      = NULL,
                                          pvalueCutoff  = 1,
                                          pAdjustMethod = "BH",
                                          qvalueCutoff  = 0.2)
 
       # transform gene id
-      ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb,keyType = "ENTREZID")
+      ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb,keyType = toType)
     }
 
     # to data.frame

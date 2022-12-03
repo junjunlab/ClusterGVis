@@ -10,7 +10,11 @@
 
 \item{OrgDb}{the annotation data for enrichment, default NULL.}
 
-\item{organism}{the organism name for kegg enrichment,mouse("mmu"), human("hsa"), default NULL.}
+\item{fromType}{the input ID type, default "SYMBOL".}
+
+\item{toType}{the ID type for "bitr" function to transform, default c("ENTREZID").}
+
+\item{organism}{the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.}
 
 \item{pvalueCutoff}{pvalueCutoff for enrichment, default 0.05.}
 
