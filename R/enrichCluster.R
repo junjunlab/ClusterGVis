@@ -5,6 +5,7 @@
 #' @param object clusterData object, default NULL.
 #' @param type which type to choose for enrichment "BP","MF","CC" or "KEGG".
 #' @param OrgDb the annotation data for enrichment, default NULL.
+#' @param id.trans whether perform the ID transformation, default TRUE.
 #' @param fromType the input ID type, default "SYMBOL".
 #' @param toType the ID type for "bitr" function to transform, default c("ENTREZID").
 #' @param organism the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.
@@ -38,6 +39,7 @@ globalVariables(c('Description', 'group', 'pvalue'))
 enrichCluster <- function(object = NULL,
                           type = c("BP","MF","CC","KEGG"),
                           OrgDb = NULL,
+                          id.trans = TRUE,
                           fromType = "SYMBOL",
                           toType = c("ENTREZID"),
                           # for kegg mouse(mmu)
@@ -60,15 +62,21 @@ enrichCluster <- function(object = NULL,
     # enrich
 
     # entriz id transformation
-    gene.ent <- clusterProfiler::bitr(tmp$gene,
-                                      fromType = fromType,
-                                      toType = toType,
-                                      OrgDb = OrgDb)
+    if(id.trans == TRUE){
+      gene.ent <- clusterProfiler::bitr(tmp$gene,
+                                        fromType = fromType,
+                                        toType = toType,
+                                        OrgDb = OrgDb)
+
+      tartget.gene = gene.ent$ENTREZID
+    }else{
+      tartget.gene = tmp$gene
+    }
 
     # GO enrich
     if(type != "KEGG"){
       set.seed(seed)
-      ego <- clusterProfiler::enrichGO(gene          = gene.ent$ENTREZID,
+      ego <- clusterProfiler::enrichGO(gene          = tartget.gene,
                                        keyType       = toType,
                                        OrgDb         = OrgDb,
                                        ont           = type,
@@ -78,7 +86,7 @@ enrichCluster <- function(object = NULL,
                                        readable      = TRUE)
     }else{
       set.seed(seed)
-      ego <- clusterProfiler::enrichKEGG(gene          = gene.ent$ENTREZID,
+      ego <- clusterProfiler::enrichKEGG(gene          = tartget.gene,
                                          keyType       = "kegg",
                                          organism      = organism,
                                          universe      = NULL,

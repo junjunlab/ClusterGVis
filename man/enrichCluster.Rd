@@ -10,6 +10,8 @@
 
 \item{OrgDb}{the annotation data for enrichment, default NULL.}
 
+\item{id.trans}{whether perform the ID transformation, default TRUE.}
+
 \item{fromType}{the input ID type, default "SYMBOL".}
 
 \item{toType}{the ID type for "bitr" function to transform, default c("ENTREZID").}
