@@ -3,7 +3,6 @@
 #' @title using visCluster to visualize cluster results from clusterData output
 #'
 #' @param object clusterData object, default NULL.
-#' @param plot.data supply with own data with data.frame format for visualization, default NULL.
 #' @param ht.col heatmap colors, default c("blue", "white", "red").
 #' @param border whether add border for heatmap, default TRUE.
 #' @param plot.type the plot type to choose which incuding "line","heatmap" and "both".
@@ -78,7 +77,7 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval',
                   'Var1'))
 visCluster <- function(object = NULL,
-                       plot.data = NULL,
+                       # plot.data = NULL,
                        ht.col = c("blue", "white", "red"),
                        border = TRUE,
                        plot.type = c("line","heatmap","both"),
@@ -135,11 +134,12 @@ visCluster <- function(object = NULL,
   # choose plot type
   if(plot.type == "line"){
     # process data
-    if(is.null(plot.data)){
-      data <- data.frame(object$long.res)
-    }else{
-      data <- plot.data
-    }
+    # if(is.null(plot.data)){
+    #   data <- data.frame(object$long.res)
+    # }else{
+    #   data <- plot.data
+    # }
+    data <- data.frame(object$long.res)
 
     # sample orders
     if(!is.null(sample.order)){
@@ -199,11 +199,13 @@ visCluster <- function(object = NULL,
   }else{
     # ==========================================================================
     # process data
-    if(is.null(plot.data)){
-      data <- data.frame(object$wide.res)
-    }else{
-      data <- plot.data
-    }
+    # if(is.null(plot.data)){
+    #   data <- data.frame(object$wide.res)
+    # }else{
+    #   data <- plot.data
+    # }
+
+    data <- data.frame(object$wide.res)
 
     # prepare matrix
     if(object$type == "mfuzz"){
