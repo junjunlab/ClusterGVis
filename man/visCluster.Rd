@@ -6,6 +6,8 @@
 \arguments{
 \item{object}{clusterData object, default NULL.}
 
+\item{plot.data}{supply with own data with data.frame format for visualization, default NULL.}
+
 \item{ht.col}{heatmap colors, default c("blue", "white", "red").}
 
 \item{border}{whether add border for heatmap, default TRUE.}
