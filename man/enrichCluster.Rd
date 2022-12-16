@@ -16,6 +16,8 @@
 
 \item{toType}{the ID type for "bitr" function to transform, default c("ENTREZID").}
 
+\item{readable}{whether make the enrichmemnt results ID readble, default TRUE.}
+
 \item{organism}{the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.}
 
 \item{pvalueCutoff}{pvalueCutoff for enrichment, default 0.05.}

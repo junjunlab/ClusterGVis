@@ -8,6 +8,7 @@
 #' @param id.trans whether perform the ID transformation, default TRUE.
 #' @param fromType the input ID type, default "SYMBOL".
 #' @param toType the ID type for "bitr" function to transform, default c("ENTREZID").
+#' @param readable whether make the enrichmemnt results ID readble, default TRUE.
 #' @param organism the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.
 #' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
 #' @param topn the top enrichment results to extract, length one or same with cluster numbers, default 5.
@@ -42,6 +43,7 @@ enrichCluster <- function(object = NULL,
                           id.trans = TRUE,
                           fromType = "SYMBOL",
                           toType = c("ENTREZID"),
+                          readable = TRUE,
                           # for kegg mouse(mmu)
                           organism = "hsa",
                           pvalueCutoff  = 0.05,
@@ -83,7 +85,7 @@ enrichCluster <- function(object = NULL,
                                        pAdjustMethod = "BH",
                                        pvalueCutoff  = 1,
                                        qvalueCutoff  = 0.2,
-                                       readable      = TRUE)
+                                       readable      = readable)
     }else{
       set.seed(seed)
       ego <- clusterProfiler::enrichKEGG(gene          = tartget.gene,
@@ -95,7 +97,11 @@ enrichCluster <- function(object = NULL,
                                          qvalueCutoff  = 0.2)
 
       # transform gene id
-      ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb,keyType = toType)
+      if(readable == TRUE){
+        ego <- clusterProfiler::setReadable(ego,OrgDb = OrgDb,keyType = toType)
+      }else{
+        ego <- ego
+      }
     }
 
     # to data.frame
