@@ -4,7 +4,15 @@ Version: 0.0.4
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: For better clusteing and visualizing the time series gene expression data 
+ of RNA-SEQ with fuzzy c-means algorithm from 'e1071' package 
+ or Kmeans from 'ComplexHeatmap' package, the function 'blockwiseModules' from 'WGCNA' package 
+ outputs also can be accepted and can be used to produce graphs for visualization, 
+ here supply ClusterGVis package to cluster and visualize time-serie gene expression data 
+ in a more concise and elegant way with one-step operation. 
+ You can also do enrichment analysis for each clusters with using 
+ 'clusterProfiler' in 'enrichCluster' function. 
+ 'ClusterGVis' allows you to create publication-quality figures.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

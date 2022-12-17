@@ -69,11 +69,11 @@ default c("grey95","grey50").}
 
 \item{go.size}{the GO term text size(numeric or "pval"), default NULL.}
 
-\item{mulGroup}{to draw multipe lines annotation, supply the groups numbers with vector, default NULL.}
+\item{mulGroup}{to draw multiple lines annotation, supply the groups numbers with vector, default NULL.}
 
 \item{lgd.label}{the lines annotation legend labels, default NULL.}
 
-\item{show_row_names}{whether to show rownames, default FALSE.}
+\item{show_row_names}{whether to show row names, default FALSE.}
 
 \item{term.text.limit}{the GO term text size limit, default c(10,18).}
 
@@ -85,7 +85,7 @@ default c("grey95","grey50").}
 
 \item{textbar.pos}{the barplot text relative position, default c(0.8,0.8).}
 
-\item{annnoblock.text}{whether add cluster numers on right block annotation, default TRUE.}
+\item{annnoblock.text}{whether add cluster numbers on right block annotation, default TRUE.}
 
 \item{annnoblock.gp}{right block annotation text color and size, default c("white",8).}
 
@@ -96,6 +96,11 @@ default c("grey95","grey50").}
 \item{sample.col}{column annotation colors, default NULL.}
 
 \item{sample.order}{the orders for column samples, default NULL.}
+
+\item{HeatmapAnnotation}{the 'HeatmapAnnotation' object from 'ComplexHeatmap'
+when you have multiple annotations, default NULL.}
+
+\item{column.split}{how to split the columns when supply multiple column annotations, default NULL.}
 
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }

@@ -38,21 +38,24 @@
 #' @param genes.gp gene labels graphics settings, default c('italic',10,NA).
 #' @param go.col the GO term text colors, default NULL.
 #' @param go.size the GO term text size(numeric or "pval"), default NULL.
-#' @param mulGroup to draw multipe lines annotation, supply the groups numbers with vector, default NULL.
+#' @param mulGroup to draw multiple lines annotation, supply the groups numbers with vector, default NULL.
 #' @param lgd.label the lines annotation legend labels, default NULL.
-#' @param show_row_names whether to show rownames, default FALSE.
+#' @param show_row_names whether to show row names, default FALSE.
 #' @param term.text.limit the GO term text size limit, default c(10,18).
 #' @param subgroup.anno the sub-cluster for annotation, supply sub-cluster id, default NULL.
 #' @param add.bar whether add bar plot for GO enrichment, default FALSE.
 #' @param bar.width the GO enrichment bar width, default 8.
 #' @param textbar.pos the barplot text relative position, default c(0.8,0.8).
 #'
-#' @param annnoblock.text whether add cluster numers on right block annotation, default TRUE.
+#' @param annnoblock.text whether add cluster numbers on right block annotation, default TRUE.
 #' @param annnoblock.gp right block annotation text color and size, default c("white",8).
 #' @param add.sampleanno whether add column annotation, default TRUE.
 #' @param sample.group the column sample groups, default NULL.
 #' @param sample.col column annotation colors, default NULL.
 #' @param sample.order the orders for column samples, default NULL.
+#' @param HeatmapAnnotation the 'HeatmapAnnotation' object from 'ComplexHeatmap'
+#' when you have multiple annotations, default NULL.
+#' @param column.split how to split the columns when supply multiple column annotations, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -126,6 +129,8 @@ visCluster <- function(object = NULL,
                        sample.group = NULL,
                        sample.col = NULL,
                        sample.order = NULL,
+                       HeatmapAnnotation = NULL,
+                       column.split = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
   col_fun = circlize::colorRamp2(c(-2, 0, 2), ht.col)
@@ -246,7 +251,11 @@ visCluster <- function(object = NULL,
       sample.info = colnames(mat)
 
       # split columns
-      column_split = NULL
+      if(is.null(HeatmapAnnotation)){
+        column_split = NULL
+      }else{
+        column_split = column.split
+      }
     }else{
       sample.info = sample.group
 
@@ -269,10 +278,15 @@ visCluster <- function(object = NULL,
 
     # top anno
     if(add.sampleanno == TRUE){
-      topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
-                                                  col = list(sample = scol),
-                                                  gp = grid::gpar(col = "white"),
-                                                  show_annotation_name = FALSE)
+      if(is.null(HeatmapAnnotation)){
+        topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
+                                                    col = list(sample = scol),
+                                                    gp = grid::gpar(col = "white"),
+                                                    show_annotation_name = FALSE)
+      }else{
+        topanno = HeatmapAnnotation
+      }
+
     }else{
       topanno = NULL
     }
