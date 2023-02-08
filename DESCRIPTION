@@ -1,14 +1,14 @@
 Package: ClusterGVis
-Title: One-step to Cluster and Visualize Gene Expression Data
-Version: 0.0.4
+Title: One-Step to Cluster and Visualize Gene Expression Data
+Version: 0.0.5
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: For better clusteing and visualizing the time series gene expression data 
+           comment = c(ORCID = "0000-0001-7692-9105"))
+Description: For better clustering and visualizing the time series gene expression data 
  of RNA-SEQ with fuzzy c-means algorithm from 'e1071' package 
- or Kmeans from 'ComplexHeatmap' package, the function 'blockwiseModules' from 'WGCNA' package 
+ or k-means clustering algorithm from 'ComplexHeatmap' package, the function 'blockwiseModules' from 'WGCNA' package 
  outputs also can be accepted and can be used to produce graphs for visualization, 
- here supply ClusterGVis package to cluster and visualize time-serie gene expression data 
+ here supply a package to cluster and visualize time-serie gene expression data 
  in a more concise and elegant way with one-step operation. 
  You can also do enrichment analysis for each clusters with using 
  'clusterProfiler' in 'enrichCluster' function. 
@@ -16,7 +16,7 @@ Description: For better clusteing and visualizing the time series gene expressio
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
 LazyData: true

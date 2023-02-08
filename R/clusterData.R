@@ -242,7 +242,7 @@ clusterData <- function(exp = NULL,
                 long.res = df,
                 type = cluster.method))
   }else{
-    print("supply with mfuzz, kmeans or wgcna !")
+    message("supply with mfuzz, kmeans or wgcna !")
   }
 }
 

@@ -352,13 +352,13 @@ visCluster <- function(object = NULL,
       index <- match(annoGene,rowGene)
 
       # some genes annotation
-      geneMark = gene = ComplexHeatmap::anno_mark(at = index,
-                                                  labels = annoGene,
-                                                  which = "row",
-                                                  side = markGenes.side,
-                                                  labels_gp = grid::gpar(fontface = genes.gp[1],
-                                                                         fontsize = as.numeric(genes.gp[2]),
-                                                                         col = gcol))
+      geneMark = ComplexHeatmap::anno_mark(at = index,
+                                           labels = annoGene,
+                                           which = "row",
+                                           side = markGenes.side,
+                                           labels_gp = grid::gpar(fontface = genes.gp[1],
+                                                                  fontsize = as.numeric(genes.gp[2]),
+                                                                  col = gcol))
     }else{
       geneMark = NULL
     }
@@ -405,7 +405,7 @@ visCluster <- function(object = NULL,
       #   }else if(set.md == "median"){
       #     mdia <- apply(mat[index, ], 2, stats::median)
       #   }else{
-      #     print("supply mean/median !")
+      #     message("supply mean/median !")
       #   }
       #
       #   # get gene numbers
@@ -447,7 +447,7 @@ visCluster <- function(object = NULL,
         # }else if(set.md == "median"){
         #   mdia <- apply(mat[index, ], 2, stats::median)
         # }else{
-        #   print("supply mean/median !")
+        #   message("supply mean/median !")
         # }
         #
         # # boxplot xpos
@@ -520,7 +520,7 @@ visCluster <- function(object = NULL,
           }else if(set.md == "median"){
             mdia <- apply(tmpmat, 2, stats::median)
           }else{
-            print("supply mean/median !")
+            message("supply mean/median !")
           }
 
           # boxplot xpos
@@ -606,7 +606,7 @@ visCluster <- function(object = NULL,
         }else if(ncol(termanno) == 4){
           colnames(termanno) <- c("id","term","pval","ratio")
         }else{
-          print("No more than 4 columns!")
+          message("No more than 4 columns!")
         }
 
         # term colors
@@ -715,8 +715,8 @@ visCluster <- function(object = NULL,
 
                                         # sub data
                                         tmp <- data %>%
-                                          dplyr::filter(id == nm) %>%
-                                          dplyr::arrange(bary)
+                                          dplyr::filter(id == nm)
+                                          # %>% dplyr::arrange(bary)
 
                                         # bar grobs
                                         # grid::grid.rect(x = rep(0,nrow(tmp)),
@@ -726,7 +726,7 @@ visCluster <- function(object = NULL,
                                         #                 gp = grid::gpar(fill = tmp$col,col = col))
 
                                         grid::grid.segments(x0 = rep(0,nrow(tmp)),
-                                                            x1 = scales::rescale(tmp$bary,to = c(0,1)),
+                                                            x1 = scales::rescale(rev(tmp$bary),to = c(0.1,0.9)),
                                                             y0 = scales::rescale(1:nrow(tmp),to = c(0,1)),
                                                             y1 = scales::rescale(1:nrow(tmp),to = c(0,1)),
                                                             gp = grid::gpar(lwd = bar.width,
