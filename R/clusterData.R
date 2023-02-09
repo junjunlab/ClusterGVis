@@ -9,6 +9,7 @@
 #' @param object the WGCNA::blockwiseModules returned object, default NULL.
 #' @param min.std min std for filter genes, this argument is in mfuzz function, default 0.
 #' @param cluster.num the number clusters, default NULL.
+#' @param subcluster subset some clusters form all clusterd data, default NULL.
 #' @param seed set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.
 #' @param scaleData whether do Z-score for expression data, default TRUE.
 #'
@@ -36,6 +37,7 @@ clusterData <- function(exp = NULL,
                         object = NULL,
                         min.std = 0,
                         cluster.num = NULL,
+                        subcluster = NULL,
                         seed = 5201314){
   ComplexHeatmap::ht_opt(message = FALSE)
 
@@ -95,6 +97,11 @@ clusterData <- function(exp = NULL,
     final_res <- merge(dnorm,membership_info,by = 'gene') %>%
       dplyr::select(-cluster2) %>%
       dplyr::arrange(cluster)
+
+    # whether subset clusters
+    if(!is.null(subcluster)){
+      final_res <- final_res %>% dplyr::filter(cluster %in% subcluster)
+    }
 
     # wide to long
     df <- reshape2::melt(final_res,
@@ -167,6 +174,11 @@ clusterData <- function(exp = NULL,
                     cluster = od.res$id) %>%
       dplyr::arrange(cluster)
 
+    # whether subset clusters
+    if(!is.null(subcluster)){
+      wide.r <- wide.r %>% dplyr::filter(cluster %in% subcluster)
+    }
+
     # wide to long
     df <- reshape2::melt(wide.r,
                          id.vars = c('cluster','gene'),
@@ -205,6 +217,11 @@ clusterData <- function(exp = NULL,
     expm$gene <- rownames(expm)
     final.res <- data.frame(cbind(expm,cinfo)) %>%
       dplyr::arrange(cluster)
+
+    # whether subset clusters
+    if(!is.null(subcluster)){
+      final.res <- final.res %>% dplyr::filter(cluster %in% subcluster)
+    }
 
     # =====================================
     cl.info <- data.frame(table(final.res$cluster))

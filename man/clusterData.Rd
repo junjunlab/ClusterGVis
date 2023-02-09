@@ -16,6 +16,8 @@ in ComplexHeatmap::Heatmap function.}
 
 \item{cluster.num}{the number clusters, default NULL.}
 
+\item{subcluster}{subset some clusters form all clusterd data, default NULL.}
+
 \item{seed}{set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.}
 
 \item{scaleData}{whether do Z-score for expression data, default TRUE.}
