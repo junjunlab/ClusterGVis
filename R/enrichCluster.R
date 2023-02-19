@@ -138,6 +138,9 @@ enrichCluster <- function(object = NULL,
       df2 <- df
     }
 
+    # remove no pass threshold terms
+    df2 <- df2 %>% stats::na.omit()
+
     # results
     return(df2)
   })
