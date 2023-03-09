@@ -56,6 +56,7 @@
 #' @param HeatmapAnnotation the 'HeatmapAnnotation' object from 'ComplexHeatmap'
 #' when you have multiple annotations, default NULL.
 #' @param column.split how to split the columns when supply multiple column annotations, default NULL.
+#' @param cluster.order the row cluster orders for user's own defination, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -81,7 +82,7 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'Var1'))
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
-                       ht.col = c("blue", "white", "red"),
+                       ht.col = c("#08519C", "white", "#A50F15"),
                        border = TRUE,
                        plot.type = c("line","heatmap","both"),
                        ms.col = c('#0099CC','grey90','#CC3333'),
@@ -129,6 +130,7 @@ visCluster <- function(object = NULL,
                        sample.group = NULL,
                        sample.col = NULL,
                        sample.order = NULL,
+                       cluster.order = NULL,
                        HeatmapAnnotation = NULL,
                        column.split = NULL,
                        ...){
@@ -243,6 +245,14 @@ visCluster <- function(object = NULL,
       nm <- rep(as.character(cl.info$Var1[x]),cl.info$Freq[x])
       paste("C",nm,sep = '')
     }) %>% unlist()
+
+    # cluster orders
+    if(!is.null(cluster.order)){
+      subgroup <- factor(subgroup,levels = paste("C",cluster.order,sep = ""))
+      cluster_row_slices = FALSE
+    }else{
+      cluster_row_slices = TRUE
+    }
 
     # plot
     # =================== bar annotation for samples
@@ -378,6 +388,7 @@ visCluster <- function(object = NULL,
                                 border = border,
                                 column_split = column_split,
                                 row_split = subgroup,
+                                cluster_row_slices = cluster_row_slices,
                                 column_names_side = "top",
                                 # border = TRUE,
                                 top_annotation = topanno,
@@ -833,6 +844,7 @@ visCluster <- function(object = NULL,
                                      left_annotation = left_annotation,
                                      column_names_side = "top",
                                      row_split = subgroup,
+                                     cluster_row_slices = cluster_row_slices,
                                      col = col_fun,
                                      ...)
 

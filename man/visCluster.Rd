@@ -102,6 +102,8 @@ when you have multiple annotations, default NULL.}
 
 \item{column.split}{how to split the columns when supply multiple column annotations, default NULL.}
 
+\item{cluster.order}{the row cluster orders for user's own defination, default NULL.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
