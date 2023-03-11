@@ -57,6 +57,8 @@
 #' when you have multiple annotations, default NULL.
 #' @param column.split how to split the columns when supply multiple column annotations, default NULL.
 #' @param cluster.order the row cluster orders for user's own defination, default NULL.
+#' @param sample.cell.order the celltype order when input is scRNA data and "showAverage = FALSE"
+#' for prepareDataFromscRNA.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -79,7 +81,8 @@
 #' }
 globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval',
-                  'Var1'))
+                  'Var1','seurat_clusters','cell.ident', 'getassy',
+                  'geneType'))
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
                        ht.col = c("#08519C", "white", "#A50F15"),
@@ -131,6 +134,7 @@ visCluster <- function(object = NULL,
                        sample.col = NULL,
                        sample.order = NULL,
                        cluster.order = NULL,
+                       sample.cell.order = NULL,
                        HeatmapAnnotation = NULL,
                        column.split = NULL,
                        ...){
@@ -205,6 +209,12 @@ visCluster <- function(object = NULL,
 
   }else{
     # ==========================================================================
+    if(object$geneMode == "all"){
+      use_raster = TRUE
+    }else{
+      use_raster = FALSE
+    }
+
     # process data
     # if(is.null(plot.data)){
     #   data <- data.frame(object$wide.res)
@@ -212,7 +222,7 @@ visCluster <- function(object = NULL,
     #   data <- plot.data
     # }
 
-    data <- data.frame(object$wide.res)
+    data <- data.frame(object$wide.res,check.names = FALSE)
 
     # prepare matrix
     if(object$type == "mfuzz"){
@@ -257,44 +267,72 @@ visCluster <- function(object = NULL,
     # plot
     # =================== bar annotation for samples
     # sample group info
-    if(is.null(sample.group)){
-      sample.info = colnames(mat)
+    if(object$geneMode == "all"){
+      # split info
+      celltype <- sapply(strsplit(colnames(mat),split = "\\|"), "[",2)
+      cell.num.info <- table(celltype)[unique(celltype)]
 
-      # split columns
-      if(is.null(HeatmapAnnotation)){
-        column_split = NULL
+      # order for column split
+      if(is.null(sample.cell.order)){
+        column_split = factor(rep(names(cell.num.info),cell.num.info),levels = unique(celltype))
       }else{
-        column_split = column.split
+        column_split = factor(rep(names(cell.num.info),cell.num.info),levels = sample.cell.order)
+      }
+
+      # assign colors for block
+      if(is.null(sample.col)){
+        block.col = 1:length(cell.num.info)
+      }else{
+        block.col = sample.col
       }
     }else{
-      sample.info = sample.group
+      if(is.null(sample.group)){
+        sample.info = colnames(mat)
 
-      # split columns
-      column_split = sample.group
-    }
+        # split columns
+        if(is.null(HeatmapAnnotation)){
+          column_split = NULL
+        }else{
+          column_split = column.split
+        }
 
-    # order
-    sample.info <- factor(sample.info,levels = unique(sample.info))
+      }else{
+        sample.info = sample.group
 
-    # sample colors
-    if(is.null(sample.col)){
-      # scol <- ggsci::pal_npg()(length(sample.info))
-      scol <- circlize::rand_color(n = length(sample.info))
-      names(scol) <- sample.info
-    }else{
-      scol <- sample.col
-      names(scol) <- sample.info
+        # split columns
+        column_split = sample.group
+      }
+
+      # order
+      sample.info <- factor(sample.info,levels = unique(sample.info))
+
+      # sample colors
+      if(is.null(sample.col)){
+        # scol <- ggsci::pal_npg()(length(sample.info))
+        scol <- circlize::rand_color(n = length(sample.info))
+        names(scol) <- sample.info
+      }else{
+        scol <- sample.col
+        names(scol) <- sample.info
+      }
+
     }
 
     # top anno
     if(add.sampleanno == TRUE){
-      if(is.null(HeatmapAnnotation)){
-        topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
-                                                    col = list(sample = scol),
-                                                    gp = grid::gpar(col = "white"),
+      if(object$geneMode == "all"){
+        topanno = ComplexHeatmap::HeatmapAnnotation(cluster = ComplexHeatmap::anno_block(gp = grid::gpar(fill = block.col),
+                                                                                         labels = NULL),
                                                     show_annotation_name = FALSE)
       }else{
-        topanno = HeatmapAnnotation
+        if(is.null(HeatmapAnnotation)){
+          topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
+                                                      col = list(sample = scol),
+                                                      gp = grid::gpar(col = "white"),
+                                                      show_annotation_name = FALSE)
+        }else{
+          topanno = HeatmapAnnotation
+        }
       }
 
     }else{
@@ -394,6 +432,7 @@ visCluster <- function(object = NULL,
                                 top_annotation = topanno,
                                 right_annotation = right_annotation,
                                 col = col_fun,
+                                use_raster = use_raster,
                                 ...)
 
       # draw
@@ -449,67 +488,26 @@ visCluster <- function(object = NULL,
         grid::pushViewport(grid::viewport(xscale = xscale, yscale = c(0,1)))
         grid::grid.rect()
 
-        # grid.xaxis(gp = gpar(fontsize = 8))
-        # grid.annotation_axis(side = 'right',gp = gpar(fontsize = 8))
-
-        # # choose method
-        # if(set.md == "mean"){
-        #   mdia <- colMeans(mat[index, ])
-        # }else if(set.md == "median"){
-        #   mdia <- apply(mat[index, ], 2, stats::median)
-        # }else{
-        #   message("supply mean/median !")
-        # }
-        #
-        # # boxplot xpos
-        # pos = scales::rescale(1:ncol(mat),to = c(0,1))
-        #
-        # # boxcol
-        # if(is.null(boxcol)){
-        #   boxcol <- rep("grey90",ncol(mat))
-        # }else{
-        #   boxcol <- boxcol
-        # }
-        #
-        # # boxplot grobs
-        # if(add.box == TRUE){
-        #   lapply(1:ncol(mat), function(x){
-        #     ComplexHeatmap::grid.boxplot(scales::rescale(mat[index, ][,x],
-        #                                                  to = c(0,1),
-        #                                                  from = c(rg[1] - 0.5,rg[2] + 0.5)),
-        #                                  pos = pos[x],
-        #                                  direction = "vertical",
-        #                                  box_width = as.numeric(box.arg[1]),
-        #                                  outline = FALSE,
-        #                                  gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
-        #   })
-        # }
-        #
-        # # points grobs
-        # if(add.point == TRUE){
-        #   grid::grid.points(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-        #                     y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-        #                     pch = as.numeric(point.arg[1]),
-        #                     gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
-        #                     size = grid::unit(as.numeric(point.arg[4]), "char"))
-        # }
-        #
-        # # lines grobs
-        # if(add.line == TRUE){
-        #   grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-        #                    y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-        #                    gp = grid::gpar(lwd = 3,col = mline.col))
-        # }
-
         # whether given multiple groups
-        if(is.null(mulGroup)){
-          mulGroup <- ncol(mat)
+        # if(is.null(mulGroup)){
+        #   mulGroup <- ncol(mat)
+        #
+        #   # ================ calculate group columns index
+        #   seqn <- data.frame(st = 1,sp = ncol(mat))
+        # }else{
+        #   mulGroup <- mulGroup
+        #
+        #   grid::grid.lines(x = c(0,1),y = rep(0.5,2),
+        #                    gp = grid::gpar(col = "black",lty = "dashed"))
+        #
+        #   # ================ calculate group columns index
+        #   cu <- cumsum(mulGroup)
+        #   seqn <- data.frame(st = c(1,cu[1:(length(cu) - 1)] + 1),
+        #                      sp = c(cu[1],cu[2:length(cu)]))
+        # }
 
-          # ================ calculate group columns index
-          seqn <- data.frame(st = 1,
-                             sp = ncol(mat))
-        }else{
-          mulGroup <- mulGroup
+        if(object$geneMode == "all"){
+          mulGroup <- cell.num.info
 
           grid::grid.lines(x = c(0,1),y = rep(0.5,2),
                            gp = grid::gpar(col = "black",lty = "dashed"))
@@ -518,62 +516,165 @@ visCluster <- function(object = NULL,
           cu <- cumsum(mulGroup)
           seqn <- data.frame(st = c(1,cu[1:(length(cu) - 1)] + 1),
                              sp = c(cu[1],cu[2:length(cu)]))
+        }else{
+          if(is.null(mulGroup)){
+            mulGroup <- ncol(mat)
+
+            # ================ calculate group columns index
+            seqn <- data.frame(st = 1,sp = ncol(mat))
+          }else{
+            mulGroup <- mulGroup
+
+            grid::grid.lines(x = c(0,1),y = rep(0.5,2),
+                             gp = grid::gpar(col = "black",lty = "dashed"))
+
+            # ================ calculate group columns index
+            cu <- cumsum(mulGroup)
+            seqn <- data.frame(st = c(1,cu[1:(length(cu) - 1)] + 1),
+                               sp = c(cu[1],cu[2:length(cu)]))
+          }
         }
 
         # loop for multiple groups to create grobs
-        lapply(1:nrow(seqn), function(x){
-          tmp <- seqn[x,]
-          tmpmat <- mat[index, c(tmp$st:tmp$sp)]
+        # lapply(1:nrow(seqn), function(x){
+        #   tmp <- seqn[x,]
+        #   tmpmat <- mat[index, c(tmp$st:tmp$sp)]
+        #
+        #   # choose method
+        #   if(set.md == "mean"){
+        #     mdia <- colMeans(tmpmat)
+        #   }else if(set.md == "median"){
+        #     mdia <- apply(tmpmat, 2, stats::median)
+        #   }else{
+        #     message("supply mean/median !")
+        #   }
+        #
+        #   # boxplot xpos
+        #   pos = scales::rescale(1:ncol(tmpmat),to = c(0,1))
+        #
+        #   # boxcol
+        #   if(is.null(boxcol)){
+        #     boxcol <- rep("grey90",ncol(tmpmat))
+        #   }else{
+        #     boxcol <- boxcol
+        #   }
+        #
+        #   # boxplot grobs
+        #   if(add.box == TRUE){
+        #     lapply(1:ncol(tmpmat), function(x){
+        #       ComplexHeatmap::grid.boxplot(scales::rescale(tmpmat[,x],
+        #                                                    to = c(0,1),
+        #                                                    from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                                    pos = pos[x],
+        #                                    direction = "vertical",
+        #                                    box_width = as.numeric(box.arg[1]),
+        #                                    outline = FALSE,
+        #                                    gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
+        #     })
+        #   }
+        #
+        #   # points grobs
+        #   if(add.point == TRUE){
+        #     grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+        #                       y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                       pch = as.numeric(point.arg[1]),
+        #                       gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
+        #                       size = grid::unit(as.numeric(point.arg[4]), "char"))
+        #   }
+        #
+        #   # lines grobs
+        #   if(add.line == TRUE){
+        #     grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+        #                      y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+        #                      gp = grid::gpar(lwd = 3,col = mline.col[x]))
+        #   }
+        # })
 
-          # choose method
-          if(set.md == "mean"){
-            mdia <- colMeans(tmpmat)
-          }else if(set.md == "median"){
-            mdia <- apply(tmpmat, 2, stats::median)
-          }else{
-            message("supply mean/median !")
-          }
+        if(object$geneMode == "all"){
+          # loop for multiple groups to create grobs
+          purrr::map_dfr(1:nrow(seqn), function(x){
+            tmp <- seqn[x,]
+            tmpmat <- mat[index, c(tmp$st:tmp$sp)]
 
-          # boxplot xpos
-          pos = scales::rescale(1:ncol(tmpmat),to = c(0,1))
+            rg <- range(mat[index,])
 
-          # boxcol
-          if(is.null(boxcol)){
-            boxcol <- rep("grey90",ncol(tmpmat))
-          }else{
-            boxcol <- boxcol
-          }
+            # choose method
+            if(set.md == "mean"){
+              mdia <- mean(rowMeans(tmpmat))
+            }else if(set.md == "median"){
+              mdia <- stats::median(apply(tmpmat, 1, stats::median))
+            }else{
+              message("supply mean/median !")
+            }
 
-          # boxplot grobs
-          if(add.box == TRUE){
-            lapply(1:ncol(tmpmat), function(x){
-              ComplexHeatmap::grid.boxplot(scales::rescale(tmpmat[,x],
-                                                           to = c(0,1),
-                                                           from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                                           pos = pos[x],
-                                           direction = "vertical",
-                                           box_width = as.numeric(box.arg[1]),
-                                           outline = FALSE,
-                                           gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
-            })
-          }
-
-          # points grobs
-          if(add.point == TRUE){
-            grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
-                              y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                              pch = as.numeric(point.arg[1]),
-                              gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
-                              size = grid::unit(as.numeric(point.arg[4]), "char"))
-          }
+            res <- data.frame(x = x,val = mdia)
+            return(res)
+          }) -> cell.ave
 
           # lines grobs
           if(add.line == TRUE){
-            grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
-                             y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
-                             gp = grid::gpar(lwd = 3,col = mline.col[x]))
+            grid::grid.lines(x = scales::rescale(cell.ave$x,to = c(0,1)),
+                             # y = scales::rescale(cell.ave$val,to = c(0,1),from = c(rg[1] - 0.1,rg[2] + 0.1)),
+                             y = scales::rescale(cell.ave$val,to = c(0.1,0.9)),
+                             gp = grid::gpar(lwd = 3,col = mline.col))
           }
-        })
+        }else{
+          # ===========================================================================
+          # multiple lines
+          lapply(1:nrow(seqn), function(x){
+            tmp <- seqn[x,]
+            tmpmat <- mat[index, c(tmp$st:tmp$sp)]
+
+            # choose method
+            if(set.md == "mean"){
+              mdia <- colMeans(tmpmat)
+            }else if(set.md == "median"){
+              mdia <- apply(tmpmat, 2, stats::median)
+            }else{
+              message("supply mean/median !")
+            }
+
+            # boxplot xpos
+            pos = scales::rescale(1:ncol(tmpmat),to = c(0,1))
+
+            # boxcol
+            if(is.null(boxcol)){
+              boxcol <- rep("grey90",ncol(tmpmat))
+            }else{
+              boxcol <- boxcol
+            }
+
+            # boxplot grobs
+            if(add.box == TRUE){
+              lapply(1:ncol(tmpmat), function(x){
+                ComplexHeatmap::grid.boxplot(scales::rescale(tmpmat[,x],
+                                                             to = c(0,1),
+                                                             from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                                             pos = pos[x],
+                                             direction = "vertical",
+                                             box_width = as.numeric(box.arg[1]),
+                                             outline = FALSE,
+                                             gp = grid::gpar(col = box.arg[2],fill = boxcol[x]))
+              })
+            }
+
+            # points grobs
+            if(add.point == TRUE){
+              grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+                                y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                                pch = as.numeric(point.arg[1]),
+                                gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
+                                size = grid::unit(as.numeric(point.arg[4]), "char"))
+            }
+
+            # lines grobs
+            if(add.line == TRUE){
+              grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+                               y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
+                               gp = grid::gpar(lwd = 3,col = mline.col[x]))
+            }
+          })
+        }
 
         # get gene numbers
         grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
@@ -727,7 +828,7 @@ visCluster <- function(object = NULL,
                                         # sub data
                                         tmp <- data %>%
                                           dplyr::filter(id == nm)
-                                          # %>% dplyr::arrange(bary)
+                                        # %>% dplyr::arrange(bary)
 
                                         # bar grobs
                                         # grid::grid.rect(x = rep(0,nrow(tmp)),
@@ -846,6 +947,7 @@ visCluster <- function(object = NULL,
                                      row_split = subgroup,
                                      cluster_row_slices = cluster_row_slices,
                                      col = col_fun,
+                                     use_raster = use_raster,
                                      ...)
 
       # draw lines legend

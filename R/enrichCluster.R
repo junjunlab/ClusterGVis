@@ -54,11 +54,17 @@ enrichCluster <- function(object = NULL,
   # get data
   enrich.data <- object$wide.res
 
+  # check geneType
+  if(startsWith(object$geneType,"nounique")){
+    split = unlist(strsplit(object$geneType,split = "\\|"))[2]
+    enrich.data$gene <- sapply(strsplit(as.character(enrich.data$gene),split = split),"[",1)
+  }
+
   # loop for enrich
   purrr::map_df(1:length(unique(enrich.data$cluster)),function(x){
     # filter
     tmp <- enrich.data %>%
-      dplyr::filter(cluster == x)
+      dplyr::filter(cluster == unique(enrich.data$cluster)[x])
 
     # =============================================
     # enrich
@@ -107,7 +113,7 @@ enrichCluster <- function(object = NULL,
     # to data.frame
     df <- data.frame(ego) %>%
       dplyr::filter(pvalue < pvalueCutoff) %>%
-      dplyr::mutate(group = paste("C",x,sep = '')) %>%
+      dplyr::mutate(group = paste("C",unique(enrich.data$cluster)[x],sep = '')) %>%
       dplyr::arrange(pvalue)
 
     # whether save all res

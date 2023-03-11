@@ -104,6 +104,9 @@ when you have multiple annotations, default NULL.}
 
 \item{cluster.order}{the row cluster orders for user's own defination, default NULL.}
 
+\item{sample.cell.order}{the celltype order when input is scRNA data and "showAverage = FALSE"
+for prepareDataFromscRNA.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
