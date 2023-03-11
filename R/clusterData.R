@@ -206,7 +206,9 @@ clusterData <- function(exp = NULL,
     # return
     return(list(wide.res = wide.r,
                 long.res = df,
-                type = cluster.method))
+                type = cluster.method,
+                geneMode = "none",
+                geneType = "none"))
   }else if(cluster.method == "wgcna"){
     # =====================================
     net <- object
@@ -257,7 +259,9 @@ clusterData <- function(exp = NULL,
     # return
     return(list(wide.res = final.res,
                 long.res = df,
-                type = cluster.method))
+                type = cluster.method,
+                geneMode = "none",
+                geneType = "none"))
   }else{
     message("supply with mfuzz, kmeans or wgcna !")
   }
