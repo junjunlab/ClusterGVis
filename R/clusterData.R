@@ -132,7 +132,9 @@ clusterData <- function(exp = NULL,
     # return
     return(list(wide.res = final_res,
                 long.res = df,
-                type = cluster.method))
+                type = cluster.method,
+                geneMode = "none",
+                geneType = "none"))
   }else if(cluster.method == "kmeans"){
     # ==========================================================================
     # using complexheatmap cluster genes
