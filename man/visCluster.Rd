@@ -107,6 +107,27 @@ when you have multiple annotations, default NULL.}
 \item{sample.cell.order}{the celltype order when input is scRNA data and "showAverage = FALSE"
 for prepareDataFromscRNA.}
 
+\item{annoKegg.data}{the KEGG term annotation for the clusters, default NULL.}
+
+\item{annoKegg.mside}{the wider KEGG term annotation box side, default "right".}
+
+\item{keggAnno.arg}{the settings for KEGG term panel annotations which are fill and col,
+default c("grey95","grey50").}
+
+\item{add.kegg.bar}{whether add bar plot for KEGG enrichment, default FALSE.}
+
+\item{kegg.col}{the KEGG term text colors, default NULL.}
+
+\item{kegg.size}{the KEGG term text size(numeric or "pval"), default NULL.}
+
+\item{by.go}{the GO term text box style("anno_link" or "anno_block"), default "anno_link".}
+
+\item{by.kegg}{the KEGG term text box style("anno_link" or "anno_block"), default "anno_link".}
+
+\item{word_wrap}{whether wrap the text, default TRUE.}
+
+\item{add_new_line}{whether add new line when text is long, default TRUE.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{

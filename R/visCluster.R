@@ -59,6 +59,17 @@
 #' @param cluster.order the row cluster orders for user's own defination, default NULL.
 #' @param sample.cell.order the celltype order when input is scRNA data and "showAverage = FALSE"
 #' for prepareDataFromscRNA.
+#' @param annoKegg.data the KEGG term annotation for the clusters, default NULL.
+#' @param annoKegg.mside the wider KEGG term annotation box side, default "right".
+#' @param keggAnno.arg the settings for KEGG term panel annotations which are fill and col,
+#' default c("grey95","grey50").
+#' @param add.kegg.bar whether add bar plot for KEGG enrichment, default FALSE.
+#' @param kegg.col the KEGG term text colors, default NULL.
+#' @param kegg.size the KEGG term text size(numeric or "pval"), default NULL.
+#' @param by.go the GO term text box style("anno_link" or "anno_block"), default "anno_link".
+#' @param by.kegg the KEGG term text box style("anno_link" or "anno_block"), default "anno_link".
+#' @param word_wrap whether wrap the text, default TRUE.
+#' @param add_new_line whether add new line when text is long, default TRUE.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -105,6 +116,24 @@ visCluster <- function(object = NULL,
                        annoTerm.mside = "right",
                        # textbox fill and col
                        termAnno.arg = c("grey95","grey50"),
+                       add.bar = FALSE,
+                       bar.width = 8,
+                       textbar.pos = c(0.8,0.8),
+                       go.col = NULL,
+                       go.size = NULL,
+                       by.go = "anno_link",
+                       # KEGG term annotation
+                       annoKegg.data = NULL,
+                       annoKegg.mside = "right",
+                       # textbox fill and col
+                       keggAnno.arg = c("grey95","grey50"),
+                       add.kegg.bar = FALSE,
+                       kegg.col = NULL,
+                       kegg.size = NULL,
+                       by.kegg = "anno_link",
+                       word_wrap = TRUE,
+                       add_new_line = TRUE,
+                       # boxplot,line.point annotation
                        add.box = FALSE,
                        boxcol = NULL,
                        # box with and border color
@@ -117,16 +146,11 @@ visCluster <- function(object = NULL,
                        markGenes = NULL,
                        markGenes.side = "right",
                        genes.gp = c('italic',10,NA),
-                       go.col = NULL,
-                       go.size = NULL,
                        term.text.limit = c(10,18),
                        mulGroup = NULL,
                        lgd.label = NULL,
                        show_row_names = FALSE,
                        subgroup.anno = NULL,
-                       add.bar = FALSE,
-                       bar.width = 8,
-                       textbar.pos = c(0.8,0.8),
                        annnoblock.text = TRUE,
                        annnoblock.gp = c("white",8),
                        add.sampleanno = TRUE,
@@ -706,8 +730,10 @@ visCluster <- function(object = NULL,
                                        side = line.side,
                                        link_gp = grid::gpar(fill = panel.arg[4],col = panel.arg[5]))
 
-      # =====================================
+
+      # ============================================================================================
       # whether add go term annotations
+      # ============================================================================================
       if(!is.null(annoTerm.data)){
         # load term info
         termanno <- annoTerm.data
@@ -748,6 +774,7 @@ visCluster <- function(object = NULL,
 
         # add to termanno
         termanno <- termanno %>%
+          dplyr::ungroup() %>%
           dplyr::mutate(col = gocol,fontsize = gosize)
 
         # to list
@@ -781,11 +808,12 @@ visCluster <- function(object = NULL,
         # }
 
         textbox = ComplexHeatmap::anno_textbox(align_to2, term.list,
-                                               word_wrap = TRUE,
-                                               add_new_line = TRUE,
+                                               word_wrap = word_wrap,
+                                               add_new_line = add_new_line,
                                                side = annoTerm.mside,
                                                background_gp = grid::gpar(fill = termAnno.arg[1],
-                                                                          col = termAnno.arg[2]))
+                                                                          col = termAnno.arg[2]),
+                                               by = by.go)
 
         # final row annotation
         # if(line.side == "right"){
@@ -839,10 +867,10 @@ visCluster <- function(object = NULL,
 
                                         grid::grid.segments(x0 = rep(0,nrow(tmp)),
                                                             x1 = scales::rescale(rev(tmp$bary),to = c(0.1,0.9)),
-                                                            y0 = scales::rescale(1:nrow(tmp),to = c(0,1)),
-                                                            y1 = scales::rescale(1:nrow(tmp),to = c(0,1)),
+                                                            y0 = scales::rescale(1:nrow(tmp),to = c(0.1,0.9)),
+                                                            y1 = scales::rescale(1:nrow(tmp),to = c(0.1,0.9)),
                                                             gp = grid::gpar(lwd = bar.width,
-                                                                            col = tmp$col,
+                                                                            col = rev(tmp$col),
                                                                             lineend = "butt"))
 
                                         # add cluster name
@@ -876,8 +904,9 @@ visCluster <- function(object = NULL,
                                bar.width = bar.width)
 
         }
-
+        # ============================================================================================
         # whether add bar annotation
+        # ============================================================================================
         if(add.bar == TRUE){
           baranno
         }else{
@@ -898,6 +927,169 @@ visCluster <- function(object = NULL,
         baranno = NULL
       }
 
+      # ============================================================================================
+      # whether add kegg term annotations
+      # ============================================================================================
+      if(!is.null(annoKegg.data)){
+        # load term info
+        termanno <- annoKegg.data
+        if(ncol(termanno) == 2){
+          colnames(termanno) <- c("id","term")
+        }else if(ncol(termanno) == 3){
+          colnames(termanno) <- c("id","term","pval")
+        }else if(ncol(termanno) == 4){
+          colnames(termanno) <- c("id","term","pval","ratio")
+        }else{
+          message("No more than 4 columns!")
+        }
+
+        # term colors
+        if(is.null(kegg.col)){
+          gocol <- circlize::rand_color(n = nrow(termanno))
+        }else{
+          gocol <- kegg.col
+        }
+
+        # term text size
+        if(is.null(kegg.size)){
+          gosize <- rep(12,nrow(termanno))
+        }else{
+          if(kegg.size == "pval"){
+            # loop for re-scaling pvalue
+            purrr::map_df(unique(termanno$id),function(x){
+              tmp <- termanno %>%
+                dplyr::filter(id == x) %>%
+                dplyr::mutate(size = scales::rescale(-log10(pval),to = term.text.limit))
+            }) -> termanno.tmp
+
+            gosize <- termanno.tmp$size
+          }else{
+            gosize <- kegg.size
+          }
+        }
+
+        # add to termanno
+        termanno <- termanno %>%
+          dplyr::ungroup() %>%
+          dplyr::mutate(col = gocol,fontsize = gosize)
+
+        # to list
+        lapply(1:length(unique(termanno$id)), function(x){
+          tmp = termanno[which(termanno$id == unique(termanno$id)[x]),]
+          df <- data.frame(text = tmp$term,
+                           col = tmp$col,
+                           fontsize = tmp$fontsize)
+          return(df)
+        }) -> term.list
+
+        # add names
+        names(term.list) <- unique(termanno$id)
+
+        # whether annotate subgroups
+        if(!is.null(subgroup.anno)){
+          align_to2 = split(seq_along(subgroup), subgroup)
+          align_to2 = align_to2[subgroup.anno]
+
+          term.list = term.list[subgroup.anno]
+        }else{
+          align_to2 = subgroup
+          term.list = term.list
+        }
+
+        # anno_textbox
+        textbox.kegg = ComplexHeatmap::anno_textbox(align_to2, term.list,
+                                                    word_wrap = word_wrap,
+                                                    add_new_line = add_new_line,
+                                                    side = annoKegg.mside,
+                                                    background_gp = grid::gpar(fill = keggAnno.arg[1],
+                                                                               col = keggAnno.arg[2]),
+                                                    by = by.kegg)
+
+        # GO bar anno function
+        if(ncol(termanno) - 2 > 2){
+          anno_keggbar <- function(data = NULL,
+                                   bar.width = 0.1,
+                                   # col = NA,
+                                   align_to = NULL,
+                                   panel.arg = panel.arg,
+                                   ...){
+            # process data
+            if(ncol(data) - 2 == 3){
+              data <- data %>%
+                dplyr::mutate(bary = -log10(pval))
+            }else{
+              data <- data %>%
+                dplyr::mutate(bary = ratio)
+            }
+
+            ComplexHeatmap::anno_zoom(align_to = align_to,
+                                      which = "row",
+
+                                      # =====================
+                                      panel_fun = function(index,nm){
+                                        grid::pushViewport(grid::viewport(xscale = c(0,1),yscale = c(0,1)))
+
+                                        grid::grid.rect()
+
+                                        # sub data
+                                        tmp <- data %>%
+                                          dplyr::filter(id == nm)
+                                        # %>% dplyr::arrange(bary)
+
+                                        # bar grobs
+                                        grid::grid.segments(x0 = rep(0,nrow(tmp)),
+                                                            x1 = scales::rescale(rev(tmp$bary),to = c(0.1,0.9)),
+                                                            y0 = scales::rescale(1:nrow(tmp),to = c(0.1,0.9)),
+                                                            y1 = scales::rescale(1:nrow(tmp),to = c(0.1,0.9)),
+                                                            gp = grid::gpar(lwd = bar.width,
+                                                                            col = rev(tmp$col),
+                                                                            lineend = "butt"))
+
+                                        # add cluster name
+                                        grid.textbox <- utils::getFromNamespace("grid.textbox", "ComplexHeatmap")
+
+                                        text <- nm
+                                        grid.textbox(text,
+                                                     x = textbar.pos[1],y = textbar.pos[2],
+                                                     gp = grid::gpar(fontsize = textbox.size,
+                                                                     fontface = "italic",
+                                                                     col = unique(tmp$col),
+                                                                     ...))
+
+                                        grid::popViewport()
+                                      },
+
+                                      # =======================
+                                      size = grid::unit(as.numeric(panel.arg[1]), "cm"),
+                                      gap = grid::unit(as.numeric(panel.arg[2]), "cm"),
+                                      width = grid::unit(as.numeric(panel.arg[3]), "cm"),
+                                      side = "right",
+                                      link_gp = grid::gpar(fill = keggAnno.arg[1],col = keggAnno.arg[2]),
+                                      ...)
+          }
+
+          # ================================
+          # bar anno
+          baranno.kegg = anno_keggbar(data = termanno,
+                                      align_to = align_to2,
+                                      panel.arg = panel.arg,
+                                      bar.width = bar.width)
+
+        }
+        # ============================================================================================
+        # whether add bar annotation
+        # ============================================================================================
+        if(add.kegg.bar == TRUE){
+          baranno.kegg
+        }else{
+          baranno.kegg = NULL
+        }
+
+      }else{
+        textbox.kegg = NULL
+        baranno.kegg = NULL
+      }
+
       # ====================================================
       # final row annotations
       if(line.side == "right"){
@@ -906,13 +1098,17 @@ visCluster <- function(object = NULL,
                                                             cluster = anno.block,
                                                             line = anno,
                                                             textbox = textbox,
-                                                            bar = baranno)
+                                                            bar = baranno,
+                                                            textbox.kegg = textbox.kegg,
+                                                            baranno.kegg = baranno.kegg)
           left_annotation = NULL
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             line = anno,
                                                             textbox = textbox,
-                                                            bar = baranno)
+                                                            bar = baranno,
+                                                            textbox.kegg = textbox.kegg,
+                                                            baranno.kegg = baranno.kegg)
           left_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark)
         }
 
@@ -921,12 +1117,16 @@ visCluster <- function(object = NULL,
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
                                                             cluster = anno.block,
                                                             textbox = textbox,
-                                                            bar = baranno)
+                                                            bar = baranno,
+                                                            textbox.kegg = textbox.kegg,
+                                                            baranno.kegg = baranno.kegg)
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             textbox = textbox,
-                                                            bar = baranno)
+                                                            bar = baranno,
+                                                            textbox.kegg = textbox.kegg,
+                                                            baranno.kegg = baranno.kegg)
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno,
                                                           gene = geneMark)
         }
