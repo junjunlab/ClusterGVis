@@ -6,7 +6,13 @@
 \arguments{
 \item{object}{clusterData object, default NULL.}
 
-\item{type}{which type to choose for enrichment "BP","MF","CC" or "KEGG".}
+\item{type}{which type to choose for enrichment "BP","MF","CC","KEGG" or "ownSet".}
+
+\item{TERM2GENE}{user input annotation of TERM TO GENE mapping, a data.frame
+of 2 column with term and gene, default NULL.}
+
+\item{TERM2NAME}{user input of TERM TO NAME mapping, a data.frame of 2 column
+with term and name, default NULL.}
 
 \item{OrgDb}{the annotation data for enrichment, default NULL.}
 

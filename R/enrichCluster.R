@@ -3,7 +3,11 @@
 #' @title using enrichCluster to do GO/KEGG enrichment analysis for multiple cluster genes
 #'
 #' @param object clusterData object, default NULL.
-#' @param type which type to choose for enrichment "BP","MF","CC" or "KEGG".
+#' @param type which type to choose for enrichment "BP","MF","CC","KEGG" or "ownSet".
+#' @param TERM2GENE user input annotation of TERM TO GENE mapping, a data.frame
+#' of 2 column with term and gene, default NULL.
+#' @param TERM2NAME user input of TERM TO NAME mapping, a data.frame of 2 column
+#' with term and name, default NULL.
 #' @param OrgDb the annotation data for enrichment, default NULL.
 #' @param id.trans whether perform the ID transformation, default TRUE.
 #' @param fromType the input ID type, default "SYMBOL".
@@ -38,7 +42,9 @@
 #' }
 globalVariables(c('Description', 'group', 'pvalue'))
 enrichCluster <- function(object = NULL,
-                          type = c("BP","MF","CC","KEGG"),
+                          type = c("BP","MF","CC","KEGG","ownSet"),
+                          TERM2GENE = NULL,
+                          TERM2NAME = NULL,
                           OrgDb = NULL,
                           id.trans = TRUE,
                           fromType = "SYMBOL",
@@ -82,7 +88,7 @@ enrichCluster <- function(object = NULL,
     }
 
     # GO enrich
-    if(type != "KEGG"){
+    if(type %in% c("BP","MF","CC")){
       set.seed(seed)
       ego <- clusterProfiler::enrichGO(gene          = tartget.gene,
                                        keyType       = toType,
@@ -92,6 +98,14 @@ enrichCluster <- function(object = NULL,
                                        pvalueCutoff  = 1,
                                        qvalueCutoff  = 0.2,
                                        readable      = readable)
+    }else if(type == "ownSet"){
+      set.seed(seed)
+      ego <- clusterProfiler::enricher(gene = tartget.gene,
+                                       TERM2GENE     = TERM2GENE,
+                                       TERM2NAME     = TERM2NAME,
+                                       pvalueCutoff  = 1,
+                                       pAdjustMethod = "BH",
+                                       qvalueCutoff  = 0.2)
     }else{
       set.seed(seed)
       ego <- clusterProfiler::enrichKEGG(gene          = tartget.gene,
