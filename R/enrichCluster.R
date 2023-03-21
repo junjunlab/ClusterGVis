@@ -82,7 +82,7 @@ enrichCluster <- function(object = NULL,
                                         toType = toType,
                                         OrgDb = OrgDb)
 
-      tartget.gene = gene.ent$ENTREZID
+      tartget.gene = unlist(gene.ent[,c(toType)])
     }else{
       tartget.gene = tmp$gene
     }
