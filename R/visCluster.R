@@ -167,8 +167,10 @@ visCluster <- function(object = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
 
-  col_range = ht.col.list[["col_range"]]
-  col_color = ht.col.list[["col_color"]]
+  col_range = ifelse(is.null(ht.col.list[["col_range"]]),c(-2,0,2),ht.col.list[["col_range"]])
+  col_color = ifelse(is.null(ht.col.list[["col_color"]]),
+                     c("#08519C", "white", "#A50F15"),
+                     ht.col.list[["col_color"]])
 
   col_fun = circlize::colorRamp2(col_range,col_color)
 
