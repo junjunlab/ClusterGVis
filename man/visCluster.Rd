@@ -6,7 +6,8 @@
 \arguments{
 \item{object}{clusterData object, default NULL.}
 
-\item{ht.col}{heatmap colors, default c("blue", "white", "red").}
+\item{ht.col.list}{list of heatmap col_range and col_color, default
+list(col_range = c(-2, 0, 2),col_color = c("#08519C", "white", "#A50F15")).}
 
 \item{border}{whether add border for heatmap, default TRUE.}
 

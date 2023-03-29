@@ -3,7 +3,8 @@
 #' @title using visCluster to visualize cluster results from clusterData output
 #'
 #' @param object clusterData object, default NULL.
-#' @param ht.col heatmap colors, default c("blue", "white", "red").
+#' @param ht.col.list list of heatmap col_range and col_color, default
+#' list(col_range = c(-2, 0, 2),col_color = c("#08519C", "white", "#A50F15")).
 #' @param border whether add border for heatmap, default TRUE.
 #' @param plot.type the plot type to choose which incuding "line","heatmap" and "both".
 #' @param ms.col membership line color form Mfuzz cluster method results,
@@ -96,7 +97,9 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'geneType'))
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
-                       ht.col = c("#08519C", "white", "#A50F15"),
+                       ht.col.list = list(col_range = c(-2, 0, 2),
+                                          col_color = c("#08519C", "white", "#A50F15")),
+                       # ht.col = c("#08519C", "white", "#A50F15"),
                        border = TRUE,
                        plot.type = c("line","heatmap","both"),
                        ms.col = c('#0099CC','grey90','#CC3333'),
@@ -163,7 +166,12 @@ visCluster <- function(object = NULL,
                        column.split = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
-  col_fun = circlize::colorRamp2(c(-2, 0, 2), ht.col)
+
+  col_range = ht.col.list[["col_range"]]
+  col_color = ht.col.list[["col_color"]]
+
+  col_fun = circlize::colorRamp2(col_range,col_color)
+
   plot.type <- match.arg(plot.type)
 
   # choose plot type
