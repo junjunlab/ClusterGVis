@@ -71,6 +71,7 @@
 #' @param by.kegg the KEGG term text box style("anno_link" or "anno_block"), default "anno_link".
 #' @param word_wrap whether wrap the text, default TRUE.
 #' @param add_new_line whether add new line when text is long, default TRUE.
+#' @param cluster_columns whether cluster the columns, default FALSE.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -164,6 +165,7 @@ visCluster <- function(object = NULL,
                        sample.cell.order = NULL,
                        HeatmapAnnotation = NULL,
                        column.split = NULL,
+                       cluster_columns = FALSE,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
 
@@ -462,7 +464,7 @@ visCluster <- function(object = NULL,
       htf <-
         ComplexHeatmap::Heatmap(as.matrix(mat),
                                 name = 'Z-score',
-                                cluster_columns = FALSE,
+                                cluster_columns = cluster_columns,
                                 show_row_names = show_row_names,
                                 border = border,
                                 column_split = column_split,
@@ -1153,7 +1155,7 @@ visCluster <- function(object = NULL,
       # pdf('test.pdf',height = 10,width = 10)
       htf <- ComplexHeatmap::Heatmap(as.matrix(mat),
                                      name = "Z-score",
-                                     cluster_columns = FALSE,
+                                     cluster_columns = cluster_columns,
                                      show_row_names = show_row_names,
                                      border = border,
                                      column_split = column_split,

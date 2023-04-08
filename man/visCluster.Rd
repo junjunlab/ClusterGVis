@@ -129,6 +129,8 @@ default c("grey95","grey50").}
 
 \item{add_new_line}{whether add new line when text is long, default TRUE.}
 
+\item{cluster_columns}{whether cluster the columns, default FALSE.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
