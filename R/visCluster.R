@@ -270,15 +270,15 @@ visCluster <- function(object = NULL,
     # prepare matrix
     if(object$type == "mfuzz"){
       mat <- data %>%
-        dplyr::arrange(cluster) %>%
+        dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster,-membership)
     }else if(object$type == "wgcna"){
       mat <- data %>%
-        dplyr::arrange(cluster) %>%
+        dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster,-modulecol)
     }else{
       mat <- data %>%
-        dplyr::arrange(cluster) %>%
+        dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster)
     }
 
@@ -291,6 +291,7 @@ visCluster <- function(object = NULL,
 
     # split info
     cl.info <- data.frame(table(data$cluster)) %>%
+      dplyr::mutate(Var1 = as.numeric(as.character(Var1))) %>%
       dplyr::arrange(Var1)
     cluster.num <- nrow(cl.info)
 
@@ -427,7 +428,7 @@ visCluster <- function(object = NULL,
 
       purrr::map_df(1:cluster.num,function(x){
         tmp <- gene.col %>%
-          dplyr::filter(cluster == x) %>%
+          dplyr::filter(as.numeric(cluster) == x) %>%
           dplyr::mutate(col = colanno[x])
       }) -> gene.col
 
