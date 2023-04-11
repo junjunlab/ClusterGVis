@@ -145,8 +145,10 @@ prepareDataFromscRNA <- function(object = NULL,
   }
 
   # add gene number
-  cltn <- table(wide.res$cluster)
-  cl.info <- data.frame(table(wide.res$cluster))
+  # cltn <- table(wide.res$cluster)
+  cl.info <- data.frame(table(wide.res$cluster)) %>%
+    dplyr::mutate(Var1 = as.numeric(as.character(Var1))) %>%
+    dplyr::arrange(Var1)
 
   id <- unique(df$cluster_name)
   purrr::map_df(seq_along(id),function(x){
@@ -154,7 +156,7 @@ prepareDataFromscRNA <- function(object = NULL,
       dplyr::filter(cluster_name == id[x])
 
     tmp %>%
-      dplyr::mutate(cluster_name = paste(cluster_name," (",cltn[x],")",sep = ''))
+      dplyr::mutate(cluster_name = paste(cluster_name," (",cl.info$Freq[x],")",sep = ''))
   }) -> df
 
   # cluster order
