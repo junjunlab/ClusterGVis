@@ -6,7 +6,6 @@
 #' @param visu whether plot, default FALSE.
 #'
 #' @return matrix.
-#' @export
 filter.std <- function(eset = NULL,
                        min.std = 0,
                        visu = FALSE){

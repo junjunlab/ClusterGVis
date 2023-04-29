@@ -131,6 +131,8 @@ default c("grey95","grey50").}
 
 \item{cluster_columns}{whether cluster the columns, default FALSE.}
 
+\item{pseudotime_col}{the branch color control for monocle input data.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{

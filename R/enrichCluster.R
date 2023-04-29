@@ -125,44 +125,49 @@ enrichCluster <- function(object = NULL,
     }
 
     # to data.frame
-    df <- data.frame(ego) %>%
-      dplyr::filter(pvalue < pvalueCutoff) %>%
-      dplyr::mutate(group = paste("C",unique(enrich.data$cluster)[x],sep = '')) %>%
-      dplyr::arrange(pvalue)
+    enrich_res <- data.frame(ego)
+    if(nrow(enrich_res) > 0){
+      df <- data.frame(ego) %>%
+        dplyr::filter(pvalue < pvalueCutoff) %>%
+        dplyr::mutate(group = paste("C",unique(enrich.data$cluster)[x],sep = '')) %>%
+        dplyr::arrange(pvalue)
 
-    # whether save all res
-    if(!is.null(topn)){
-      # top n selection
-      if(length(topn) == 1){
-        top = topn
+      # whether save all res
+      if(!is.null(topn)){
+        # top n selection
+        if(length(topn) == 1){
+          top = topn
+        }else{
+          top = topn[x]
+        }
+
+        df <- df %>%
+          # dplyr::select(group,Description,pvalue) %>%
+          dplyr::slice_head(n = top)
+
+        # add gene enrich ratio
+        df1 <- purrr::map_df(1:nrow(df),function(x){
+          tmp1 <- df[x,]
+          size = unlist(strsplit(as.character(tmp1$GeneRatio),split = '/'))
+          tmp1$ratio <- (as.numeric(size[1])/as.numeric(size[2]))*100
+          return(tmp1)
+        })
+
+        # select columns
+        df2 <- df1 %>%
+          dplyr::select(group,Description,pvalue,ratio)
       }else{
-        top = topn[x]
+        df2 <- df
       }
 
-      df <- df %>%
-        # dplyr::select(group,Description,pvalue) %>%
-        dplyr::slice_head(n = top)
+      # remove no pass threshold terms
+      df2 <- df2 %>% stats::na.omit()
 
-      # add gene enrich ratio
-      df1 <- purrr::map_df(1:nrow(df),function(x){
-        tmp1 <- df[x,]
-        size = unlist(strsplit(as.character(tmp1$GeneRatio),split = '/'))
-        tmp1$ratio <- (as.numeric(size[1])/as.numeric(size[2]))*100
-        return(tmp1)
-      })
-
-      # select columns
-      df2 <- df1 %>%
-        dplyr::select(group,Description,pvalue,ratio)
+      # results
+      return(df2)
     }else{
-      df2 <- df
+      return(NULL)
     }
-
-    # remove no pass threshold terms
-    df2 <- df2 %>% stats::na.omit()
-
-    # results
-    return(df2)
   })
 }
 

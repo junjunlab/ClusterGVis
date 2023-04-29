@@ -1,6 +1,6 @@
 Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
-Version: 0.0.8
+Version: 0.0.9
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7692-9105"))
@@ -15,25 +15,32 @@ Description: For better clustering and visualizing the time series gene expressi
  'ClusterGVis' allows you to create publication-quality figures.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
+    monocle,
     R (>= 2.10)
-LazyData: true
 Imports: 
     Biobase,
     circlize,
     clusterProfiler,
+    colorRamps,
     ComplexHeatmap,
     dplyr,
     e1071,
     factoextra,
     ggplot2,
+    grDevices,
     grid,
+    igraph,
     jjAnno,
     magrittr,
+    Matrix,
     Mfuzz,
     org.Mm.eg.db,
+    pheatmap,
     purrr,
     reshape2,
     scales,

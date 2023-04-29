@@ -72,6 +72,7 @@
 #' @param word_wrap whether wrap the text, default TRUE.
 #' @param add_new_line whether add new line when text is long, default TRUE.
 #' @param cluster_columns whether cluster the columns, default FALSE.
+#' @param pseudotime_col the branch color control for monocle input data.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -166,6 +167,7 @@ visCluster <- function(object = NULL,
                        HeatmapAnnotation = NULL,
                        column.split = NULL,
                        cluster_columns = FALSE,
+                       pseudotime_col = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
 
@@ -265,7 +267,8 @@ visCluster <- function(object = NULL,
     #   data <- plot.data
     # }
 
-    data <- data.frame(object$wide.res,check.names = FALSE)
+    data <- data.frame(object$wide.res,check.names = FALSE) %>%
+      dplyr::arrange(as.numeric(as.character(cluster)))
 
     # prepare matrix
     if(object$type == "mfuzz"){
@@ -276,7 +279,11 @@ visCluster <- function(object = NULL,
       mat <- data %>%
         dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster,-modulecol)
-    }else{
+    }else if(object$type == "scRNAdata"){
+      mat <- data %>%
+        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+        dplyr::select(-gene,-cluster)
+    }else if(object$type == "monocle"){
       mat <- data %>%
         dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster)
@@ -311,7 +318,7 @@ visCluster <- function(object = NULL,
     # plot
     # =================== bar annotation for samples
     # sample group info
-    if(object$geneMode == "all"){
+    if(object$geneMode == "all" & object$type == "scRNAdata"){
       # split info
       celltype <- sapply(strsplit(colnames(mat),split = "\\|"), "[",2)
       cell.num.info <- table(celltype)[unique(celltype)]
@@ -335,11 +342,18 @@ visCluster <- function(object = NULL,
 
         # split columns
         if(is.null(HeatmapAnnotation)){
-          column_split = NULL
+          if(object$geneType == "branched"){
+            if(ncol(mat) == 200){
+              column_split = rep(c("branch1","branch2"),each = 100)
+            }else{
+              column_split = rep(levels(object$pseudotime),rep(100,ncol(mat)/100))
+            }
+          }else{
+            column_split = NULL
+          }
         }else{
           column_split = column.split
         }
-
       }else{
         sample.info = sample.group
 
@@ -347,24 +361,67 @@ visCluster <- function(object = NULL,
         column_split = sample.group
       }
 
-      # order
-      sample.info <- factor(sample.info,levels = unique(sample.info))
+      # assign colors for monocle input
+      if(object$type != "monocle"){
+        sample.info <- factor(sample.info,levels = unique(sample.info))
 
-      # sample colors
-      if(is.null(sample.col)){
-        # scol <- ggsci::pal_npg()(length(sample.info))
-        scol <- circlize::rand_color(n = length(sample.info))
-        names(scol) <- sample.info
+        # sample colors
+        if(is.null(sample.col)){
+          # scol <- ggsci::pal_npg()(length(sample.info))
+          scol <- circlize::rand_color(n = length(sample.info))
+          names(scol) <- sample.info
+        }else{
+          scol <- sample.col
+          names(scol) <- sample.info
+        }
       }else{
-        scol <- sample.col
-        names(scol) <- sample.info
-      }
+        sample.info <- factor(object$pseudotime,levels = unique(object$pseudotime))
 
+        # sample colors
+        if(is.null(pseudotime_col)){
+          if(object$geneType == "branched"){
+            if(length(unique(object$pseudotime)) == 3){
+              pseudotime_col <- c("red","grey80","blue")
+            }else{
+              pseudotime_col <- circlize::rand_color(n = length(unique(object$pseudotime)))
+            }
+          }else{
+            pseudotime_col <- c("blue", "red")
+          }
+        }else{
+          pseudotime_col <- pseudotime_col
+        }
+
+        if(is.null(sample.col)){
+          if(object$type != "monocle"){
+            scol <- circlize::rand_color(n = length(sample.info))
+            names(scol) <- sample.info
+          }else{
+            if(object$geneType == "branched"){
+              if(length(unique(object$pseudotime)) == 3){
+                scol <- rep(pseudotime_col,
+                            table(object$pseudotime)[unique(object$pseudotime)])
+                names(scol) <- sample.info
+              }else{
+                scol <- rep(pseudotime_col,
+                            table(object$pseudotime)[unique(object$pseudotime)])
+                names(scol) <- sample.info
+              }
+            }else{
+              scol <- grDevices::colorRampPalette(pseudotime_col)(100)
+              names(scol) <- sample.info
+            }
+          }
+        }else{
+          scol <- sample.col
+          names(scol) <- sample.info
+        }
+      }
     }
 
     # top anno
     if(add.sampleanno == TRUE){
-      if(object$geneMode == "all"){
+      if(object$geneMode == "all" & object$type == "scRNAdata"){
         topanno = ComplexHeatmap::HeatmapAnnotation(cluster = ComplexHeatmap::anno_block(gp = grid::gpar(fill = block.col),
                                                                                          labels = NULL),
                                                     show_annotation_name = FALSE)
@@ -372,7 +429,10 @@ visCluster <- function(object = NULL,
         if(is.null(HeatmapAnnotation)){
           topanno = ComplexHeatmap::HeatmapAnnotation(sample = sample.info,
                                                       col = list(sample = scol),
-                                                      gp = grid::gpar(col = "white"),
+                                                      gp = grid::gpar(col = ifelse(object$type == "monocle",
+                                                                                   NA,"white")),
+                                                      show_legend = ifelse(object$type == "monocle",
+                                                                           FALSE,TRUE),
                                                       show_annotation_name = FALSE)
         }else{
           topanno = HeatmapAnnotation
@@ -460,6 +520,32 @@ visCluster <- function(object = NULL,
 
     # =======================================================
     # return plot according to plot type
+    if(object$type == "monocle" | object$geneMode == "all"){
+      show_column_names = FALSE
+    }
+
+    # legend for monocle heatmap
+    if(object$geneType == "non-branched"){
+      rg <- range(as.numeric(as.character(sample.info)))
+      col_fun2 = circlize::colorRamp2(c(rg[1],rg[2]),pseudotime_col)
+      lgd = ComplexHeatmap::Legend(col_fun = col_fun2, title = "pseudotime")
+      lgd_list = list(lgd)
+    }else if(object$geneType == "branched"){
+      if(length(levels(sample.info)) == 3){
+        lgd = ComplexHeatmap::Legend(labels = levels(sample.info),
+                                     legend_gp = grid::gpar(fill = pseudotime_col),
+                                     title = "branch")
+      }else{
+        lgd = ComplexHeatmap::Legend(labels = levels(sample.info),
+                                     legend_gp = grid::gpar(fill = pseudotime_col),
+                                     title = "branch")
+      }
+      lgd_list = list(lgd)
+    }else{
+      lgd_list <- NULL
+    }
+
+    # plot heatmap
     if(plot.type == "heatmap"){
       # draw HT
       htf <-
@@ -472,6 +558,7 @@ visCluster <- function(object = NULL,
                                 row_split = subgroup,
                                 cluster_row_slices = cluster_row_slices,
                                 column_names_side = "top",
+                                show_column_names = show_column_names,
                                 # border = TRUE,
                                 top_annotation = topanno,
                                 right_annotation = right_annotation,
@@ -480,43 +567,10 @@ visCluster <- function(object = NULL,
                                 ...)
 
       # draw
-      ComplexHeatmap::draw(htf,merge_legend = TRUE)
+      ComplexHeatmap::draw(htf,merge_legend = TRUE,annotation_legend_list = lgd_list)
     }else{
       #====================== heatmap + line
       rg = range(mat)
-
-      # # panel_fun for line plot
-      # panel_fun = function(index, nm) {
-      #   grid::pushViewport(grid::viewport(xscale = c(1,ncol(mat)), yscale = rg))
-      #   grid::grid.rect()
-      #
-      #   # grid.xaxis(gp = gpar(fontsize = 8))
-      #   # grid.annotation_axis(side = 'right',gp = gpar(fontsize = 8))
-      #
-      #   # choose method
-      #   if(set.md == "mean"){
-      #     mdia <- colMeans(mat[index, ])
-      #   }else if(set.md == "median"){
-      #     mdia <- apply(mat[index, ], 2, stats::median)
-      #   }else{
-      #     message("supply mean/median !")
-      #   }
-      #
-      #   # get gene numbers
-      #   text <- paste("Gene Size:",nrow(mat[index, ]),sep = ' ')
-      #   ComplexHeatmap::grid.textbox(text,x = textbox.pos[1],y = textbox.pos[2],
-      #                                gp = grid::gpar(fontsize = textbox.size,fontface = "italic"))
-      #
-      #   # grid.points(x = 1:ncol(m),y = mdia,
-      #   #             pch = 19,
-      #   #             gp = gpar(col = 'orange'))
-      #
-      #   grid::grid.lines(x = scales::rescale(1:ncol(mat),to = c(0,1)),
-      #                    y = scales::rescale(mdia,to = c(0,1),from = rg),
-      #                    gp = grid::gpar(lwd = 3,col = mline.col))
-      #
-      #   grid::popViewport()
-      # }
 
       # ====================================================================
       # panel_fun for line plot
@@ -550,7 +604,7 @@ visCluster <- function(object = NULL,
         #                      sp = c(cu[1],cu[2:length(cu)]))
         # }
 
-        if(object$geneMode == "all"){
+        if(object$geneMode == "all" & object$type == "scRNAdata"){
           mulGroup <- cell.num.info
 
           grid::grid.lines(x = c(0,1),y = rep(0.5,2),
@@ -634,7 +688,7 @@ visCluster <- function(object = NULL,
         #   }
         # })
 
-        if(object$geneMode == "all"){
+        if(object$geneMode == "all" & object$type == "scRNAdata"){
           # loop for multiple groups to create grobs
           purrr::map_dfr(1:nrow(seqn), function(x){
             tmp <- seqn[x,]
@@ -1153,6 +1207,10 @@ visCluster <- function(object = NULL,
       }
 
       # save
+      if(object$type == "monocle" | object$geneMode == "all"){
+        show_column_names = FALSE
+      }
+
       # pdf('test.pdf',height = 10,width = 10)
       htf <- ComplexHeatmap::Heatmap(as.matrix(mat),
                                      name = "Z-score",
@@ -1164,6 +1222,7 @@ visCluster <- function(object = NULL,
                                      right_annotation = right_annotation2,
                                      left_annotation = left_annotation,
                                      column_names_side = "top",
+                                     show_column_names = show_column_names,
                                      row_split = subgroup,
                                      cluster_row_slices = cluster_row_slices,
                                      col = col_fun,
@@ -1172,7 +1231,7 @@ visCluster <- function(object = NULL,
 
       # draw lines legend
       if(is.null(mulGroup)){
-        ComplexHeatmap::draw(htf,merge_legend = TRUE)
+        ComplexHeatmap::draw(htf,merge_legend = TRUE,annotation_legend_list = lgd_list)
       }else{
         if(is.null(lgd.label)){
           lgd.label <- paste("group",1:length(mulGroup),sep = '')
@@ -1180,12 +1239,12 @@ visCluster <- function(object = NULL,
           lgd.label <- lgd.label
         }
 
-        lgd_list = list(
-          ComplexHeatmap::Legend(labels = lgd.label,
-                                 type = "lines",
-                                 legend_gp = grid::gpar(col = mline.col, lty = 1)))
+        lgd_list2 = ComplexHeatmap::Legend(labels = lgd.label,
+                                           type = "lines",
+                                           legend_gp = grid::gpar(col = mline.col, lty = 1))
 
-        ComplexHeatmap::draw(htf,annotation_legend_list = lgd_list,merge_legend = TRUE)
+        lgd_list_com <- ComplexHeatmap::packLegend(lgd_list,lgd_list2)
+        ComplexHeatmap::draw(htf,annotation_legend_list = lgd_list_com,merge_legend = TRUE)
       }
       # dev.off()
     }
