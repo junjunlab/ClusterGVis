@@ -287,6 +287,10 @@ visCluster <- function(object = NULL,
       mat <- data %>%
         dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster)
+    }else{
+      mat <- data %>%
+        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+        dplyr::select(-gene,-cluster)
     }
 
     rownames(mat) <- data$gene
@@ -522,6 +526,8 @@ visCluster <- function(object = NULL,
     # return plot according to plot type
     if(object$type == "monocle" | object$geneMode == "all"){
       show_column_names = FALSE
+    }else{
+      show_column_names = TRUE
     }
 
     # legend for monocle heatmap
@@ -1209,6 +1215,8 @@ visCluster <- function(object = NULL,
       # save
       if(object$type == "monocle" | object$geneMode == "all"){
         show_column_names = FALSE
+      }else{
+        show_column_names = TRUE
       }
 
       # pdf('test.pdf',height = 10,width = 10)
