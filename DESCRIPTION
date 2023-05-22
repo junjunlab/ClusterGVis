@@ -22,6 +22,8 @@ RoxygenNote: 7.2.3
 Depends: 
     monocle,
     R (>= 2.10)
+Remotes:
+  junjunlab/jjAnno
 Imports: 
     Biobase,
     circlize,
