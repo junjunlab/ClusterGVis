@@ -79,18 +79,19 @@ clusterData <- function(exp = NULL,
 
     # membership
     mem <- cbind(mfuzz_res$membership,cluster2 = mfuzz_res$cluster) %>%
-      as.data.frame() %>%
+      data.frame(check.names = FALSE) %>%
       dplyr::mutate(gene = rownames(.))
 
     # get gene membership
     lapply(1:cluster.num, function(x){
       ms <- mem %>% dplyr::filter(cluster2 == x)
-      res <- data.frame(membership = ms[[x]],gene = ms$gene,cluster2 = ms$cluster2)
+      res <- data.frame(membership = ms[[x]],gene = ms$gene,cluster2 = ms$cluster2,
+                        check.names = FALSE)
     }) %>% do.call('rbind',.) -> membership_info
 
     # get normalized data
     dnorm <- cbind(myset@assayData$exprs,cluster = mfuzz_res$cluster) %>%
-      as.data.frame() %>%
+      data.frame(check.names = FALSE) %>%
       dplyr::mutate(gene = rownames(.))
 
     # merge membership info and normalized data
@@ -149,10 +150,11 @@ clusterData <- function(exp = NULL,
 
     # plot
     set.seed(seed)
-    ht = ComplexHeatmap::Heatmap(hclust_matrix,
-                                 show_row_names = F,
-                                 show_row_dend = F,
-                                 row_km = cluster.num)
+    ht <- ComplexHeatmap::Heatmap(hclust_matrix,
+                                  show_row_names = F,
+                                  show_row_dend = F,
+                                  show_column_names = F,
+                                  row_km = cluster.num)
 
     # gene order
     ht = ComplexHeatmap::draw(ht)
@@ -161,17 +163,18 @@ clusterData <- function(exp = NULL,
     # get index
     purrr::map_df(1:length(names(row.order)),function(x){
       data.frame(od = row.order[[x]],
-                 id = as.numeric(names(row.order)[x]))
+                 id = as.numeric(names(row.order)[x]),
+                 check.names = FALSE)
     }) -> od.res
 
-    cl.info <- data.frame(table(od.res$id))
+    cl.info <- data.frame(table(od.res$id),check.names = FALSE)
 
     # reorder matrix
     m <- hclust_matrix[od.res$od,]
 
     # add cluster and gene.name
     wide.r <- m %>%
-      data.frame() %>%
+      data.frame(check.names = FALSE) %>%
       dplyr::mutate(gene = rownames(.),
                     cluster = od.res$id) %>%
       dplyr::arrange(cluster)
@@ -215,7 +218,8 @@ clusterData <- function(exp = NULL,
     # =====================================
     net <- object
     cinfo <- data.frame(cluster = net$colors + 1,
-                        modulecol = WGCNA::labels2colors(net$colors))
+                        modulecol = WGCNA::labels2colors(net$colors),
+                        check.names = FALSE)
 
     expm <- data.frame(t(scale(exp)))
     expm$gene <- rownames(expm)

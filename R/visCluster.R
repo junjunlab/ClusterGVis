@@ -254,18 +254,6 @@ visCluster <- function(object = NULL,
 
   }else{
     # ==========================================================================
-    if(object$geneMode == "all"){
-      use_raster = TRUE
-    }else{
-      use_raster = FALSE
-    }
-
-    # process data
-    # if(is.null(plot.data)){
-    #   data <- data.frame(object$wide.res)
-    # }else{
-    #   data <- plot.data
-    # }
 
     data <- data.frame(object$wide.res,check.names = FALSE) %>%
       dplyr::arrange(as.numeric(as.character(cluster)))
@@ -294,6 +282,12 @@ visCluster <- function(object = NULL,
     }
 
     rownames(mat) <- data$gene
+
+    if(object$geneMode == "all" | ncol(mat) > 20){
+      use_raster = TRUE
+    }else{
+      use_raster = FALSE
+    }
 
     # sample orders
     if(!is.null(sample.order)){
@@ -524,7 +518,7 @@ visCluster <- function(object = NULL,
 
     # =======================================================
     # return plot according to plot type
-    if(object$type == "monocle" | object$geneMode == "all"){
+    if(object$type == "monocle" | object$geneMode == "all" | ncol(mat) > 20){
       show_column_names = FALSE
     }else{
       show_column_names = TRUE
@@ -1213,7 +1207,7 @@ visCluster <- function(object = NULL,
       }
 
       # save
-      if(object$type == "monocle" | object$geneMode == "all"){
+      if(object$type == "monocle" | object$geneMode == "all" | ncol(mat) > 20){
         show_column_names = FALSE
       }else{
         show_column_names = TRUE
@@ -1251,7 +1245,12 @@ visCluster <- function(object = NULL,
                                            type = "lines",
                                            legend_gp = grid::gpar(col = mline.col, lty = 1))
 
-        lgd_list_com <- ComplexHeatmap::packLegend(lgd_list,lgd_list2)
+        if(!is.null(lgd_list)){
+          lgd_list_com <- ComplexHeatmap::packLegend(lgd_list,lgd_list2)
+        }else{
+          lgd_list_com <- lgd_list2
+        }
+
         ComplexHeatmap::draw(htf,annotation_legend_list = lgd_list_com,merge_legend = TRUE)
       }
       # dev.off()

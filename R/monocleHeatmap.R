@@ -808,6 +808,47 @@ plot_multiple_branches_heatmap2 <- function(cds = NULL,
 
 
 
+#' Calculate and return a smoothed pseudotime matrix for the given gene list
+#'
+#' This function takes in a monocle3 object and returns a smoothed pseudotime
+#' matrix for the
+#' given gene list, either in counts or normalized form. The function first matches
+#' the gene list
+#' with the rownames of the SummarizedExperiment object, and then orders the
+#' pseudotime information.
+#' The function then uses smooth.spline to apply smoothing to the data. Finally,
+#' the function normalizes
+#' the data by subtracting the mean and dividing by the standard deviation for each row.
+#'
+#' @param cds_obj A monocle3 object
+#' @param assays Type of assay to be used for the analysis, either "counts" or "normalized"
+#' @param gene_list A vector of gene names
+#' @return A smoothed pseudotime matrix for the given gene list
+#' @importFrom monocle3 exprs pseudotime normalized_counts
+#' @importFrom SummarizedExperiment rowData
+#' @export
+pre_pseudotime_matrix <- function(cds_obj = NULL,
+                                  assays = c("counts","normalized"),
+                                  gene_list = NULL){
+  assays <- match.arg(assays,c("counts","normalized"))
+
+  # choose assays type
+  if(assays == "counts"){
+    pt.matrix <- monocle3::exprs(cds_obj)[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+                                          order(monocle3::pseudotime(cds_obj))]
+  }else if(assays == "normalized"){
+    pt.matrix <- monocle3::normalized_counts(cds_obj, norm_method = "log")[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+                                                                           order(monocle3::pseudotime(cds_obj))]
+  }
+
+  pt.matrix <- t(apply(pt.matrix,1,function(x){stats::smooth.spline(x,df=3)$y}))
+  pt.matrix <- t(apply(pt.matrix,1,function(x){(x-mean(x))/sd(x)}))
+  rownames(pt.matrix) <- gene_list
+  colnames(pt.matrix) <- 1:ncol(pt.matrix)
+  return(pt.matrix)
+}
+
+
 #' This is a test data for this package
 #' test data describtion
 #'
