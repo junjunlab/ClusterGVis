@@ -21,6 +21,8 @@
 #' @param textbox.size the text size of the text in left-line plot, default 8.
 #' @param panel.arg the settings for the left-line panel which are
 #' panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).
+#' @param ggplot.panel.arg the settings for the ggplot2 object plot panel which are
+#' panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).
 #' @param annoTerm.data the GO term annotation for the clusters, default NULL.
 #' @param annoTerm.mside the wider GO term annotation box side, default "right".
 #' @param termAnno.arg the settings for GO term panel annotations which are fill and col,
@@ -73,6 +75,7 @@
 #' @param add_new_line whether add new line when text is long, default TRUE.
 #' @param cluster_columns whether cluster the columns, default FALSE.
 #' @param pseudotime_col the branch color control for monocle input data.
+#' @param gglist a list of ggplot object to annotate each cluster, default NULL.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -97,6 +100,7 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval',
                   'Var1','seurat_clusters','cell.ident', 'getassy',
                   'geneType'))
+
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
                        ht.col.list = list(col_range = c(-2, 0, 2),
@@ -117,6 +121,7 @@ visCluster <- function(object = NULL,
                        textbox.size = 8,
                        # panel size,gap,width,fill,col
                        panel.arg = c(2,0.25,4,"grey90",NA),
+                       ggplot.panel.arg = c(2,0.25,4,"grey90",NA),
                        annoTerm.data = NULL,
                        annoTerm.mside = "right",
                        # textbox fill and col
@@ -168,6 +173,7 @@ visCluster <- function(object = NULL,
                        column.split = NULL,
                        cluster_columns = FALSE,
                        pseudotime_col = NULL,
+                       gglist = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
 
@@ -572,8 +578,33 @@ visCluster <- function(object = NULL,
       #====================== heatmap + line
       rg = range(mat)
 
-      # ====================================================================
+      # ============================================================================================
+      # panel_fun for ggplot object
+      # ============================================================================================
+      if(!is.null(gglist)){
+        anno_ggplot2 = ComplexHeatmap::anno_zoom(align_to = align_to,
+                                                 which = "row",
+                                                 panel_fun = function(index, nm) {
+                                                   g <- gglist[[nm]]
+                                                   g <- grid::grid.grabExpr(print(g))
+                                                   grid::pushViewport(grid::viewport())
+                                                   grid::grid.rect()
+                                                   grid::grid.draw(g)
+                                                   grid::popViewport()
+                                                 },
+                                                 size = grid::unit(as.numeric(ggplot.panel.arg[1]), "cm"),
+                                                 gap = grid::unit(as.numeric(ggplot.panel.arg[2]), "cm"),
+                                                 width = grid::unit(as.numeric(ggplot.panel.arg[3]), "cm"),
+                                                 side = "right",
+                                                 link_gp = grid::gpar(fill = ggplot.panel.arg[4],col = ggplot.panel.arg[5]))
+
+      }else{
+        anno_ggplot2 = NULL
+      }
+
+      # ============================================================================================
       # panel_fun for line plot
+      # ============================================================================================
       panel_fun = function(index, nm) {
 
         # whether add boxplot
@@ -1171,6 +1202,7 @@ visCluster <- function(object = NULL,
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
                                                             cluster = anno.block,
                                                             line = anno,
+                                                            anno_ggplot2 = anno_ggplot2,
                                                             textbox = textbox,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
@@ -1179,6 +1211,7 @@ visCluster <- function(object = NULL,
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             line = anno,
+                                                            anno_ggplot2 = anno_ggplot2,
                                                             textbox = textbox,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
@@ -1190,6 +1223,7 @@ visCluster <- function(object = NULL,
         if(markGenes.side == "right"){
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
                                                             cluster = anno.block,
+                                                            anno_ggplot2 = anno_ggplot2,
                                                             textbox = textbox,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
@@ -1197,6 +1231,7 @@ visCluster <- function(object = NULL,
           left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
+                                                            anno_ggplot2 = anno_ggplot2,
                                                             textbox = textbox,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,

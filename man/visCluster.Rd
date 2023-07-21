@@ -39,6 +39,9 @@ default c('#0099CC','grey90','#CC3333').}
 \item{panel.arg}{the settings for the left-line panel which are
 panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
 
+\item{ggplot.panel.arg}{the settings for the ggplot2 object plot panel which are
+panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
+
 \item{annoTerm.data}{the GO term annotation for the clusters, default NULL.}
 
 \item{annoTerm.mside}{the wider GO term annotation box side, default "right".}
@@ -132,6 +135,8 @@ default c("grey95","grey50").}
 \item{cluster_columns}{whether cluster the columns, default FALSE.}
 
 \item{pseudotime_col}{the branch color control for monocle input data.}
+
+\item{gglist}{a list of ggplot object to annotate each cluster, default NULL.}
 
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
