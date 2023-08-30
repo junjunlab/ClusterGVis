@@ -24,7 +24,7 @@ devtools::install_github("junjunlab/ClusterGVis")
 
 ## Figures
 
-![image](https://user-images.githubusercontent.com/64965509/226291391-0a3b3d5f-f3ef-499e-9815-bf1abe9442e9.png)
+![1690443879586](https://github.com/junjunlab/ClusterGVis/assets/64965509/ce1f2368-8f8c-465d-8b32-24cacc31d33f)
 
 ## Document
 
@@ -43,3 +43,5 @@ devtools::install_github("junjunlab/ClusterGVis")
 > - [**听说你还想添加 KEGG 注释?**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247508362&idx=1&sn=68c90f6b6cf328f220c2926e1ff68df6&chksm=c1849bfbf6f312eddc8839706dc81984fb6da270dec3505b351b69f775e49e92ea585b3c5d1c&token=1432898004&lang=zh_CN#rd)
 > - [**ClusterGVis 对接 monocle2 拟时序热图**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247509140&idx=1&sn=3f46ed8760be054b173a60642d8fe608&chksm=c1849ee5f6f317f36c7cb7e496181c1d9b431cb0c7a674f8cd31e7960b8f0830c4e8e0490b7d&token=46732270&lang=zh_CN#rd)
 > - [**听说你想画个 monocle3 的拟时序热图?**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247509312&idx=1&sn=5ab254679b6934cbe6c7a325154e1143&chksm=c1849f31f6f31627cc1148df6eb33e1e757a455c27d4822e864a28987aa2af95e9688b8061fd&token=553825481&lang=zh_CN#rd)
+> - [**ClusterGVis 添加自定义图形注释**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247509499&idx=1&sn=888b0cb8401eb46c1f56c8e90fd2bb81&chksm=c1849f8af6f3169cfaf72e4818cd414375251b0fcf031bc05bda33fc39e7c9bae549cfc1e2bc&token=948441875&lang=zh_CN#rd)
+> - [**听说你想插入 GO 和 KEGG 图形注释?**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247509510&idx=1&sn=5f1f4cb3a3f37abccc19265da77536f9&chksm=c1849c77f6f315618e2029f6837f483948e195489daaec481793cb30891641fa105e6bbbcd19&token=948441875&lang=zh_CN#rd)
