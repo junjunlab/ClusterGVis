@@ -31,6 +31,8 @@ with term and name, default NULL.}
 \item{topn}{the top enrichment results to extract, length one or same with cluster numbers, default 5.}
 
 \item{seed}{the enrichment seed, default 5201314.}
+
+\item{add.gene}{whether return genes for output, default FALSE.}
 }
 \value{
 a data.frame.

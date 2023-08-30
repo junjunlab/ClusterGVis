@@ -1,3 +1,4 @@
+globalVariables(c("geneID"))
 #' @name enrichCluster
 #' @author JunZhang
 #' @title using enrichCluster to do GO/KEGG enrichment analysis for multiple cluster genes
@@ -17,6 +18,7 @@
 #' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
 #' @param topn the top enrichment results to extract, length one or same with cluster numbers, default 5.
 #' @param seed the enrichment seed, default 5201314.
+#' @param add.gene whether return genes for output, default FALSE.
 #'
 #' @import org.Mm.eg.db
 #'
@@ -54,7 +56,8 @@ enrichCluster <- function(object = NULL,
                           organism = "hsa",
                           pvalueCutoff  = 0.05,
                           topn = 5,
-                          seed = 5201314){
+                          seed = 5201314,
+                          add.gene = FALSE){
   type <- match.arg(type)
 
   # get data
@@ -154,8 +157,11 @@ enrichCluster <- function(object = NULL,
         })
 
         # select columns
-        df2 <- df1 %>%
-          dplyr::select(group,Description,pvalue,ratio)
+        if(add.gene == TRUE){
+          df2 <- df1 %>% dplyr::select(group,Description,pvalue,ratio,geneID)
+        }else{
+          df2 <- df1 %>% dplyr::select(group,Description,pvalue,ratio)
+        }
       }else{
         df2 <- df
       }
