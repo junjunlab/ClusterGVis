@@ -259,8 +259,10 @@ clusterData <- function(exp = NULL,
     }) -> df
 
     # cluster order
-    df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
-                                                             " (",cl.info$Freq,")",sep = ''))
+    # df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
+    #                                                          " (",cl.info$Freq,")",sep = ''))
+
+    df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info), " (",cl.info$Freq," ",unique(df$modulecol),")",sep = ''))
 
     # return
     return(list(wide.res = final.res,
