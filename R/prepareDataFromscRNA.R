@@ -39,13 +39,24 @@ prepareDataFromscRNA <- function(object = NULL,
   # choose mode
   if(showAverage == TRUE){
     # get cells mean gene expression
-    mean_gene_exp <- Seurat::AverageExpression(object,
-                                               features = markerGene,
-                                               group.by = group.by,
-                                               assays = assays,
-                                               slot = slot) %>%
-      data.frame() %>%
-      as.matrix()
+    if(utils::packageVersion("Seurat") > 4){
+      mean_gene_exp <- Seurat::AverageExpression(object,
+                                                 features = markerGene,
+                                                 group.by = group.by,
+                                                 assays = assays,
+                                                 layer = slot) %>%
+        data.frame() %>%
+        as.matrix()
+    }else{
+      mean_gene_exp <- Seurat::AverageExpression(object,
+                                                 features = markerGene,
+                                                 group.by = group.by,
+                                                 assays = assays,
+                                                 slot = slot) %>%
+        data.frame() %>%
+        as.matrix()
+    }
+
 
     # add colnames
     name1 <- gsub(pattern = paste0(assays,'.',sep = ''),replacement = '',colnames(mean_gene_exp))
