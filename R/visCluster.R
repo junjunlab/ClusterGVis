@@ -201,7 +201,10 @@ visCluster <- function(object = NULL,
     # }else{
     #   data <- plot.data
     # }
-    data <- data.frame(object$long.res)
+    data <- data.frame(object$long.res) %>%
+      dplyr::arrange(cluster,membership)
+
+    data$gene <- factor(data$gene,levels = unique(data$gene))
 
     # sample orders
     if(!is.null(sample.order)){
