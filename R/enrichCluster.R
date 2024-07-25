@@ -79,6 +79,8 @@ enrichCluster <- function(object = NULL,
     # enrich
 
     # entriz id transformation
+    id.trans <- ifelse(type == "ownSet",FALSE,TRUE)
+
     if(id.trans == TRUE){
       gene.ent <- clusterProfiler::bitr(tmp$gene,
                                         fromType = fromType,
