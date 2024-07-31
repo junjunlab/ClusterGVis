@@ -39,7 +39,8 @@ prepareDataFromscRNA <- function(object = NULL,
   # choose mode
   if(showAverage == TRUE){
     # get cells mean gene expression
-    if(utils::packageVersion("Seurat") > 4){
+    vr <- utils::compareVersion(as.character(utils::packageVersion("Seurat")),"5")
+    if(vr == 1){
       mean_gene_exp <- Seurat::AverageExpression(object,
                                                  features = markerGene,
                                                  group.by = group.by,
