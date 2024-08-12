@@ -201,8 +201,15 @@ visCluster <- function(object = NULL,
     # }else{
     #   data <- plot.data
     # }
+
+    if(object$type %in% c("scRNAdata","monocle")){
+      var <- c("cluster")
+    }else{
+      var <- c("cluster","membership")
+    }
+
     data <- data.frame(object$long.res) %>%
-      dplyr::arrange(cluster,membership)
+      dplyr::arrange(var)
 
     data$gene <- factor(data$gene,levels = unique(data$gene))
 
