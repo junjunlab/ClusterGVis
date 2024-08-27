@@ -99,7 +99,7 @@
 globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
                   'membership', 'norm_value','id', 'log10P', 'pval',
                   'Var1','seurat_clusters','cell.ident', 'getassy',
-                  'geneType'))
+                  'geneType','.data'))
 
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
@@ -373,7 +373,8 @@ visCluster <- function(object = NULL,
         sample.info = sample.group
 
         # split columns
-        column_split = sample.group
+        # column_split = sample.group
+        column_split = factor(sample.group,levels = unique(sample.group))
       }
 
       # assign colors for monocle input
