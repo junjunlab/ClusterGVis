@@ -202,7 +202,7 @@ visCluster <- function(object = NULL,
     #   data <- plot.data
     # }
 
-    if(object$type %in% c("scRNAdata","monocle")){
+    if(object$type %in% c("scRNAdata","monocle","wgcna")){
       data <- data.frame(object$long.res) %>%
         dplyr::arrange(.data[["cluster"]])
     }else{
