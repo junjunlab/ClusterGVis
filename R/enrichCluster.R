@@ -101,7 +101,7 @@ enrichCluster <- function(object = NULL,
                                        ont           = type,
                                        pAdjustMethod = "BH",
                                        pvalueCutoff  = 1,
-                                       qvalueCutoff  = 0.2,
+                                       qvalueCutoff  = 1,
                                        readable      = readable)
     }else if(type == "ownSet"){
       set.seed(seed)
@@ -110,7 +110,7 @@ enrichCluster <- function(object = NULL,
                                        TERM2NAME     = TERM2NAME,
                                        pvalueCutoff  = 1,
                                        pAdjustMethod = "BH",
-                                       qvalueCutoff  = 0.2)
+                                       qvalueCutoff  = 1)
     }else{
       set.seed(seed)
       ego <- clusterProfiler::enrichKEGG(gene          = tartget.gene,
@@ -119,7 +119,7 @@ enrichCluster <- function(object = NULL,
                                          universe      = NULL,
                                          pvalueCutoff  = 1,
                                          pAdjustMethod = "BH",
-                                         qvalueCutoff  = 0.2)
+                                         qvalueCutoff  = 1)
 
       # transform gene id
       if(readable == TRUE){
