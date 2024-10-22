@@ -24,7 +24,9 @@ Depends:
     R (>= 2.10)
 Remotes:
   junjunlab/jjAnno,
-  cole-trapnell-lab/monocle3
+  cole-trapnell-lab/monocle3,
+  jokergoo/circlize,
+  jokergoo/ComplexHeatmap
 Imports: 
     Biobase,
     circlize,
@@ -53,4 +55,4 @@ Imports:
     SummarizedExperiment,
     tibble,
     WGCNA
-biocViews: Sequencing,clusterProfiler,org.Mm.eg.db,SummarizedExperiment
+biocViews: Sequencing,clusterProfiler,org.Mm.eg.db,SummarizedExperiment,Mfuzz
