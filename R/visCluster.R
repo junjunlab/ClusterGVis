@@ -224,7 +224,7 @@ visCluster <- function(object = NULL,
       ggplot2::ggplot(data,ggplot2::aes(x = cell_type,y = norm_value))
 
     # type
-    if(object$type == "mfuzz"){
+    if(object$type %in% c("mfuzz","TCseq")){
       line <- line +
         ggplot2::geom_line(ggplot2::aes(color = membership,group = gene),size = line.size) +
         ggplot2::scale_color_gradient2(low = ms.col[1],mid = ms.col[2],high = ms.col[3],
@@ -276,7 +276,7 @@ visCluster <- function(object = NULL,
       dplyr::arrange(as.numeric(as.character(cluster)))
 
     # prepare matrix
-    if(object$type == "mfuzz"){
+    if(object$type %in% c("mfuzz","TCseq")){
       mat <- data %>%
         dplyr::arrange(as.numeric(as.character(cluster))) %>%
         dplyr::select(-gene,-cluster,-membership)

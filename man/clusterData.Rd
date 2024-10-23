@@ -3,12 +3,29 @@
 \name{clusterData}
 \alias{clusterData}
 \title{using clusterData to cluster genes}
+\usage{
+clusterData(
+  exp = NULL,
+  scaleData = TRUE,
+  cluster.method = c("mfuzz", "TCseq", "kmeans", "wgcna"),
+  TCseq_params_list = list(),
+  object = NULL,
+  min.std = 0,
+  cluster.num = NULL,
+  subcluster = NULL,
+  seed = 5201314
+)
+}
 \arguments{
 \item{exp}{the gene normalized expression data(fpkm/rpkm/tpm), default NULL.}
+
+\item{scaleData}{whether do Z-score for expression data, default TRUE.}
 
 \item{cluster.method}{which cluster method to choose, mfuzz, kmeans or wgcna, default "mfuzz".
 details see package Mfuzz. If choose "kmeans", the row_km argument will be used to cluster genes
 in ComplexHeatmap::Heatmap function.}
+
+\item{TCseq_params_list}{List papameters passed by TCseq::timeclust function.}
 
 \item{object}{the WGCNA::blockwiseModules returned object, default NULL.}
 
@@ -19,8 +36,6 @@ in ComplexHeatmap::Heatmap function.}
 \item{subcluster}{subset some clusters form all clusterd data, default NULL.}
 
 \item{seed}{set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.}
-
-\item{scaleData}{whether do Z-score for expression data, default TRUE.}
 }
 \value{
 clusterData return a list including wide-shape and long-shape clustered results.

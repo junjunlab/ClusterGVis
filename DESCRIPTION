@@ -1,6 +1,6 @@
 Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7692-9105"))
@@ -53,6 +53,7 @@ Imports:
     Seurat,
     stats,
     SummarizedExperiment,
+    TCseq,
     tibble,
     WGCNA
 biocViews: Sequencing,clusterProfiler,org.Mm.eg.db,SummarizedExperiment,Mfuzz

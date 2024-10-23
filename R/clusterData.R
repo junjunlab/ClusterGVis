@@ -1,3 +1,5 @@
+globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x", "cl.y"))
+
 #' @name clusterData
 #' @author JunZhang
 #' @title using clusterData to cluster genes
@@ -6,6 +8,7 @@
 #' @param cluster.method which cluster method to choose, mfuzz, kmeans or wgcna, default "mfuzz".
 #' details see package Mfuzz. If choose "kmeans", the row_km argument will be used to cluster genes
 #' in ComplexHeatmap::Heatmap function.
+#' @param TCseq_params_list List papameters passed by TCseq::timeclust function.
 #' @param object the WGCNA::blockwiseModules returned object, default NULL.
 #' @param min.std min std for filter genes, this argument is in mfuzz function, default 0.
 #' @param cluster.num the number clusters, default NULL.
@@ -14,6 +17,9 @@
 #' @param scaleData whether do Z-score for expression data, default TRUE.
 #'
 #' @return clusterData return a list including wide-shape and long-shape clustered results.
+#'
+#' @importFrom utils modifyList
+#'
 #' @export
 #'
 #' @examples
@@ -29,11 +35,10 @@
 #'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
 #'
-
-globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol'))
 clusterData <- function(exp = NULL,
                         scaleData = TRUE,
-                        cluster.method = c("mfuzz","kmeans","wgcna"),
+                        cluster.method = c("mfuzz","TCseq","kmeans","wgcna"),
+                        TCseq_params_list = list(),
                         object = NULL,
                         min.std = 0,
                         cluster.num = NULL,
@@ -44,61 +49,102 @@ clusterData <- function(exp = NULL,
   # choose method
   cluster.method <- match.arg(cluster.method)
 
-  if(cluster.method == "mfuzz"){
-    # ========================
-    # cluster data
-    # myset <- methods::new("ExpressionSet",exprs = as.matrix(exp))
-    myset <- Biobase::ExpressionSet(assayData = as.matrix(exp))
-    myset <- Mfuzz::filter.std(myset,min.std = min.std,visu = FALSE)
+  # check clusting method
+  if(cluster.method %in% c("mfuzz","TCseq")){
 
-    # whether zsocre data
-    if(scaleData == TRUE){
-      myset <- Mfuzz::standardise(myset)
-    }else{
-      myset <- myset
+    if(cluster.method == "mfuzz"){
+      # ==========================================================================
+      # mfuzz
+      # ==========================================================================
+      # cluster data
+      # myset <- methods::new("ExpressionSet",exprs = as.matrix(exp))
+      myset <- Biobase::ExpressionSet(assayData = as.matrix(exp))
+      myset <- Mfuzz::filter.std(myset,min.std = min.std,visu = FALSE)
+
+      # whether zsocre data
+      if(scaleData == TRUE){
+        myset <- Mfuzz::standardise(myset)
+      }else{
+        myset <- myset
+      }
+
+      cluster_number <- cluster.num
+      m <- Mfuzz::mestimate(myset)
+
+      # cluster step
+      set.seed(seed)
+      # mfuzz_res <- Mfuzz::mfuzz(myset, c = cluster_number, m = m)
+
+      # user define mfuzz
+      mfuzz1 <- function(eset,centers,m,...){
+        cl <- e1071::cmeans(Biobase::exprs(eset),centers = centers,method = "cmeans",m = m,...)
+      }
+
+      mfuzz_res <- mfuzz1(myset, c = cluster_number, m = m)
+      # ========================
+      # get clustered data
+      mtx <- Biobase::assayData(myset)
+      mtx <- mtx$exprs
+      raw_cluster_anno <- cbind(mtx,cluster = mfuzz_res$cluster)
+
+      # membership
+      mem <- cbind(mfuzz_res$membership,cluster2 = mfuzz_res$cluster) %>%
+        data.frame(check.names = FALSE) %>%
+        dplyr::mutate(gene = rownames(.))
+
+      # get gene membership
+      lapply(1:cluster.num, function(x){
+        ms <- mem %>% dplyr::filter(cluster2 == x)
+        res <- data.frame(membership = ms[[x]],gene = ms$gene,cluster2 = ms$cluster2,
+                          check.names = FALSE)
+      }) %>% do.call('rbind',.) -> membership_info
+
+      # get normalized data
+      dnorm <- cbind(myset@assayData$exprs,cluster = mfuzz_res$cluster) %>%
+        data.frame(check.names = FALSE) %>%
+        dplyr::mutate(gene = rownames(.))
+
+      # merge membership info and normalized data
+      final_res <- merge(dnorm,membership_info,by = 'gene') %>%
+        dplyr::select(-cluster2) %>%
+        dplyr::arrange(cluster)
+    }else if(cluster.method == "TCseq"){
+      # ==========================================================================
+      # TCseq
+      # ==========================================================================
+      # tca <- TCseq::timeclust(x = as.matrix(exp), algo = "cm",
+      #                         k = cluster.num, standardize = scaleData)
+
+      tca <- do.call(TCseq::timeclust,
+                     modifyList(list(x = as.matrix(exp),
+                                     algo = "cm",
+                                     k = cluster.num,
+                                     standardize = scaleData),
+                                TCseq_params_list))
+
+      dt <- data.frame(tca@data) %>%
+        tibble::rownames_to_column(var = "gene")
+
+      cluster <- data.frame(cl = tca@cluster,check.names = F) %>%
+        tibble::rownames_to_column(var = "gene")
+
+      membership <- data.frame(tca@membership,check.names = F) %>%
+        tibble::rownames_to_column(var = "gene") %>%
+        reshape2::melt(id.vars = "gene",variable.name = "cl",value.name = "membership")
+
+      anno <- cluster %>%
+        dplyr::left_join(y = membership,by = "gene") %>%
+        dplyr::filter(cl.x == cl.y) %>%
+        dplyr::select(-cl.y) %>%
+        dplyr::rename(cluster = cl.x)
+
+      final_res <- dt %>%
+        dplyr::left_join(y = anno,by = "gene")
+
     }
 
-    cluster_number <- cluster.num
-    m <- Mfuzz::mestimate(myset)
 
-    # cluster step
-    set.seed(seed)
-    # mfuzz_res <- Mfuzz::mfuzz(myset, c = cluster_number, m = m)
-
-    # user define mfuzz
-    mfuzz1 <- function(eset,centers,m,...){
-      cl <- e1071::cmeans(Biobase::exprs(eset),centers = centers,method = "cmeans",m = m,...)
-    }
-
-    mfuzz_res <- mfuzz1(myset, c = cluster_number, m = m)
-    # ========================
-    # get clustered data
-    mtx <- Biobase::assayData(myset)
-    mtx <- mtx$exprs
-    raw_cluster_anno <- cbind(mtx,cluster = mfuzz_res$cluster)
-
-    # membership
-    mem <- cbind(mfuzz_res$membership,cluster2 = mfuzz_res$cluster) %>%
-      data.frame(check.names = FALSE) %>%
-      dplyr::mutate(gene = rownames(.))
-
-    # get gene membership
-    lapply(1:cluster.num, function(x){
-      ms <- mem %>% dplyr::filter(cluster2 == x)
-      res <- data.frame(membership = ms[[x]],gene = ms$gene,cluster2 = ms$cluster2,
-                        check.names = FALSE)
-    }) %>% do.call('rbind',.) -> membership_info
-
-    # get normalized data
-    dnorm <- cbind(myset@assayData$exprs,cluster = mfuzz_res$cluster) %>%
-      data.frame(check.names = FALSE) %>%
-      dplyr::mutate(gene = rownames(.))
-
-    # merge membership info and normalized data
-    final_res <- merge(dnorm,membership_info,by = 'gene') %>%
-      dplyr::select(-cluster2) %>%
-      dplyr::arrange(cluster)
-
+    # ==========================================================================
     # whether subset clusters
     if(!is.null(subcluster)){
       final_res <- final_res %>% dplyr::filter(cluster %in% subcluster)

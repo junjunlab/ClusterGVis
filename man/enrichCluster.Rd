@@ -3,6 +3,24 @@
 \name{enrichCluster}
 \alias{enrichCluster}
 \title{using enrichCluster to do GO/KEGG enrichment analysis for multiple cluster genes}
+\usage{
+enrichCluster(
+  object = NULL,
+  type = c("BP", "MF", "CC", "KEGG", "ownSet"),
+  TERM2GENE = NULL,
+  TERM2NAME = NULL,
+  OrgDb = NULL,
+  id.trans = TRUE,
+  fromType = "SYMBOL",
+  toType = c("ENTREZID"),
+  readable = TRUE,
+  organism = "hsa",
+  pvalueCutoff = 0.05,
+  topn = 5,
+  seed = 5201314,
+  add.gene = FALSE
+)
+}
 \arguments{
 \item{object}{clusterData object, default NULL.}
 

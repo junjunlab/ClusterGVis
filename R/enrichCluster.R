@@ -1,4 +1,5 @@
-globalVariables(c("geneID"))
+globalVariables(c('Description', 'group', 'pvalue',"geneID"))
+
 #' @name enrichCluster
 #' @author JunZhang
 #' @title using enrichCluster to do GO/KEGG enrichment analysis for multiple cluster genes
@@ -42,7 +43,6 @@ globalVariables(c("geneID"))
 #'                         type = "BP",
 #'                         topn = 5)
 #' }
-globalVariables(c('Description', 'group', 'pvalue'))
 enrichCluster <- function(object = NULL,
                           type = c("BP","MF","CC","KEGG","ownSet"),
                           TERM2GENE = NULL,
