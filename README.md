@@ -8,6 +8,22 @@ Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/
 
 <!-- badges: end -->
 
+## Requirements
+
+There are some R package to make sure have been installed for better installing **ClusterGVis**：
+
+``` r
+BiocManager::install("ComplexHeatmap")
+BiocManager::install("clusterProfiler")
+BiocManager::install("TCseq")
+BiocManager::install("Mfuzz")
+BiocManager::install("monocle")
+BiocManager::install("org.Mm.eg.db")
+devtools::install_github('cole-trapnell-lab/monocle3')
+install.packages("circlize")
+install.packages("Seurat")
+```
+
 ## Installation
 
 You can install the development version of transPlotR like so:
