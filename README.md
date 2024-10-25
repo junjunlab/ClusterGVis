@@ -38,10 +38,9 @@ devtools::install_github("junjunlab/ClusterGVis")
 
 > Jun Zhang (2022). *ClusterGVis: One-step to Cluster and Visualize Gene Expression Matrix.*  https://github.com/junjunlab/ClusterGVis
 
-## Document
+## Documentation
 
-> - https://github.com/junjunlab/ClusterGVis/wiki/document
-> - https://github.com/junjunlab/ClusterGVis/wiki/version-0.0.2
+The comprehensive documentation:  [https://junjunlab.github.io/ClusterGvis-manual/](https://junjunlab.github.io/ClusterGvis-manual/)
 
 ## Related blogs
 
