@@ -206,8 +206,14 @@ visCluster <- function(object = NULL,
       data <- data.frame(object$long.res) %>%
         dplyr::arrange(.data[["cluster"]])
     }else{
-      data <- data.frame(object$long.res) %>%
-        dplyr::arrange(.data[["cluster"]],.data[["membership"]])
+      if(object$type %in% c("mfuzz","TCseq")){
+        data <- data.frame(object$long.res) %>%
+          dplyr::arrange(.data[["cluster"]],.data[["membership"]])
+      }else{
+        data <- data.frame(object$long.res) %>%
+          dplyr::arrange(.data[["cluster"]])
+      }
+
     }
 
 
