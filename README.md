@@ -4,7 +4,7 @@
 
 To enhance clustering and visualization of time-series gene expression data from RNA-Seq experiments, we present the **ClusterGVis** package. This tool enables concise and elegant analysis of time-series gene expression data in a simple, one-step operation. Additionally, you can perform enrichment analysis for each cluster using the **enrichCluster** function, which integrates seamlessly with **clusterProfiler**. **ClusterGVis** empowers you to create publication-quality visualizations with ease.
 
-Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), [**Mfuzz**](https://www.bioconductor.org/packages/release/bioc/html/Mfuzz.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
+Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
 
 <!-- badges: end -->
 
