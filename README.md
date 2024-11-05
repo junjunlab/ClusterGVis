@@ -2,9 +2,9 @@
 
 <!-- badges: start -->
 
-For better clusteing and visualizing the time series gene expression data of RNA-SEQ with ***fuzzy c-means*** algorithm from e1071 package or ***Kmeans*** from ComplexHeatmap package, the function **blockwiseModules** from [**WGCNA**](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/) package outputs also can be accepted and can be used to produce graphs for visualization. Here supply [**ClusterGVis**](https://github.com/junjunlab/ClusterGVis) package to cluster and visualize time-serie gene expression data in a more concise and elegant way with one-step operation. You can also do enrichment analysis for each clusters with using **clusterProfiler** in [**enrichCluster**](https://github.com/junjunlab/ClusterGVis) function. ClusterGVis allows you to create ***publication-quality figures***.
+To enhance clustering and visualization of time-series gene expression data from RNA-Seq experiments, we present the **ClusterGVis** package. This tool enables concise and elegant analysis of time-series gene expression data in a simple, one-step operation. Additionally, you can perform enrichment analysis for each cluster using the **enrichCluster** function, which integrates seamlessly with **clusterProfiler**. **ClusterGVis** empowers you to create publication-quality visualizations with ease.
 
-Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), [**Mfuzz**](https://www.bioconductor.org/packages/release/bioc/html/Mfuzz.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
+Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) and [**ComplexHeatmap**](https://jokergoo.github.io/ComplexHeatmap-reference/book/introduction.html)!
 
 <!-- badges: end -->
 
@@ -38,14 +38,9 @@ devtools::install_github("junjunlab/ClusterGVis")
 
 > Jun Zhang (2022). *ClusterGVis: One-step to Cluster and Visualize Gene Expression Matrix.*  https://github.com/junjunlab/ClusterGVis
 
-## Figures
+## Documentation
 
-![1690443879586](https://github.com/junjunlab/ClusterGVis/assets/64965509/ce1f2368-8f8c-465d-8b32-24cacc31d33f)
-
-## Document
-
-> - https://github.com/junjunlab/ClusterGVis/wiki/document
-> - https://github.com/junjunlab/ClusterGVis/wiki/version-0.0.2
+The comprehensive documentation:  [https://junjunlab.github.io/ClusterGvis-manual/](https://junjunlab.github.io/ClusterGvis-manual/)
 
 ## Related blogs
 
