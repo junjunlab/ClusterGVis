@@ -76,6 +76,8 @@
 #' @param cluster_columns whether cluster the columns, default FALSE.
 #' @param pseudotime_col the branch color control for monocle input data.
 #' @param gglist a list of ggplot object to annotate each cluster, default NULL.
+#' @param row_annotation_obj Row annotation for heatmap, it is a `ComplexHeatmap::rowAnnotation()` object
+#' when "markGenes.side" or ”line.side“ is "right". Otherwise is a list of named vectors.
 #'
 #' @param ... othe aruguments passed by Heatmap fuction.
 #'
@@ -174,6 +176,7 @@ visCluster <- function(object = NULL,
                        cluster_columns = FALSE,
                        pseudotime_col = NULL,
                        gglist = NULL,
+                       row_annotation_obj = NULL,
                        ...){
   ComplexHeatmap::ht_opt(message = FALSE)
 
@@ -571,6 +574,12 @@ visCluster <- function(object = NULL,
 
     # plot heatmap
     if(plot.type == "heatmap"){
+      if(!is.null(row_annotation_obj)){
+        left_annotation_ht <- row_annotation_obj
+      }else{
+        left_annotation_ht <- NULL
+      }
+
       # draw HT
       htf <-
         ComplexHeatmap::Heatmap(as.matrix(mat),
@@ -585,6 +594,7 @@ visCluster <- function(object = NULL,
                                 show_column_names = show_column_names,
                                 # border = TRUE,
                                 top_annotation = topanno,
+                                left_annotation = left_annotation_ht,
                                 right_annotation = right_annotation,
                                 col = col_fun,
                                 use_raster = use_raster,
@@ -1213,8 +1223,11 @@ visCluster <- function(object = NULL,
         baranno.kegg = NULL
       }
 
-      # ====================================================
+      # ===============================================================================
       # final row annotations
+      # ===============================================================================
+
+
       if(line.side == "right"){
         if(markGenes.side == "right"){
           right_annotation2 = ComplexHeatmap::rowAnnotation(gene = geneMark,
@@ -1225,7 +1238,14 @@ visCluster <- function(object = NULL,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
                                                             baranno.kegg = baranno.kegg)
-          left_annotation = NULL
+
+          if(!is.null(row_annotation_obj)){
+            left_annotation <- row_annotation_obj
+          }else{
+            left_annotation <- NULL
+          }
+
+          # left_annotation = NULL
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             line = anno,
@@ -1234,7 +1254,16 @@ visCluster <- function(object = NULL,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
                                                             baranno.kegg = baranno.kegg)
-          left_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark)
+
+          if(!is.null(row_annotation_obj)){
+            left_annotation <- do.call(ComplexHeatmap::rowAnnotation,
+                                       modifyList(list(gene = geneMark),
+                                                  row_annotation_obj))
+          }else{
+            left_annotation <- ComplexHeatmap::rowAnnotation(gene = geneMark)
+          }
+
+          # left_annotation = ComplexHeatmap::rowAnnotation(gene = geneMark)
         }
 
       }else{
@@ -1246,7 +1275,16 @@ visCluster <- function(object = NULL,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
                                                             baranno.kegg = baranno.kegg)
-          left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
+
+          if(!is.null(row_annotation_obj)){
+            left_annotation <- do.call(ComplexHeatmap::rowAnnotation,
+                                       modifyList(list(line = anno),
+                                                  row_annotation_obj))
+          }else{
+            left_annotation <- ComplexHeatmap::rowAnnotation(line = anno)
+          }
+
+          # left_annotation = ComplexHeatmap::rowAnnotation(line = anno)
         }else{
           right_annotation2 = ComplexHeatmap::rowAnnotation(cluster = anno.block,
                                                             anno_ggplot2 = anno_ggplot2,
@@ -1254,8 +1292,16 @@ visCluster <- function(object = NULL,
                                                             bar = baranno,
                                                             textbox.kegg = textbox.kegg,
                                                             baranno.kegg = baranno.kegg)
-          left_annotation = ComplexHeatmap::rowAnnotation(line = anno,
-                                                          gene = geneMark)
+
+          if(!is.null(row_annotation_obj)){
+            left_annotation <- do.call(ComplexHeatmap::rowAnnotation,
+                                       modifyList(list(gene = geneMark,line = anno),
+                                                  row_annotation_obj))
+          }else{
+            left_annotation <- ComplexHeatmap::rowAnnotation(line = anno,gene = geneMark)
+          }
+
+          # left_annotation = ComplexHeatmap::rowAnnotation(line = anno,gene = geneMark)
         }
       }
 

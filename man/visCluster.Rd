@@ -138,6 +138,9 @@ default c("grey95","grey50").}
 
 \item{gglist}{a list of ggplot object to annotate each cluster, default NULL.}
 
+\item{row_annotation_obj}{Row annotation for heatmap, it is a \code{ComplexHeatmap::rowAnnotation()} object
+when "markGenes.side" or ”line.side“ is "right". Otherwise is a list of named vectors.}
+
 \item{...}{othe aruguments passed by Heatmap fuction.}
 }
 \value{
