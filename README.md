@@ -26,7 +26,7 @@ install.packages("Seurat")
 
 ## Installation
 
-You can install the development version of transPlotR like so:
+You can install the development version of ClusterGVis like so:
 
 ``` r
 # Note: please update your ComplexHeatmap to the latest version!
