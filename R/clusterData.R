@@ -207,11 +207,17 @@ clusterData <- function(exp = NULL,
     row.order = ComplexHeatmap::row_order(ht)
 
     # get index
-    purrr::map_df(1:length(names(row.order)),function(x){
-      data.frame(od = row.order[[x]],
-                 id = as.numeric(names(row.order)[x]),
-                 check.names = FALSE)
-    }) -> od.res
+    if(is.null(cluster.num) | cluster.num == 1){
+      od.res <- data.frame(od = row.order,id = 1)
+    }else{
+      # get index
+      purrr::map_df(1:length(names(row.order)),function(x){
+        data.frame(od = row.order[[x]],
+                   id = as.numeric(names(row.order)[x]),
+                   check.names = FALSE)
+      }) -> od.res
+    }
+
 
     cl.info <- data.frame(table(od.res$id),check.names = FALSE)
 
