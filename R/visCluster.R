@@ -639,7 +639,9 @@ visCluster <- function(object = NULL,
         if(add.box == TRUE & add.line != TRUE){
           xscale = c(-0.1,1.1)
         }else{
-          xscale = c(0,1)
+          # xscale = c(0,1)
+          xscale = c(-0.1,1.1)
+          panel_scale <- c(0.1,0.9)
         }
 
         grid::pushViewport(grid::viewport(xscale = xscale, yscale = c(0,1)))
@@ -817,7 +819,7 @@ visCluster <- function(object = NULL,
 
             # points grobs
             if(add.point == TRUE){
-              grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+              grid::grid.points(x = scales::rescale(1:ncol(tmpmat),to = panel_scale),
                                 y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
                                 pch = as.numeric(point.arg[1]),
                                 gp = grid::gpar(fill = point.arg[2],col = point.arg[3]),
@@ -826,7 +828,7 @@ visCluster <- function(object = NULL,
 
             # lines grobs
             if(add.line == TRUE){
-              grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = c(0,1)),
+              grid::grid.lines(x = scales::rescale(1:ncol(tmpmat),to = panel_scale),
                                y = scales::rescale(mdia,to = c(0,1),from = c(rg[1] - 0.5,rg[2] + 0.5)),
                                gp = grid::gpar(lwd = 3,col = mline.col[x]))
             }
