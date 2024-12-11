@@ -19,6 +19,7 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #' @return clusterData return a list including wide-shape and long-shape clustered results.
 #'
 #' @importFrom utils modifyList
+#' @importFrom stats kmeans
 #'
 #' @export
 #'
@@ -195,28 +196,35 @@ clusterData <- function(exp = NULL,
     }
 
     # plot
-    set.seed(seed)
-    ht <- ComplexHeatmap::Heatmap(hclust_matrix,
-                                  show_row_names = F,
-                                  show_row_dend = F,
-                                  show_column_names = F,
-                                  row_km = cluster.num)
+    # set.seed(seed)
+    # ht <- ComplexHeatmap::Heatmap(hclust_matrix,
+    #                               show_row_names = F,
+    #                               show_row_dend = F,
+    #                               show_column_names = F,
+    #                               row_km = cluster.num)
+    #
+    # # gene order
+    # ht = ComplexHeatmap::draw(ht)
+    # row.order = ComplexHeatmap::row_order(ht)
+    #
+    # # get index
+    # if(is.null(cluster.num) | cluster.num == 1){
+    #   od.res <- data.frame(od = row.order,id = 1)
+    # }else{
+    #   # get index
+    #   purrr::map_df(1:length(names(row.order)),function(x){
+    #     data.frame(od = row.order[[x]],
+    #                id = as.numeric(names(row.order)[x]),
+    #                check.names = FALSE)
+    #   }) -> od.res
+    # }
 
-    # gene order
-    ht = ComplexHeatmap::draw(ht)
-    row.order = ComplexHeatmap::row_order(ht)
+    # add kmeans func n stats
+    km <- stats::kmeans(x = hclust_matrix,centers = cluster.num,nstart = 10)
 
-    # get index
-    if(is.null(cluster.num) | cluster.num == 1){
-      od.res <- data.frame(od = row.order,id = 1)
-    }else{
-      # get index
-      purrr::map_df(1:length(names(row.order)),function(x){
-        data.frame(od = row.order[[x]],
-                   id = as.numeric(names(row.order)[x]),
-                   check.names = FALSE)
-      }) -> od.res
-    }
+    od.res <- data.frame(od = match(names(km$cluster),rownames(hclust_matrix)),
+                         id = as.numeric(km$cluster),
+                         check.names = FALSE)
 
 
     cl.info <- data.frame(table(od.res$id),check.names = FALSE)
