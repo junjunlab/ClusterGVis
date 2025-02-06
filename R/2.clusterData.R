@@ -1,22 +1,53 @@
 globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x", "cl.y"))
 
-#' @name clusterData
+#' Cluster Data Based on Different Methods
 #' @author JunZhang
-#' @title using clusterData to cluster genes
 #'
-#' @param exp the gene normalized expression data(fpkm/rpkm/tpm), default NULL.
-#' @param cluster.method which cluster method to choose, mfuzz, kmeans or wgcna, default "mfuzz".
-#' details see package Mfuzz. If choose "kmeans", the row_km argument will be used to cluster genes
-#' in ComplexHeatmap::Heatmap function.
-#' @param TCseq_params_list List papameters passed by TCseq::timeclust function.
-#' @param object the WGCNA::blockwiseModules returned object, default NULL.
-#' @param min.std min std for filter genes, this argument is in mfuzz function, default 0.
-#' @param cluster.num the number clusters, default NULL.
-#' @param subcluster subset some clusters form all clusterd data, default NULL.
-#' @param seed set a seed for cluster analysis in mfuzz or Heatmap function, default 5201314.
-#' @param scaleData whether do Z-score for expression data, default TRUE.
+#' This function performs clustering on input data using one of four methods:
+#' **mfuzz**, **TCseq**, **kmeans**, or **wgcna**. The clustering results include
+#' metadata, normalized data, and cluster memberships.
 #'
-#' @return clusterData return a list including wide-shape and long-shape clustered results.
+#' @param obj An input object that can take one of two types:
+#'        - A **cell_data_set** object for trajectory analysis.
+#'        - A **matrix** or **data.frame** containing expression data.
+#' @param scaleData Logical. Whether to scale the data (e.g., z-score normalization).
+#' @param cluster.method Character. Clustering method to use.
+#'        Options are one of `"mfuzz"`, `"TCseq"`, `"kmeans"`, or `"wgcna"`.
+#' @param TCseq_params_list A list of additional parameters passed to the `TCseq::timeclust` function.
+#' @param object A pre-calculated object required when using `"wgcna"` as the clustering method.
+#' @param min.std Numeric. Minimum standard deviation for filtering expression data.
+#' @param cluster.num Integer. The number of clusters to identify.
+#' @param subcluster A numeric vector of specific cluster IDs to include in the results.
+#'        If `NULL`, all clusters are included.
+#' @param seed An integer seed for reproducibility in clustering operations.
+#' @param ... Additional arguments passed to internal functions such as `pre_pseudotime_matrix`.
+#'
+#' @return A list containing the following clustering results:
+#'   - **wide.res**: A wide-format data frame with clusters and normalized expression levels.
+#'   - **long.res**: A long-format data frame for visualizations, containing cluster information,
+#'                   normalized values, cluster names, and memberships.
+#'   - **cluster.list**: A list where each element contains genes belonging to a specific cluster.
+#'   - **type**: The clustering method used (`"mfuzz"`, `"TCseq"`, `"kmeans"`, or `"wgcna"`).
+#'   - **geneMode**: Currently set to `"none"` (reserved for future use).
+#'   - **geneType**: Currently set to `"none"` (reserved for future use).
+#'
+#' @details
+#' Depending on the selected `cluster.method`, different clustering algorithms are used:
+#'   - **`"mfuzz"`**: Applies Mfuzz soft clustering method, suitable for identifying overlapping clusters.
+#'   - **`"TCseq"`**: Uses TCseq clustering for time-series expression data with support for additional parameters.
+#'   - **`"kmeans"`**: Employs standard k-means clustering via base R's `stats::kmeans`.
+#'   - **`"wgcna"`**: Leverages pre-calculated WGCNA (Weighted Gene Co-expression Network Analysis) networks.
+#'
+#' The function is designed to be flexible, allowing preprocessing (e.g., filtering by `min.std`),
+#' scaling the data (`scaleData = TRUE`), and generating results compatible with data visualization pipelines.
+#'
+#' @section WGCNA Clustering:
+#' If the **WGCNA** method is selected, the `object` parameter must contain a pre-calculated WGCNA network object.
+#' This is typically obtained using the WGCNA package functions.
+#'
+#' @section Subsetting Clusters:
+#' Use the `subcluster` parameter to focus on specific clusters. Cluster IDs not included in the
+#' `subcluster` vector will be excluded from the final results.
 #'
 #' @importFrom utils modifyList
 #' @importFrom stats kmeans
@@ -27,16 +58,16 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #'
 #' data("exps")
 #' # mfuzz
-#' cm <- clusterData(exp = exps,
+#' cm <- clusterData(obj = exps,
 #'                   cluster.method = "mfuzz",
 #'                   cluster.num = 8)
 #'
 #' # kmeans
-#' ck <- clusterData(exp = exps,
+#' ck <- clusterData(obj = exps,
 #'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
 #'
-clusterData <- function(exp = NULL,
+clusterData <- function(obj = NULL,
                         scaleData = TRUE,
                         cluster.method = c("mfuzz","TCseq","kmeans","wgcna"),
                         TCseq_params_list = list(),
@@ -44,8 +75,19 @@ clusterData <- function(exp = NULL,
                         min.std = 0,
                         cluster.num = NULL,
                         subcluster = NULL,
-                        seed = 5201314){
+                        seed = 5201314,...){
   ComplexHeatmap::ht_opt(message = FALSE)
+
+  # check datatype
+  cls <- class(obj)
+  # pkg <- attr(cls,"package")
+  extra_params <- list(cds_obj = obj,assays = "counts",...)
+
+  if(cls == "cell_data_set"){
+    exp <- do.call(pre_pseudotime_matrix,extra_params)
+  }else if(cls %in% c("matrix","data.frame")){
+    exp <- obj
+  }
 
   # choose method
   cluster.method <- match.arg(cluster.method)

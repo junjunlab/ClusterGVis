@@ -3,7 +3,7 @@
 \name{plot_genes_branched_heatmap2}
 \alias{plot_genes_branched_heatmap2}
 \title{Create a heatmap to demonstrate the bifurcation of gene expression along two
-branchs}
+branchs which is slightly modified in monocle2}
 \usage{
 plot_genes_branched_heatmap2(
   cds_subset = NULL,

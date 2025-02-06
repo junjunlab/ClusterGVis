@@ -2,7 +2,7 @@
 % Please edit documentation in R/monocleHeatmap.R
 \name{plot_pseudotime_heatmap2}
 \alias{plot_pseudotime_heatmap2}
-\title{Plots a pseudotime-ordered, row-centered heatmap}
+\title{Plots a pseudotime-ordered, row-centered heatmap which is slightly modified in monocle2}
 \usage{
 plot_pseudotime_heatmap2(
   cds_subset,

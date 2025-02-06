@@ -1,6 +1,18 @@
-#' @name visCluster
+globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
+                  'membership', 'norm_value','id', 'log10P', 'pval',
+                  'Var1','seurat_clusters','cell.ident', 'getassy',
+                  'geneType','.data'))
+
+#' Visualize Clustered Gene Data Using Line Plots and Heatmaps
+#'
+#' This function visualizes clustered gene expression data as line plots, heatmaps, or
+#' a combination of both, using the `ComplexHeatmap` and `ggplot2` frameworks. Gene
+#' annotations, sample annotations, and additional features like custom color schemes
+#' and annotations for GO/KEGG terms are supported for visualization.
+#'
 #' @author JunZhang
-#' @title using visCluster to visualize cluster results from clusterData output
+#'
+#' @title using visCluster to visualize cluster results from clusterData and enrichCluster output
 #'
 #' @param object clusterData object, default NULL.
 #' @param ht.col.list list of heatmap col_range and col_color, default
@@ -98,11 +110,6 @@
 #' visCluster(object = cm,
 #'            plot.type = "line")
 #' }
-globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
-                  'membership', 'norm_value','id', 'log10P', 'pval',
-                  'Var1','seurat_clusters','cell.ident', 'getassy',
-                  'geneType','.data'))
-
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
                        ht.col.list = list(col_range = c(-2, 0, 2),

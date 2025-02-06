@@ -24,7 +24,7 @@ traverseTree <- function(g, starting_cell, end_cells){
 
 
 
-#' Plots a pseudotime-ordered, row-centered heatmap
+#' Plots a pseudotime-ordered, row-centered heatmap which is slightly modified in monocle2
 #'
 #' @description The function plot_pseudotime_heatmap takes a CellDataSet object
 #' (usually containing a only subset of significant genes) and generates smooth
@@ -275,7 +275,7 @@ plot_pseudotime_heatmap2 <- function(cds_subset,
 
 
 #'  Create a heatmap to demonstrate the bifurcation of gene expression along two
-#'  branchs
+#'  branchs which is slightly modified in monocle2
 #'
 #'  @description returns a heatmap that shows changes in both lineages at the same
 #'  time.

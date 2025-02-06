@@ -1,25 +1,45 @@
 globalVariables(c('Description', 'group', 'pvalue',"geneID"))
 
-#' @name enrichCluster
+#' Perform GO/KEGG Enrichment Analysis for Multiple Clusters
 #' @author JunZhang
-#' @title using enrichCluster to do GO/KEGG enrichment analysis for multiple cluster genes
 #'
-#' @param object clusterData object, default NULL.
-#' @param type which type to choose for enrichment "BP","MF","CC","KEGG" or "ownSet".
-#' @param TERM2GENE user input annotation of TERM TO GENE mapping, a data.frame
-#' of 2 column with term and gene, default NULL.
-#' @param TERM2NAME user input of TERM TO NAME mapping, a data.frame of 2 column
-#' with term and name, default NULL.
-#' @param OrgDb the annotation data for enrichment, default NULL.
-#' @param id.trans whether perform the ID transformation, default TRUE.
-#' @param fromType the input ID type, default "SYMBOL".
-#' @param toType the ID type for "bitr" function to transform, default c("ENTREZID").
-#' @param readable whether make the enrichmemnt results ID readble, default TRUE.
-#' @param organism the organism name for "KEGG" enrichment,mouse("mmu"), human("hsa"), default NULL.
-#' @param pvalueCutoff pvalueCutoff for enrichment, default 0.05.
-#' @param topn the top enrichment results to extract, length one or same with cluster numbers, default 5.
-#' @param seed the enrichment seed, default 5201314.
-#' @param add.gene whether return genes for output, default FALSE.
+#' This function performs Gene Ontology (GO) or KEGG enrichment analysis, or custom gene set enrichment,
+#' on clustered genes. It supports multiple clusters, incorporating cluster-specific results into its analysis.
+#'
+#' @param object An object containing clustering results.
+#'   This is clusterData object. Alternatively, it can be a `CellDataSet` object, in which case the function can also visualize pseudotime data.
+#' @param type Character. The type of enrichment analysis to perform. Options include:
+#'   - `"BP"`: Biological Process (GO)
+#'   - `"MF"`: Molecular Function (GO)
+#'   - `"CC"`: Cellular Component (GO)
+#'   - `"KEGG"`: KEGG Pathway analysis
+#'   - `"ownSet"`: Custom gene set enrichment, requiring `TERM2GENE` and optionally `TERM2NAME`.
+#' @param TERM2GENE A data frame containing mappings of terms to genes. Required when `type = "ownSet"`.
+#'   This must be a two-column data frame, where the first column is the term and the second column is the gene.
+#' @param TERM2NAME A data frame containing term-to-name mappings. Optional when `type = "ownSet"`.
+#'   This must also be a two-column data frame, where the first column is the term and the second column is the name.
+#' @param OrgDb An organism database object (e.g., `org.Hs.eg.db` for human or `org.Mm.eg.db` for mouse),
+#'   used for GO or KEGG enrichment analysis.
+#' @param id.trans Logical. Whether to perform gene ID transformation. Default is `TRUE`.
+#' @param fromType Character. The type of the input gene IDs (e.g., `"SYMBOL"`, `"ENSEMBL"`). Default is `"SYMBOL"`.
+#' @param toType Character. The target ID type for transformation using `clusterProfiler::bitr`
+#'   (e.g., `"ENTREZID"`). Default is `"ENTREZID"`.
+#' @param readable Logical. Whether to convert the enrichment result IDs back to a readable format (e.g., SYMBOL).
+#'   Only applicable for GO and KEGG analysis. Default is `TRUE`.
+#' @param organism Character. The KEGG organism code (e.g., `"hsa"` for human, `"mmu"` for mouse). Required when
+#'   performing KEGG enrichment. Default is `"hsa"`.
+#' @param pvalueCutoff Numeric. The p-value cutoff for enriched terms to be included in the results. Default is `0.05`.
+#' @param topn Integer or vector. The number of top enrichment results to extract. If a single value, it is applied
+#'   to all clusters. Otherwise, it should match the number of clusters. Default is `5`.
+#' @param seed Numeric. Seed for random operations to ensure reproducibility. Default is `5201314`.
+#' @param add.gene Logical. Whether to include the list of genes associated with each enriched term in the results.
+#'   Default is `FALSE`.
+#' @param heatmap.type Character. The type of heatmap visualization to use when input data is a `CellDataSet` object.
+#'   Options include:
+#'   - `"plot_pseudotime_heatmap2"`
+#'   - `"plot_genes_branched_heatmap2"`
+#'   - `"plot_multiple_branches_heatmap2"`
+#' @param ... Additional arguments passed to plot_pseudotime_heatmap2/plot_genes_branched_heatmap2/plot_multiple_branches_heatmap2 functions.
 #'
 #'
 #' @return a data.frame.
@@ -56,8 +76,28 @@ enrichCluster <- function(object = NULL,
                           pvalueCutoff  = 0.05,
                           topn = 5,
                           seed = 5201314,
-                          add.gene = FALSE){
+                          add.gene = FALSE,
+                          heatmap.type = c("plot_pseudotime_heatmap2",
+                                           "plot_genes_branched_heatmap2",
+                                           "plot_multiple_branches_heatmap2"),
+                          ...){
   type <- match.arg(type)
+  heatmap.type <- match.arg(heatmap.type)
+
+  # check datatype
+  cls <- class(object)
+
+  # check heatmap.type
+  if(cls == "CellDataSet"){
+    if(heatmap.type %in% c("plot_pseudotime_heatmap2", "plot_genes_branched_heatmap2")){
+      extra_params <- list(cds_subset = object,...)
+      object <- do.call(plot_pseudotime_heatmap2,extra_params)
+    }else{
+      extra_params <- list(cds = object,...)
+      object <- do.call(plot_pseudotime_heatmap2,extra_params)
+    }
+
+  }
 
   # get data
   enrich.data <- object$wide.res
