@@ -177,9 +177,15 @@ clusterData <- function(exp = NULL,
     df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
                                                              " (",cl.info$Freq,")",sep = ''))
 
+    # cluster list
+    wide <- final_res
+    wide$cluster <- paste("C",wide$cluster,sep = "")
+    cluster.list <- split(wide$gene,wide$cluster)
+
     # return
     return(list(wide.res = final_res,
                 long.res = df,
+                cluster.list = cluster.list,
                 type = cluster.method,
                 geneMode = "none",
                 geneType = "none"))
@@ -268,9 +274,15 @@ clusterData <- function(exp = NULL,
     # cluster order
     df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info),
                                                              " (",cl.info$Freq,")",sep = ''))
+    # cluster list
+    wide <- wide.r
+    wide$cluster <- paste("C",wide$cluster,sep = "")
+    cluster.list <- split(wide$gene,wide$cluster)
+
     # return
     return(list(wide.res = wide.r,
                 long.res = df,
+                cluster.list = cluster.list,
                 type = cluster.method,
                 geneMode = "none",
                 geneType = "none"))
@@ -324,9 +336,15 @@ clusterData <- function(exp = NULL,
 
     df$cluster_name <- factor(df$cluster_name,levels = paste("cluster ",1:nrow(cl.info), " (",cl.info$Freq," ",unique(df$modulecol),")",sep = ''))
 
+    # cluster list
+    wide <- final.res
+    wide$cluster <- paste("C",wide$cluster,sep = "")
+    cluster.list <- split(wide$gene,wide$cluster)
+
     # return
     return(list(wide.res = final.res,
                 long.res = df,
+                cluster.list = cluster.list,
                 type = cluster.method,
                 geneMode = "none",
                 geneType = "none"))

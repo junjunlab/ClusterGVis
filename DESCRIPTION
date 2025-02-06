@@ -4,15 +4,12 @@ Version: 0.1.2
 Authors@R: 
     person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7692-9105"))
-Description: For better clustering and visualizing the time series gene expression data 
- of RNA-SEQ with fuzzy c-means algorithm from 'e1071' package 
- or k-means clustering algorithm from 'ComplexHeatmap' package, the function 'blockwiseModules' from 'WGCNA' package 
- outputs also can be accepted and can be used to produce graphs for visualization, 
- here supply a package to cluster and visualize time-serie gene expression data 
- in a more concise and elegant way with one-step operation. 
- You can also do enrichment analysis for each clusters with using 
- 'clusterProfiler' in 'enrichCluster' function. 
- 'ClusterGVis' allows you to create publication-quality figures.
+Description: ClusterGVis is an R package designed to streamline the clustering 
+  and visualization of time-series gene expression data from RNA-Seq experiments. 
+  It supports clustering analysis using the fuzzy c-means 
+  algorithm (via the 'e1071' package) or the k-means clustering algorithm 
+  (via the 'ComplexHeatmap' package). Additionally, it accepts outputs from 
+  the 'blockwiseModules' function of the 'WGCNA' package for downstream visualization.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -20,40 +17,10 @@ LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    monocle,
     R (>= 2.10)
-Remotes:
-  junjunlab/jjAnno,
-  cole-trapnell-lab/monocle3,
-  jokergoo/circlize,
-  jokergoo/ComplexHeatmap
-Imports: 
-    Biobase,
-    circlize,
-    clusterProfiler,
-    colorRamps,
-    ComplexHeatmap,
-    dplyr,
-    e1071,
-    factoextra,
-    ggplot2,
-    grDevices,
-    grid,
-    igraph,
-    jjAnno,
-    magrittr,
-    Matrix,
-    Mfuzz,
-    monocle3,
-    org.Mm.eg.db,
-    pheatmap,
-    purrr,
-    reshape2,
-    scales,
-    Seurat,
-    stats,
-    SummarizedExperiment,
-    TCseq,
-    tibble,
-    WGCNA
+Imports: Biobase, circlize, clusterProfiler, colorRamps, ComplexHeatmap,
+    dplyr, e1071, factoextra, ggplot2, grDevices, grid,
+    magrittr, Matrix, Mfuzz, purrr,reshape2, scales, stats, 
+    SummarizedExperiment, TCseq, tibble
+Suggests: igraph, monocle, monocle3, org.Mm.eg.db, pheatmap, Seurat, WGCNA, jjAnno
 biocViews: Sequencing,clusterProfiler,org.Mm.eg.db,SummarizedExperiment,Mfuzz

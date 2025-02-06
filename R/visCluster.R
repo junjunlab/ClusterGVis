@@ -470,7 +470,11 @@ visCluster <- function(object = NULL,
 
     # =================== bar annotation for clusters
     if(is.null(ctAnno.col)){
-      colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
+      if (requireNamespace("jjAnno", quietly = TRUE)){
+        colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
+      }else{
+        stop("Package 'jjAnno' is required for this functionality. Please install it.")
+      }
     }else{
       colanno <- ctAnno.col
     }

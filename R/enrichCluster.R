@@ -21,7 +21,6 @@ globalVariables(c('Description', 'group', 'pvalue',"geneID"))
 #' @param seed the enrichment seed, default 5201314.
 #' @param add.gene whether return genes for output, default FALSE.
 #'
-#' @import org.Mm.eg.db
 #'
 #' @return a data.frame.
 #' @export
