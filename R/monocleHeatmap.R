@@ -11,7 +11,8 @@ globalVariables(c("Cluster", "Pseudotime", "State", "buildBranchCellDataSet",
 traverseTree <- function(g, starting_cell, end_cells){
 
   if (requireNamespace("igraph", quietly = TRUE)) {
-    distance <- igraph::shortest.paths(g, v=starting_cell, to=end_cells)
+    # distance <- igraph::shortest.paths(g, v=starting_cell, to=end_cells)
+    distance <- igraph::distances(g, v=starting_cell, to=end_cells)
     branchPoints <- which(igraph::degree(g) == 3)
     path <- igraph::shortest_paths(g, from = starting_cell, end_cells)
   }else{
