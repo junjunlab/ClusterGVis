@@ -97,12 +97,12 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("termanno")
 #' data("exps")
 #'
 #' # mfuzz
-#' cm <- clusterData(exp = exps,
+#' cm <- clusterData(obj = exps,
 #'                   cluster.method = "mfuzz",
 #'                   cluster.num = 8)
 #'
@@ -477,11 +477,12 @@ visCluster <- function(object = NULL,
 
     # =================== bar annotation for clusters
     if(is.null(ctAnno.col)){
-      if (requireNamespace("jjAnno", quietly = TRUE)){
-        colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
-      }else{
-        stop("Package 'jjAnno' is required for this functionality. Please install it.")
-      }
+      # if (requireNamespace("jjAnno", quietly = TRUE)){
+      #   colanno <- jjAnno::useMyCol("stallion",n = cluster.num)
+      # }else{
+      #   stop("Package 'jjAnno' is required for this functionality. Please install it.")
+      # }
+      colanno <- circlize::rand_color(n = cluster.num)
     }else{
       colanno <- ctAnno.col
     }

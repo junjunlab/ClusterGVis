@@ -85,24 +85,6 @@ a data.frame.
 \description{
 Perform GO/KEGG Enrichment Analysis for Multiple Clusters
 }
-\examples{
-\dontrun{
-library(org.Mm.eg.db)
-
-data("exps")
-
-# mfuzz
-ck <- clusterData(exp = exps,
-                  cluster.method = "kmeans",
-                  cluster.num = 8)
-
-# enrich for clusters
-enrich <- enrichCluster(object = ck,
-                        OrgDb = org.Mm.eg.db,
-                        type = "BP",
-                        topn = 5)
-}
-}
 \author{
 JunZhang
 

@@ -82,18 +82,14 @@ Use the \code{subcluster} parameter to focus on specific clusters. Cluster IDs n
 }
 
 \examples{
-
+\donttest{
 data("exps")
-# mfuzz
-cm <- clusterData(obj = exps,
-                  cluster.method = "mfuzz",
-                  cluster.num = 8)
 
 # kmeans
 ck <- clusterData(obj = exps,
                   cluster.method = "kmeans",
                   cluster.num = 8)
-
+}
 }
 \author{
 JunZhang

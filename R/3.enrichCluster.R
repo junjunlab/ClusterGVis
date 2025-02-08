@@ -45,23 +45,6 @@ globalVariables(c('Description', 'group', 'pvalue',"geneID"))
 #' @return a data.frame.
 #' @export
 #'
-#' @examples
-#' \dontrun{
-#' library(org.Mm.eg.db)
-#'
-#' data("exps")
-#'
-#' # mfuzz
-#' ck <- clusterData(exp = exps,
-#'                   cluster.method = "kmeans",
-#'                   cluster.num = 8)
-#'
-#' # enrich for clusters
-#' enrich <- enrichCluster(object = ck,
-#'                         OrgDb = org.Mm.eg.db,
-#'                         type = "BP",
-#'                         topn = 5)
-#' }
 enrichCluster <- function(object = NULL,
                           type = c("BP","MF","CC","KEGG","ownSet"),
                           TERM2GENE = NULL,
@@ -81,8 +64,10 @@ enrichCluster <- function(object = NULL,
                                            "plot_genes_branched_heatmap2",
                                            "plot_multiple_branches_heatmap2"),
                           ...){
-  type <- match.arg(type)
-  heatmap.type <- match.arg(heatmap.type)
+  type <- match.arg(type,c("BP","MF","CC","KEGG","ownSet"))
+  heatmap.type <- match.arg(heatmap.type,c("plot_pseudotime_heatmap2",
+                                           "plot_genes_branched_heatmap2",
+                                           "plot_multiple_branches_heatmap2"))
 
   # check datatype
   cls <- class(object)

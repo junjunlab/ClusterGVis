@@ -51,22 +51,19 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #'
 #' @importFrom utils modifyList
 #' @importFrom stats kmeans
+#' @importFrom Biobase exprs
 #'
 #' @export
 #'
 #' @examples
-#'
+#' \donttest{
 #' data("exps")
-#' # mfuzz
-#' cm <- clusterData(obj = exps,
-#'                   cluster.method = "mfuzz",
-#'                   cluster.num = 8)
 #'
 #' # kmeans
 #' ck <- clusterData(obj = exps,
 #'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
-#'
+#'}
 clusterData <- function(obj = NULL,
                         scaleData = TRUE,
                         cluster.method = c("mfuzz","TCseq","kmeans","wgcna"),
@@ -81,9 +78,10 @@ clusterData <- function(obj = NULL,
   # check datatype
   cls <- class(obj)
   # pkg <- attr(cls,"package")
-  extra_params <- list(cds_obj = obj,assays = "counts",...)
 
   if(cls == "cell_data_set"){
+    extra_params <- list(cds_obj = obj,assays = "counts",...)
+
     exp <- do.call(pre_pseudotime_matrix,extra_params)
   }else if(cls %in% c("matrix","data.frame")){
     exp <- obj
@@ -102,7 +100,7 @@ clusterData <- function(obj = NULL,
       # cluster data
       # myset <- methods::new("ExpressionSet",exprs = as.matrix(exp))
       myset <- Biobase::ExpressionSet(assayData = as.matrix(exp))
-      myset <- Mfuzz::filter.std(myset,min.std = min.std,visu = FALSE)
+      myset <- filter.std(myset,min.std = min.std,visu = FALSE)
 
       # whether zsocre data
       if(scaleData == TRUE){

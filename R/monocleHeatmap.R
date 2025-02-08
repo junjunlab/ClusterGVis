@@ -895,19 +895,26 @@ pre_pseudotime_matrix <- function(cds_obj = NULL,
                                   gene_list = NULL){
   assays <- match.arg(assays,c("counts","normalized"))
 
-  # choose assays type
-  if (requireNamespace("monocle3", quietly = TRUE)) {
-    if(assays == "counts"){
-      pt.matrix <- monocle3::exprs(cds_obj)[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
-                                            order(monocle3::pseudotime(cds_obj))]
-    }else if(assays == "normalized"){
-      pt.matrix <- monocle3::normalized_counts(cds_obj, norm_method = "log")[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
-                                                                             order(monocle3::pseudotime(cds_obj))]
-    }
-  } else {
-    warning("Cannot create monocle3 'monocle3' is not installed.")
-  }
+  # # choose assays type
+  # if (requireNamespace("monocle3", quietly = TRUE)) {
+  #   if(assays == "counts"){
+  #     pt.matrix <- monocle3::exprs(cds_obj)[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+  #                                           order(monocle3::pseudotime(cds_obj))]
+  #   }else if(assays == "normalized"){
+  #     pt.matrix <- monocle3::normalized_counts(cds_obj, norm_method = "log")[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+  #                                                                            order(monocle3::pseudotime(cds_obj))]
+  #   }
+  # } else {
+  #   warning("Cannot create monocle3 'monocle3' is not installed.")
+  # }
 
+  if(assays == "counts"){
+    pt.matrix <- exprs(cds_obj)[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+                                order(pseudotime(cds_obj))]
+  }else if(assays == "normalized"){
+    pt.matrix <- normalized_counts(cds_obj, norm_method = "log")[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),
+                                                                 order(pseudotime(cds_obj))]
+  }
 
   pt.matrix <- t(apply(pt.matrix,1,function(x){stats::smooth.spline(x,df=3)$y}))
   pt.matrix <- t(apply(pt.matrix,1,function(x){(x-mean(x))/sd(x)}))

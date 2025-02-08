@@ -26,17 +26,16 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("exps")
 #' getClusters(exps)
 #' }
-getClusters <- function(obj = NULL){
+getClusters <- function(obj = NULL,...){
   # check datatype
   cls <- class(obj)
-  # pkg <- attr(cls,"package")
-  extra_params <- list(cds_obj = obj,assays = "counts",...)
 
   if(cls == "cell_data_set"){
+    extra_params <- list(cds_obj = obj,assays = "counts",...)
     exp <- do.call(pre_pseudotime_matrix,extra_params)
   }else if(cls %in% c("matrix","data.frame")){
     exp <- obj

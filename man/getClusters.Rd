@@ -4,7 +4,7 @@
 \alias{getClusters}
 \title{Determine Optimal Clusters for Gene Expression or Pseudotime Data}
 \usage{
-getClusters(obj = NULL)
+getClusters(obj = NULL, ...)
 }
 \arguments{
 \item{obj}{A data object representing the gene expression data or pseudotime data:
@@ -34,7 +34,7 @@ a ggplot.
 Determine Optimal Clusters for Gene Expression or Pseudotime Data
 }
 \examples{
-\dontrun{
+\donttest{
 data("exps")
 getClusters(exps)
 }

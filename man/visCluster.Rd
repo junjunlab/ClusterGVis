@@ -226,12 +226,12 @@ annotations, sample annotations, and additional features like custom color schem
 and annotations for GO/KEGG terms are supported for visualization.
 }
 \examples{
-\dontrun{
+\donttest{
 data("termanno")
 data("exps")
 
 # mfuzz
-cm <- clusterData(exp = exps,
+cm <- clusterData(obj = exps,
                   cluster.method = "mfuzz",
                   cluster.num = 8)
 
