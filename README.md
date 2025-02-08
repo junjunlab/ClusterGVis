@@ -24,7 +24,6 @@ BiocManager::install("clusterProfiler")
 BiocManager::install("TCseq")
 BiocManager::install("Mfuzz")
 BiocManager::install("monocle")
-BiocManager::install("org.Mm.eg.db")
 devtools::install_github('cole-trapnell-lab/monocle3')
 install.packages("circlize")
 install.packages("Seurat")
@@ -47,6 +46,10 @@ devtools::install_github("junjunlab/ClusterGVis")
 ## Documentation
 
 The comprehensive documentation:  [https://junjunlab.github.io/ClusterGvis-manual/](https://junjunlab.github.io/ClusterGvis-manual/)
+
+## Interactive web App
+
+[https://github.com/junjunlab/ClusterGvis-app](https://github.com/junjunlab/ClusterGvis-app)
 
 ## Related blogs
 
