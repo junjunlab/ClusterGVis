@@ -226,19 +226,18 @@ annotations, sample annotations, and additional features like custom color schem
 and annotations for GO/KEGG terms are supported for visualization.
 }
 \examples{
-\donttest{
-data("termanno")
+
 data("exps")
 
 # mfuzz
 cm <- clusterData(obj = exps,
-                  cluster.method = "mfuzz",
+                  cluster.method = "kmeans",
                   cluster.num = 8)
 
 # plot
 visCluster(object = cm,
            plot.type = "line")
-}
+
 }
 \author{
 JunZhang

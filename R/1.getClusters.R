@@ -25,11 +25,6 @@
 #' @return a ggplot.
 #' @export
 #'
-#' @examples
-#' \donttest{
-#' data("exps")
-#' getClusters(exps)
-#' }
 getClusters <- function(obj = NULL,...){
   # check datatype
   cls <- class(obj)

@@ -4,9 +4,10 @@
 #' @param eset expression matrix, default NULL.
 #' @param min.std min stand error, default 0.
 #' @param visu whether plot, default FALSE.
+#' @param verbose show filter information.
 #'
 #' @return matrix.
-filter.std <- function (eset, min.std,visu=TRUE){
+filter.std <- function (eset, min.std,visu=TRUE, verbose = TRUE){
   #index <- logical(dim(exprs(eset))[1])
   if(class(eset) %in% c("data.frame", "matrix")){
     tmp <- logical(dim(eset)[1])
@@ -27,7 +28,10 @@ filter.std <- function (eset, min.std,visu=TRUE){
     }
     index <- tmp > min.std
     index[is.na(index)] <- TRUE
-    cat(paste(sum(!index),"genes excluded.\n"))
+    if(verbose){
+      print(paste(sum(!index),"genes excluded.\n"))
+    }
+
   }
 
 

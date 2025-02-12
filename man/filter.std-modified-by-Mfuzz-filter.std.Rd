@@ -5,7 +5,7 @@
 \alias{filter.std}
 \title{using filter.std to filter low expression genes}
 \usage{
-filter.std(eset, min.std, visu = TRUE)
+filter.std(eset, min.std, visu = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{eset}{expression matrix, default NULL.}
@@ -13,6 +13,8 @@ filter.std(eset, min.std, visu = TRUE)
 \item{min.std}{min stand error, default 0.}
 
 \item{visu}{whether plot, default FALSE.}
+
+\item{verbose}{show filter information.}
 }
 \value{
 matrix.

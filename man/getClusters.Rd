@@ -33,12 +33,6 @@ a ggplot.
 \description{
 Determine Optimal Clusters for Gene Expression or Pseudotime Data
 }
-\examples{
-\donttest{
-data("exps")
-getClusters(exps)
-}
-}
 \author{
 JunZhang
 

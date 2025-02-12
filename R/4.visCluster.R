@@ -97,19 +97,18 @@ globalVariables(c('cell_type', 'cluster.num', 'gene',"ratio","bary",
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' data("termanno")
+#'
 #' data("exps")
 #'
 #' # mfuzz
 #' cm <- clusterData(obj = exps,
-#'                   cluster.method = "mfuzz",
+#'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
 #'
 #' # plot
 #' visCluster(object = cm,
 #'            plot.type = "line")
-#' }
+#'
 visCluster <- function(object = NULL,
                        # plot.data = NULL,
                        ht.col.list = list(col_range = c(-2, 0, 2),

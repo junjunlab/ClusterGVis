@@ -56,14 +56,14 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #' @export
 #'
 #' @examples
-#' \donttest{
+#'
 #' data("exps")
 #'
 #' # kmeans
 #' ck <- clusterData(obj = exps,
 #'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
-#'}
+#'
 clusterData <- function(obj = NULL,
                         scaleData = TRUE,
                         cluster.method = c("mfuzz","TCseq","kmeans","wgcna"),
