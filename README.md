@@ -34,6 +34,9 @@ install.packages("Seurat")
 You can install the development version of ClusterGVis like so:
 
 ``` r
+# install from cran
+install.packages("ClusterGVis")
+
 # Note: please update your ComplexHeatmap to the latest version!
 # install.packages("devtools")
 devtools::install_github("junjunlab/ClusterGVis")
