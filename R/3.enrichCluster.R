@@ -34,6 +34,8 @@ globalVariables(c('Description', 'group', 'pvalue',"geneID"))
 #' @param seed Numeric. Seed for random operations to ensure reproducibility. Default is `5201314`.
 #' @param add.gene Logical. Whether to include the list of genes associated with each enriched term in the results.
 #'   Default is `FALSE`.
+#' @param use_internal_data Logical, use KEGG.db or latest online KEGG data for enrichKEGG function.
+#' Default is `FALSE`.
 #' @param heatmap.type Character. The type of heatmap visualization to use when input data is a `CellDataSet` object.
 #'   Options include:
 #'   - `"plot_pseudotime_heatmap2"`
@@ -60,6 +62,7 @@ enrichCluster <- function(object = NULL,
                           topn = 5,
                           seed = 5201314,
                           add.gene = FALSE,
+                          use_internal_data = FALSE,
                           heatmap.type = c("plot_pseudotime_heatmap2",
                                            "plot_genes_branched_heatmap2",
                                            "plot_multiple_branches_heatmap2"),
@@ -143,7 +146,8 @@ enrichCluster <- function(object = NULL,
                                          universe      = NULL,
                                          pvalueCutoff  = 1,
                                          pAdjustMethod = "BH",
-                                         qvalueCutoff  = 1)
+                                         qvalueCutoff  = 1,
+                                         use_internal_data = use_internal_data)
 
       # transform gene id
       if(readable == TRUE){
