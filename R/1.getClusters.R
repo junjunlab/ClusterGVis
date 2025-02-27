@@ -29,10 +29,10 @@ getClusters <- function(obj = NULL,...){
   # check datatype
   cls <- class(obj)
 
-  if(cls == "cell_data_set"){
+  if("cell_data_set" %in% cls){
     extra_params <- list(cds_obj = obj,assays = "counts",...)
     exp <- do.call(pre_pseudotime_matrix,extra_params)
-  }else if(cls %in% c("matrix","data.frame")){
+  }else if("matrix" %in% cls | "data.frame" %in% cls){
     exp <- obj
   }
 

@@ -9,7 +9,8 @@
 #' @return matrix.
 filter.std <- function (eset, min.std,visu=TRUE, verbose = TRUE){
   #index <- logical(dim(exprs(eset))[1])
-  if(class(eset) %in% c("data.frame", "matrix")){
+
+  if("matrix" %in% class(eset) | "data.frame" %in% class(eset)){
     tmp <- logical(dim(eset)[1])
   }else{
     tmp <- logical(dim(Biobase::exprs(eset))[1])
