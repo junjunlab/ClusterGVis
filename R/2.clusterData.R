@@ -110,7 +110,7 @@ clusterData <- function(obj = NULL,
       }
 
       cluster_number <- cluster.num
-      m <- Mfuzz::mestimate(myset)
+      m <- mestimate(myset)
 
       # cluster step
       set.seed(seed)

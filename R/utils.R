@@ -26,6 +26,14 @@ standardise <- function(eset){
 }
 
 
+# from mfuzz
+mestimate<- function(eset){
+  N <-  dim(Biobase::exprs(eset))[[1]]
+  D <- dim(Biobase::exprs(eset))[[2]]
+  m.sj <- 1 + (1418/N + 22.05)*D^(-2) + (12.33/N +0.243)*D^(-0.0406*log(N) - 0.1134)
+  return(m.sj)
+}
+
 
 # Test whether a matrix is one of our supported sparse matrices
 # author https://github.com/cole-trapnell-lab/monocle3
