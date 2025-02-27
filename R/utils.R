@@ -15,6 +15,18 @@ NULL
 
 
 
+
+standardise <- function(eset){
+  data <- Biobase::exprs(eset)
+  for (i in 1:dim(data)[[1]]){
+    data[i,] <- (data[i,] - mean(data[i,],na.rm=TRUE))/sd(data[i,],na.rm=TRUE)
+  }
+  Biobase::exprs(eset) <- data
+  eset
+}
+
+
+
 # Test whether a matrix is one of our supported sparse matrices
 # author https://github.com/cole-trapnell-lab/monocle3
 is_sparse_matrix <- function(x){

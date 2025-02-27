@@ -64,6 +64,8 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #'                   cluster.method = "kmeans",
 #'                   cluster.num = 8)
 #'
+obj = exps
+cluster.method="mfuzz"
 clusterData <- function(obj = NULL,
                         scaleData = TRUE,
                         cluster.method = c("mfuzz","TCseq","kmeans","wgcna"),
@@ -104,7 +106,7 @@ clusterData <- function(obj = NULL,
 
       # whether zsocre data
       if(scaleData == TRUE){
-        myset <- Mfuzz::standardise(myset)
+        myset <- standardise(myset)
       }else{
         myset <- myset
       }
