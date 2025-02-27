@@ -15,7 +15,7 @@ NULL
 
 
 
-
+# from mfuzz
 standardise <- function(eset){
   data <- Biobase::exprs(eset)
   for (i in 1:dim(data)[[1]]){
