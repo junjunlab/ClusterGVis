@@ -34,6 +34,9 @@ install.packages("Seurat")
 You can install the development version of ClusterGVis like so:
 
 ``` r
+# install from cran
+install.packages("ClusterGVis")
+
 # Note: please update your ComplexHeatmap to the latest version!
 # install.packages("devtools")
 devtools::install_github("junjunlab/ClusterGVis")
@@ -67,3 +70,4 @@ The comprehensive documentation:  [https://junjunlab.github.io/ClusterGvis-manua
 > - [**听说你想插入 GO 和 KEGG 图形注释?**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247509510&idx=1&sn=5f1f4cb3a3f37abccc19265da77536f9&chksm=c1849c77f6f315618e2029f6837f483948e195489daaec481793cb30891641fa105e6bbbcd19&token=948441875&lang=zh_CN#rd)
 > - [**enrichCluster 关于非模式物种富集分析的使用**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247514040&idx=1&sn=3d7005394edf920db316a4afceda3d01&chksm=c1848dc9f6f304df5624b8e0177c543fb210a07a0daa47efcb9b1520fba166c6c070860480a3&token=1281308534&lang=zh_CN#rd)
 > - [**听说你想给 visCluster 添加行注释？**](https://mp.weixin.qq.com/s?__biz=MzkyMTI1MTYxNA==&mid=2247515529&idx=1&sn=b047eb05ccbce0a9ad6ee734b4188416&chksm=c18487f8f6f30eee3c027ac7c5f9b0babcc2fe737dfc2a6c5236e906ec6853b1f508e184af5f&token=2024721694&lang=zh_CN#rd)
+> - [**ClusterGVis shiny 交互式 web 来了？**](https://mp.weixin.qq.com/s/pRP0QiLs5EEHqoqqyCu3_g?token=1387911352&lang=zh_CN)
