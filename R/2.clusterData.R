@@ -153,6 +153,8 @@ clusterData <- function(obj = NULL,
       # ==========================================================================
       # TCseq
       # ==========================================================================
+      exp <- filter.std(exp,min.std = min.std,visu = FALSE)
+
       # tca <- TCseq::timeclust(x = as.matrix(exp), algo = "cm",
       #                         k = cluster.num, standardize = scaleData)
 
