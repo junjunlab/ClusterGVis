@@ -51,7 +51,6 @@ globalVariables(c('.', 'cluster', 'cluster2', 'cluster_name','modulecol',"cl.x",
 #'
 #' @importFrom utils modifyList
 #' @importFrom stats kmeans
-#' @importFrom Biobase exprs
 #'
 #' @export
 #'
