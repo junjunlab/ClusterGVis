@@ -1,0 +1,10 @@
+---
+title: "vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Please go to <https://junjunlab.github.io/ClusterGvis-manual/> for the full vignette.
