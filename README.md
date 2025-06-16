@@ -1,6 +1,6 @@
 # ClusterGVis 
 
-<img src="man/clusterGVis.png" align="right" height="200" />
+<img src="vignettes/clusterGVis.png" align="right" height="200" />
 
 
 <!-- badges: start -->
@@ -11,7 +11,7 @@ Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/
 
 <!-- badges: end -->
 
-<img src="man/clusterGvis_graphic_abstract.jpg" align="center" height="auto" width="100%" />
+<img src="vignettes/clusterGvis_graphic_abstract.jpg" align="center" height="auto" width="100%" />
 
 ## Requirements
 
