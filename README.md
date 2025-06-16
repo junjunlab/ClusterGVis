@@ -2,7 +2,6 @@
 
 <img src="man/clusterGVis.png" align="right" height="200" />
 
-[<img src="https://api.gitsponsors.com/api/badge/img?id=567959743" height="20">](https://api.gitsponsors.com/api/badge/link?p=b/ezAJVN0xNqgLVUM5KpD3UFUaPcGiCX/bJh2svGqY75UqRIv5PTiwVjzvqbfzEVLAlmaI3tKih91d5pOhzL0Q==)
 
 <!-- badges: start -->
 
