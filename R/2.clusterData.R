@@ -152,6 +152,10 @@ clusterData <- function(obj = NULL,
       # ==========================================================================
       # TCseq
       # ==========================================================================
+      if (!requireNamespace("TCseq", quietly = TRUE)) {
+        stop("Package 'TCseq' is required. Please install it.")
+      }
+
       exp <- filter.std(exp,min.std = min.std,visu = FALSE)
 
       # tca <- TCseq::timeclust(x = as.matrix(exp), algo = "cm",

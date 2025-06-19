@@ -198,6 +198,10 @@ visCluster <- function(object = NULL,
     col_color = ht.col.list[["col_color"]]
   }
 
+  if (!requireNamespace("circlize", quietly = TRUE)) {
+    stop("Package 'circlize' is required. Please install it.")
+  }
+
   col_fun = circlize::colorRamp2(col_range,col_color)
 
   plot.type <- match.arg(plot.type)
@@ -399,6 +403,11 @@ visCluster <- function(object = NULL,
         # sample colors
         if(is.null(sample.col)){
           # scol <- ggsci::pal_npg()(length(sample.info))
+
+          if (!requireNamespace("circlize", quietly = TRUE)) {
+            stop("Package 'circlize' is required. Please install it.")
+          }
+
           scol <- circlize::rand_color(n = length(sample.info))
           names(scol) <- sample.info
         }else{
@@ -414,6 +423,10 @@ visCluster <- function(object = NULL,
             if(length(unique(object$pseudotime)) == 3){
               pseudotime_col <- c("red","grey80","blue")
             }else{
+              if (!requireNamespace("circlize", quietly = TRUE)) {
+                stop("Package 'circlize' is required. Please install it.")
+              }
+
               pseudotime_col <- circlize::rand_color(n = length(unique(object$pseudotime)))
             }
           }else{
@@ -425,6 +438,10 @@ visCluster <- function(object = NULL,
 
         if(is.null(sample.col)){
           if(object$type != "monocle"){
+            if (!requireNamespace("circlize", quietly = TRUE)) {
+              stop("Package 'circlize' is required. Please install it.")
+            }
+
             scol <- circlize::rand_color(n = length(sample.info))
             names(scol) <- sample.info
           }else{
@@ -481,6 +498,10 @@ visCluster <- function(object = NULL,
       # }else{
       #   stop("Package 'jjAnno' is required for this functionality. Please install it.")
       # }
+      if (!requireNamespace("circlize", quietly = TRUE)) {
+        stop("Package 'circlize' is required. Please install it.")
+      }
+
       colanno <- circlize::rand_color(n = cluster.num)
     }else{
       colanno <- ctAnno.col
@@ -565,6 +586,11 @@ visCluster <- function(object = NULL,
     # legend for monocle heatmap
     if(object$geneType == "non-branched"){
       rg <- range(as.numeric(as.character(sample.info)))
+
+      if (!requireNamespace("circlize", quietly = TRUE)) {
+        stop("Package 'circlize' is required. Please install it.")
+      }
+
       col_fun2 = circlize::colorRamp2(c(rg[1],rg[2]),pseudotime_col)
       lgd = ComplexHeatmap::Legend(col_fun = col_fun2, title = "pseudotime")
       lgd_list = list(lgd)
@@ -895,6 +921,10 @@ visCluster <- function(object = NULL,
 
         # term colors
         if(is.null(go.col)){
+          if (!requireNamespace("circlize", quietly = TRUE)) {
+            stop("Package 'circlize' is required. Please install it.")
+          }
+
           gocol <- circlize::rand_color(n = nrow(termanno))
         }else{
           gocol <- go.col
@@ -1091,6 +1121,10 @@ visCluster <- function(object = NULL,
 
         # term colors
         if(is.null(kegg.col)){
+          if (!requireNamespace("circlize", quietly = TRUE)) {
+            stop("Package 'circlize' is required. Please install it.")
+          }
+
           gocol <- circlize::rand_color(n = nrow(termanno))
         }else{
           gocol <- kegg.col

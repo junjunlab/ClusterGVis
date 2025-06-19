@@ -889,7 +889,6 @@ plot_multiple_branches_heatmap2 <- function(cds = NULL,
 #' @param assays Type of assay to be used for the analysis, either "counts" or "normalized"
 #' @param gene_list A vector of gene names
 #' @return A smoothed pseudotime matrix for the given gene list
-#' @importFrom SummarizedExperiment rowData
 #' @export
 pre_pseudotime_matrix <- function(cds_obj = NULL,
                                   assays = c("counts","normalized"),
@@ -908,6 +907,10 @@ pre_pseudotime_matrix <- function(cds_obj = NULL,
   # } else {
   #   warning("Cannot create monocle3 'monocle3' is not installed.")
   # }
+
+  if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
+    stop("Package 'SummarizedExperiment' is required. Please install it.")
+  }
 
   if(assays == "counts"){
     pt.matrix <- exprs(cds_obj)[match(gene_list,rownames(SummarizedExperiment::rowData(cds_obj))),

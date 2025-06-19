@@ -12,10 +12,15 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
     R (>= 2.10)
-Imports: Biobase,circlize,clusterProfiler,colorRamps,ComplexHeatmap,dplyr,e1071,
-    factoextra,ggplot2,grDevices,grid,magrittr,Matrix,methods,purrr,
-    reshape2,scales,SingleCellExperiment,stats,SummarizedExperiment,TCseq,tibble
+Imports: Biobase,colorRamps,ComplexHeatmap,dplyr,e1071,
+    factoextra,ggplot2,grDevices,grid,magrittr,Matrix,methods,purrr,BiocManager,
+    reshape2,scales,stats,tibble
 Suggests: 
+    clusterProfiler,
+    SummarizedExperiment,
+    SingleCellExperiment,
+    TCseq,
+    circlize,
     igraph,
     knitr,
     monocle,
@@ -23,9 +28,7 @@ Suggests:
     rmarkdown,
     Seurat,
     WGCNA,
-    cli,
-    utils,
-    BiocManager
+    utils
 biocViews: clusterProfiler,SummarizedExperiment,ComplexHeatmap,circlize,SingleCellExperiment,TCseq
 URL: https://github.com/junjunlab/ClusterGVis/, https://junjunlab.github.io/ClusterGvis-manual/
 BugReports: https://github.com/junjunlab/ClusterGVis/issues

@@ -67,6 +67,10 @@ enrichCluster <- function(object = NULL,
                                            "plot_genes_branched_heatmap2",
                                            "plot_multiple_branches_heatmap2"),
                           ...){
+  if (!requireNamespace("clusterProfiler", quietly = TRUE)) {
+    stop("Package 'clusterProfiler' is required. Please install it.")
+  }
+
   type <- match.arg(type,c("BP","MF","CC","KEGG","ownSet"))
   heatmap.type <- match.arg(heatmap.type,c("plot_pseudotime_heatmap2",
                                            "plot_genes_branched_heatmap2",

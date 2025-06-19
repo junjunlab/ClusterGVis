@@ -51,6 +51,11 @@ is_sparse_matrix <- function(x){
 #' @export
 size_factors <- function( cds ) {
   stopifnot( methods::is( cds, "cell_data_set" ) )
+
+  if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+    stop("Package 'SingleCellExperiment' is required. Please install it.")
+  }
+
   sf <- SingleCellExperiment::colData(cds)$Size_Factor
   names( sf ) <- colnames(SingleCellExperiment::counts(cds) )
   sf
@@ -59,39 +64,25 @@ size_factors <- function( cds ) {
 
 
 
-#' The cell_data_set class from https://github.com/cole-trapnell-lab/monocle3/blob/master/R/cell_data_set.R
-#'
-#' The main class used by Monocle3 to hold single-cell expression data.
-#' cell_data_set extends the Bioconductor SingleCellExperiment class.
-#'
-#' This class is initialized from a matrix of expression values along with cell
-#' and feature metadata.
-#'
-#' @field reduce_dim_aux SimpleList, auxiliary information from reduced
-#'   dimension.
-#' @field principal_graph_aux SimpleList, auxiliary information from principal
-#'   graph construction
-#' @field principal_graph SimpleList of igraph objects containing principal
-#'   graphs for different dimensionality reduction.
-#' @field clusters SimpleList of cluster information for different
-#'   dimensionality reduction.
-#' @name cell_data_set
-#' @rdname cell_data_set
-#' @aliases cell_data_set-class
-#' @exportClass cell_data_set
-#' @importFrom Biobase package.version
-#' @importFrom SingleCellExperiment SingleCellExperiment colData rowData
-#' @importFrom SingleCellExperiment reducedDim<- reducedDim reducedDims<-
-#' @importFrom SingleCellExperiment reducedDims
-#' @importFrom SummarizedExperiment Assays colData<- rowData<- assays assays<-
+# ==============================================================================
+
+
 setClass("cell_data_set",
-         contains = c("SingleCellExperiment"),
+         contains = if (requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+           "SingleCellExperiment"
+         } else {
+           stop("Class 'cell_data_set' requires 'SingleCellExperiment'.
+                Install with: BiocManager::install('SingleCellExperiment')")
+         },
          slots = c(reduce_dim_aux = "SimpleList",
                    principal_graph_aux="SimpleList",
                    principal_graph = "SimpleList",
                    clusters = "SimpleList")
 )
 
+
+
+# ==============================================================================
 
 #' Generic to extract pseudotime from CDS object
 #'
@@ -148,6 +139,10 @@ setGeneric("exprs", function(x) standardGeneric("exprs"))
 #'
 #' @export
 setMethod("exprs", "cell_data_set", function(x) {
+  if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
+    stop("Package 'SummarizedExperiment' is required. Please install it.")
+  }
+
   value <- SummarizedExperiment::assays(x)$counts
   return(value)
 })
@@ -168,13 +163,17 @@ setMethod("exprs", "cell_data_set", function(x) {
 #'   matrix.
 #'
 #'
-#' @importFrom SingleCellExperiment counts
 #'
 #' @export
 normalized_counts <- function(cds,
                               norm_method=c("log", "binary", "size_only"),
                               pseudocount=1){
   norm_method = match.arg(norm_method)
+
+  if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+    stop("Package 'SingleCellExperiment' is required. Please install it.")
+  }
+
   norm_mat = SingleCellExperiment::counts(cds)
   if (norm_method == "binary"){
     # The '+ 0' coerces the matrix to type numeric. It's possible
