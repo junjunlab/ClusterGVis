@@ -1,6 +1,6 @@
 Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
-Version: 0.1.3
+Version: 0.1.4
 Authors@R: 
   person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),comment = c(ORCID = "0000-0001-7692-9105"))
 Description: Streamlining the clustering and visualization of time-series gene expression data from RNA-Seq experiments, this tool supports fuzzy c-means and k-means clustering algorithms. It is compatible with outputs from widely-used packages such as 'Seurat', 'Monocle', and 'WGCNA', enabling seamless downstream visualization and analysis. See Lokesh Kumar and Matthias E Futschik (2007) <doi:10.6026/97320630002005> for more details.
