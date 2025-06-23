@@ -1,3 +1,5 @@
+
+
 #' Check and Install Required Packages
 #'
 #' This function checks if the required Bioconductor and CRAN packages are installed.
@@ -21,16 +23,16 @@ check_dependency <- function(){
                 "clusterProfiler",
                 "SummarizedExperiment",
                 "ComplexHeatmap",
-                "SingleCellExperiment",
                 "TCseq","monocle","Biobase")
 
-  # check needed packages
+  # check needed packages on BiocManager
   for (pkg in packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       BiocManager::install(pkg)
     }
   }
 
+  # check needed packages on CRAN
   crans <- c("Seurat","WGCNA","igraph","pheatmap","circlize","e1071","colorRamps")
 
   # check needed packages
@@ -39,4 +41,6 @@ check_dependency <- function(){
       utils::install.packages(pkg)
     }
   }
+
+
 }

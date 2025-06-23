@@ -14,13 +14,12 @@ Depends:
     R (>= 2.10)
 Imports: colorRamps,dplyr,e1071,
     factoextra,ggplot2,grDevices,grid,magrittr,Matrix,methods,purrr,
-    reshape2,scales,stats,tibble
+    reshape2,scales,stats,tibble,SingleCellExperiment
 Suggests: 
     Biobase,
     ComplexHeatmap,
     clusterProfiler,
     SummarizedExperiment,
-    SingleCellExperiment,
     TCseq,
     circlize,
     igraph,

@@ -66,14 +66,13 @@ size_factors <- function( cds ) {
 
 # ==============================================================================
 
-
+#' Cell Data Set Class
+#' @name cell_data_set-class
+#' @rdname cell_data_set-class
+#' @exportClass cell_data_set
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 setClass("cell_data_set",
-         contains = if (requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-           "SingleCellExperiment"
-         } else {
-           stop("Class 'cell_data_set' requires 'SingleCellExperiment'.
-                Install with: BiocManager::install('SingleCellExperiment')")
-         },
+         contains = "SingleCellExperiment",
          slots = c(reduce_dim_aux = "SimpleList",
                    principal_graph_aux="SimpleList",
                    principal_graph = "SimpleList",
@@ -147,6 +146,8 @@ setMethod("exprs", "cell_data_set", function(x) {
   return(value)
 })
 
+
+# ==============================================================================
 
 #' Return a size-factor normalized and (optionally) log-transformed expression
 #'
