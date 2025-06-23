@@ -72,7 +72,9 @@ clusterData <- function(obj = NULL,
                         cluster.num = NULL,
                         subcluster = NULL,
                         seed = 5201314,...){
-  ComplexHeatmap::ht_opt(message = FALSE)
+  if (!requireNamespace("Biobase", quietly = TRUE)) {
+    stop("Package 'Biobase' is required. Please install it.")
+  }
 
   # check datatype
   cls <- class(obj)

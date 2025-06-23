@@ -81,6 +81,10 @@ plot_pseudotime_heatmap2 <- function(cds_subset,
                                      trend_formula = '~sm.ns(Pseudotime, df=3)',
                                      return_heatmap = FALSE,
                                      cores = 1){
+  if (!requireNamespace("Biobase", quietly = TRUE)) {
+    stop("Package 'Biobase' is required. Please install it.")
+  }
+
   num_clusters <- min(num_clusters, nrow(cds_subset))
   pseudocount <- 1
   newdata <- data.frame(Pseudotime = seq(min(Biobase::pData(cds_subset)$Pseudotime), max(Biobase::pData(cds_subset)$Pseudotime),length.out = 100))
@@ -348,6 +352,10 @@ plot_genes_branched_heatmap2 <- function(cds_subset = NULL,
                                          trend_formula = '~sm.ns(Pseudotime, df=3) * Branch',
                                          return_heatmap = FALSE,
                                          cores = 1, ...) {
+  if (!requireNamespace("Biobase", quietly = TRUE)) {
+    stop("Package 'Biobase' is required. Please install it.")
+  }
+
   if (requireNamespace("monocle", quietly = TRUE)) {
     cds <- NA
     new_cds <- monocle::buildBranchCellDataSet(cds_subset,
@@ -644,6 +652,10 @@ plot_multiple_branches_heatmap2 <- function(cds = NULL,
   pseudocount <- 1
   if(!(all(branches %in% Biobase::pData(cds)$State)) & length(branches) == 1){
     stop('This function only allows to make multiple branch plots where branches is included in the pData')
+  }
+
+  if (!requireNamespace("Biobase", quietly = TRUE)) {
+    stop("Package 'Biobase' is required. Please install it.")
   }
 
   branch_label <- branches

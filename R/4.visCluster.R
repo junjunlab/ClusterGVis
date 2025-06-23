@@ -184,6 +184,10 @@ visCluster <- function(object = NULL,
                        gglist = NULL,
                        row_annotation_obj = NULL,
                        ...){
+  if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
+    stop("Package 'ComplexHeatmap' is required. Please install it.")
+  }
+
   ComplexHeatmap::ht_opt(message = FALSE)
 
   if(is.null(ht.col.list[["col_range"]])){

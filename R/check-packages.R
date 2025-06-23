@@ -8,7 +8,6 @@
 #' \code{pheatmap}, \code{circlize}, \code{e1071}, and \code{colorRamps}.
 #'
 #' @return NULL This function does not return a value. It installs the packages as needed.
-#' @importFrom BiocManager install
 #' @importFrom utils install.packages
 #' @export
 check_dependency <- function(){
@@ -17,7 +16,9 @@ check_dependency <- function(){
     utils::install.packages("BiocManager")
   }
 
-  packages <- c("clusterProfiler",
+  packages <- c("Biobase",
+                "ComplexHeatmap",
+                "clusterProfiler",
                 "SummarizedExperiment",
                 "ComplexHeatmap",
                 "SingleCellExperiment",
