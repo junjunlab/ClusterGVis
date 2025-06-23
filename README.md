@@ -18,14 +18,7 @@ Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/
 There are some R package to make sure have been installed for better installing **ClusterGVis**：
 
 ``` r
-BiocManager::install("ComplexHeatmap")
-BiocManager::install("clusterProfiler")
-BiocManager::install("TCseq")
-BiocManager::install("Mfuzz")
-BiocManager::install("monocle")
-devtools::install_github('cole-trapnell-lab/monocle3')
-install.packages("circlize")
-install.packages("Seurat")
+BiocManager::install("SingleCellExperiment")
 ```
 
 ## Installation
