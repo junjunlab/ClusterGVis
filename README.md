@@ -19,6 +19,9 @@ There are some R package to make sure have been installed for better installing 
 
 ``` r
 BiocManager::install("SingleCellExperiment")
+
+# install dependent packages
+check_dependency()
 ```
 
 ## Installation
