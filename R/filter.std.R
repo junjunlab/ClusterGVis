@@ -17,7 +17,7 @@ filter.std <- function (eset, min.std,visu=TRUE, verbose = TRUE){
   }
 
   if (is.numeric(min.std)){
-    if(class(eset) %in% c("data.frame", "matrix")){
+    if("data.frame" %in% class(eset) | "matrix" %in% class(eset)){
       data <- eset
     }else{
       data <- Biobase::exprs(eset)
