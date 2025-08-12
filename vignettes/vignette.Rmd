@@ -7,4 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Please go to <https://junjunlab.github.io/ClusterGvis-manual/> for the full vignette.
+    Please go to <https://junjunlab.github.io/ClusterGvis-manual/> for the full 
+    vignette.
+
+# Session Info
+
+```{r}
+sessionInfo()
+```

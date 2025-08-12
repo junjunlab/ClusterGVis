@@ -7,11 +7,13 @@
 getClusters(obj = NULL, ...)
 }
 \arguments{
-\item{obj}{A data object representing the gene expression data or pseudotime data:
+\item{obj}{A data object representing the gene expression data or
+pseudotime data:
 \itemize{
 \item If the input is a \code{cell_data_set} object (e.g., from \code{Monocle3}),
 the function preprocesses the data using \code{pre_pseudotime_matrix}.
-\item If the input is a numeric matrix or a \code{data.frame}, it directly uses this data.
+\item If the input is a numeric matrix or a \code{data.frame}, it directly uses
+this data.
 Default is \code{NULL}.
 }}
 
@@ -25,7 +27,8 @@ A \code{ggplot} object visualizing the Elbow plot, where:
 \item The y-axis represents the WSS for each cluster number.
 }
 
-The optimal cluster number can be visually identified at the "elbow point," where the
+The optimal cluster number can be visually identified at the "elbow point,
+" where the
 reduction in WSS diminishes sharply.
 
 a ggplot.
@@ -33,11 +36,19 @@ a ggplot.
 \description{
 Determine Optimal Clusters for Gene Expression or Pseudotime Data
 }
+\examples{
+
+data("exps")
+getClusters(obj = exps)
+
+}
 \author{
 JunZhang
 
-The \code{getClusters} function identifies the optimal number of clusters for a given data object.
-It supports multiple input types, including gene expression matrices and objects such as
-\code{cell_data_set}. The function implements the Elbow method to evaluate within-cluster
-sum of squares (WSS) across a range of cluster numbers and visualizes the results.
+The \code{getClusters} function identifies the optimal number of clusters for a
+given data object.
+It supports multiple input types, including gene expression matrices and
+objects such as \code{cell_data_set}. The function implements the Elbow method
+to evaluate within-cluster sum of squares (WSS) across a range of cluster
+numbers and visualizes the results.
 }

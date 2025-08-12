@@ -2,7 +2,10 @@
 % Please edit documentation in R/monocleHeatmap.R
 \name{plot_multiple_branches_heatmap2}
 \alias{plot_multiple_branches_heatmap2}
-\title{Create a heatmap to demonstrate the bifurcation of gene expression along
+\title{Modified function: Plot heatmap of 3 branches with the same coloring.
+Each CDS
+subset has to have the same set of genes.
+Create a heatmap to demonstrate the bifurcation of gene expression along
 multiple branches}
 \usage{
 plot_multiple_branches_heatmap2(
@@ -32,7 +35,8 @@ detected with BEAM)}
 \item{branches}{The terminal branches (states) on the developmental tree you
 want to investigate.}
 
-\item{branches_name}{Name (for example, cell type) of branches you believe the
+\item{branches_name}{Name (for example, cell type) of branches you believe
+the
 cells on the branches are associated with.}
 
 \item{cluster_rows}{Whether to cluster the rows of the heatmap.}
@@ -71,16 +75,37 @@ the spline curve for each gene/feature.}
 
 \item{return_heatmap}{Whether to return the pheatmap object to the user.}
 
-\item{cores}{Number of cores to use when smoothing the expression curves shown
+\item{cores}{Number of cores to use when smoothing the expression curves
+shown
 in the heatmap.}
 }
 \value{
-A list of heatmap_matrix (expression matrix for the branch committment),
+A list of heatmap_matrix (expression matrix for the branch
+committment),
 ph (pheatmap heatmap object),
-annotation_row (annotation data.frame for the row), annotation_col (annotation
+annotation_row (annotation data.frame for the row), annotation_col
+(annotation
 data.frame for the column).
 }
 \description{
+Modified function: Plot heatmap of 3 branches with the same coloring.
+Each CDS
+subset has to have the same set of genes.
 Create a heatmap to demonstrate the bifurcation of gene expression along
 multiple branches
+}
+\examples{
+data("HSMM")
+data("BEAM_res")
+
+
+# return plot
+# plot_multiple_branches_heatmap2(HSMM[row.names(subset(BEAM_res,qval < 1e-4)),],
+#                                 branches = c(1,3,4,5),
+#                                 num_clusters = 4,
+#                                 cores = 1,
+#                                 use_gene_short_name = T,
+#                                 show_rownames = T,
+#                                 return_heatmap = T)
+
 }

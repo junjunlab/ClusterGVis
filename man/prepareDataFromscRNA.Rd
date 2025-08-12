@@ -21,33 +21,75 @@ prepareDataFromscRNA(
 \arguments{
 \item{object}{an object of class Seurat containing the scRNA-seq data.}
 
-\item{diffData}{a dataframe containing information about the differential expression analysis which can
+\item{diffData}{a dataframe containing information about the differential
+expression analysis which can
 be output from function FindAllMarkers.}
 
-\item{showAverage}{a logical indicating whether to show the average gene expression across all cells.}
+\item{showAverage}{a logical indicating whether to show the average gene
+expression across all cells.}
 
-\item{cells}{a vector of cell names to extract from the Seurat object. If NULL, all cells will be used.}
+\item{cells}{a vector of cell names to extract from the Seurat object. If
+NULL, all cells will be used.}
 
-\item{group.by}{a string specifying the grouping variable for differential expression analysis. Default is 'ident', which groups cells by their assigned clusters.}
+\item{group.by}{a string specifying the grouping variable for differential
+expression analysis. Default is 'ident', which groups cells by their
+assigned clusters.}
 
-\item{assays}{a string or vector of strings specifying the assay(s) to extract from the Seurat object. Default is 'RNA'.}
+\item{assays}{a string or vector of strings specifying the assay(s) to
+extract from the Seurat object. Default is 'RNA'.}
 
-\item{slot}{a string specifying the slot name where the assay data is stored in the Seurat object. Default is 'data'.}
+\item{slot}{a string specifying the slot name where the assay data is stored
+in the Seurat object. Default is 'data'.}
 
 \item{scale.data}{whether do Z-score for expression data, default TRUE.}
 
 \item{cluster.order}{the celltype orders.}
 
-\item{keep.uniqGene}{a logical indicating whether to keep only unique gene names. Default is TRUE.}
+\item{keep.uniqGene}{a logical indicating whether to keep only unique gene
+names. Default is TRUE.}
 
-\item{sep}{a character string to separate gene and cell names in the output dataframe. Default is "_".}
+\item{sep}{a character string to separate gene and cell names in the output
+dataframe. Default is "_".}
 }
 \value{
-a dataframe containing the expression data for the specified genes and cells,
+a dataframe containing the expression data for the specified genes
+and cells,
 organized in a format suitable for differential gene expression analysis.
 }
 \description{
-This function prepares single-cell RNA sequencing (scRNA-seq) data for differential
-gene expression analysis. It extracts the expression data for the specified cells
-and genes, and organizes them into a dataframe format suitable for downstream analysis.
+This function prepares single-cell RNA sequencing (scRNA-seq) data for
+differential
+gene expression analysis. It extracts the expression data for the specified
+cells
+and genes, and organizes them into a dataframe format suitable for downstream
+analysis.
+}
+\examples{
+
+# Load required libraries
+library(Seurat)
+library(dplyr)
+
+data("pbmc_subset")
+
+# report only the positive ones
+pbmc.markers.all <- Seurat::FindAllMarkers(pbmc_subset,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25
+)
+
+# get top 10 genes
+pbmc.markers <- pbmc.markers.all \%>\%
+  dplyr::group_by(cluster) \%>\%
+  dplyr::top_n(n = 20, wt = avg_log2FC)
+
+
+# prepare data from seurat object
+st.data <- prepareDataFromscRNA(
+  object = pbmc_subset,
+  diffData = pbmc.markers,
+  showAverage = TRUE
+)
+
 }

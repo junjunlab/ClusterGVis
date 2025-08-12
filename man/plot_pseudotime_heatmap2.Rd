@@ -2,7 +2,8 @@
 % Please edit documentation in R/monocleHeatmap.R
 \name{plot_pseudotime_heatmap2}
 \alias{plot_pseudotime_heatmap2}
-\title{Plots a pseudotime-ordered, row-centered heatmap which is slightly modified in monocle2}
+\title{Plots a pseudotime-ordered, row-centered heatmap which is
+slightly modified in monocle2}
 \usage{
 plot_pseudotime_heatmap2(
   cds_subset,
@@ -23,7 +24,8 @@ plot_pseudotime_heatmap2(
 )
 }
 \arguments{
-\item{cds_subset}{CellDataSet for the experiment (normally only the branching
+\item{cds_subset}{CellDataSet for the experiment (normally only the
+branching
 genes detected with branchTest)}
 
 \item{cluster_rows}{Whether to cluster the rows of the heatmap.}
@@ -40,7 +42,8 @@ heatmap. Must be a dataframe with one row for each row in the fData table of
 cds_subset, with matching IDs.}
 
 \item{add_annotation_col}{Additional annotations to show for each column in
-the heatmap. Must be a dataframe with one row for each cell in the pData table
+the heatmap. Must be a dataframe with one row for each cell in the
+pData table
 of cds_subset, with matching IDs.}
 
 \item{show_rownames}{Whether to show the names for each row in the table.}
@@ -62,14 +65,19 @@ the spline curve for each gene/feature.}
 
 \item{return_heatmap}{Whether to return the pheatmap object to the user.}
 
-\item{cores}{Number of cores to use when smoothing the expression curves shown
+\item{cores}{Number of cores to use when smoothing the expression
+curves shown
 in the heatmap.}
 }
 \value{
-A list of heatmap_matrix (expression matrix for the branch committment),
+A list of heatmap_matrix (expression matrix for the branch
+committment),
 ph (pheatmap heatmap object),
-annotation_row (annotation data.frame for the row), annotation_col (annotation
+annotation_row (annotation data.frame for the row), annotation_col
+(annotation
 data.frame for the column).
+
+pheatmap plot or data frame.
 }
 \description{
 The function plot_pseudotime_heatmap takes a CellDataSet object
@@ -77,4 +85,18 @@ The function plot_pseudotime_heatmap takes a CellDataSet object
 expression curves much like plot_genes_in_pseudotime.
 Then, it clusters these genes and plots them using the pheatmap package.
 This allows you to visualize modules of genes that co-vary across pseudotime.
+}
+\examples{
+data("HSMM")
+data("BEAM_res")
+data("sig_gene_names")
+
+# return plot
+# plot_pseudotime_heatmap2(HSMM[sig_gene_names[1:100],],
+#                          num_clusters = 4,
+#                          cores = 1,
+#                          show_rownames = T,
+#                          return_heatmap = T)
+
+
 }

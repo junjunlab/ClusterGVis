@@ -2,9 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{pseudotime}
 \alias{pseudotime}
+\alias{pseudotime,cell_data_set-method}
 \title{Generic to extract pseudotime from CDS object}
 \usage{
 pseudotime(x, reduction_method = "UMAP")
+
+\S4method{pseudotime}{cell_data_set}(x, reduction_method = "UMAP")
 }
 \arguments{
 \item{x}{A cell_data_set object.}
@@ -12,7 +15,18 @@ pseudotime(x, reduction_method = "UMAP")
 \item{reduction_method}{Reduced dimension to extract pseudotime for.}
 }
 \value{
-Pseudotime values.
+A named numeric vector containing pseudotime values for each cell.
+The vector has the following properties:
+\itemize{
+\item Names correspond to cell identifiers (column names from the
+expression matrix)
+\item Values are numeric pseudotime values representing trajectory
+progress
+\item Values typically range from 0 (trajectory start) to maximum
+trajectory length
+\item Higher values indicate cells further along the developmental
+trajectory
+}
 }
 \description{
 Generic to extract pseudotime from CDS object

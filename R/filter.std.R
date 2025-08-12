@@ -7,37 +7,36 @@
 #' @param verbose show filter information.
 #'
 #' @return matrix.
-filter.std <- function (eset, min.std,visu=TRUE, verbose = TRUE){
-  #index <- logical(dim(exprs(eset))[1])
+filter.std <- function(eset, min.std, visu = TRUE, verbose = TRUE) {
+  # index <- logical(dim(exprs(eset))[1])
 
-  if("matrix" %in% class(eset) | "data.frame" %in% class(eset)){
+  if ("matrix" %in% class(eset) | "data.frame" %in% class(eset)) {
     tmp <- logical(dim(eset)[1])
-  }else{
+  } else {
     tmp <- logical(dim(Biobase::exprs(eset))[1])
   }
 
-  if (is.numeric(min.std)){
-    if("data.frame" %in% class(eset) | "matrix" %in% class(eset)){
+  if (is.numeric(min.std)) {
+    if ("data.frame" %in% class(eset) | "matrix" %in% class(eset)) {
       data <- eset
-    }else{
+    } else {
       data <- Biobase::exprs(eset)
     }
 
-    for (i in 1:length(tmp)){
-      tmp[i]  <- sd(data[i,],na.rm=TRUE)
+    for (i in seq_len(length(tmp))) {
+      tmp[i] <- sd(data[i, ], na.rm = TRUE)
       #   index[i]  <- ( tmp[i] > min.std)
     }
     index <- tmp > min.std
     index[is.na(index)] <- TRUE
-    if(verbose){
-      print(paste(sum(!index),"genes excluded.\n"))
+    if (verbose) {
+      methods::show(paste(sum(!index), "genes excluded.\n"))
     }
-
   }
 
 
-  if (visu){
-    plot(sort(tmp),xlab="Ordered genes",ylab="Sd")
+  if (visu) {
+    plot(sort(tmp), xlab = "Ordered genes", ylab = "Sd")
   }
-  eset[index,]
+  eset[index, ]
 }

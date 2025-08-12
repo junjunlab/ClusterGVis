@@ -57,7 +57,8 @@ heatmap. Must be a dataframe with one row for each row in the fData table of
 cds_subset, with matching IDs.}
 
 \item{add_annotation_col}{Additional annotations to show for each column in
-the heatmap. Must be a dataframe with one row for each cell in the pData table
+the heatmap. Must be a dataframe with one row for each cell in the pData
+table
 of cds_subset, with matching IDs.}
 
 \item{show_rownames}{Whether to show the names for each row in the table.}
@@ -79,25 +80,45 @@ the spline curve for each gene/feature.}
 
 \item{return_heatmap}{Whether to return the pheatmap object to the user.}
 
-\item{cores}{Number of cores to use when smoothing the expression curves shown
+\item{cores}{Number of cores to use when smoothing the expression curves
+shown
 in the heatmap.}
 
 \item{...}{Additional arguments passed to buildBranchCellDataSet}
 }
 \value{
-A list of heatmap_matrix (expression matrix for the branch committment),
+A list of heatmap_matrix (expression matrix for the branch
+committment),
 ph (pheatmap heatmap object),
-annotation_row (annotation data.frame for the row), annotation_col (annotation
+annotation_row (annotation data.frame for the row), annotation_col
+(annotation
 data.frame for the column).
 }
 \description{
-@description returns a heatmap that shows changes in both lineages at the same
+@description returns a heatmap that shows changes in both lineages at the
+same
 time.
 It also requires that you choose a branch point to inspect.
 Columns are points in pseudotime, rows are genes, and the beginning of
 pseudotime is in the middle of the heatmap.
 As you read from the middle of the heatmap to the right, you are following
 one lineage through pseudotime. As you read left, the other.
-The genes are clustered hierarchically, so you can visualize modules of genes
+The genes are clustered hierarchically, so you can visualize modules of
+genes
 that have similar lineage-dependent expression patterns.
+}
+\examples{
+data("HSMM")
+data("BEAM_res")
+
+
+# return plot
+# plot_genes_branched_heatmap2(HSMM[row.names(subset(BEAM_res,qval < 1e-4)),],
+#                              branch_point = 1,
+#                              num_clusters = 4,
+#                              cores = 1,
+#                              use_gene_short_name = T,
+#                              show_rownames = T,
+#                              return_heatmap = T)
+
 }

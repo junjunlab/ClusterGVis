@@ -13,7 +13,8 @@ pre_pseudotime_matrix(
 \arguments{
 \item{cds_obj}{A monocle3 object}
 
-\item{assays}{Type of assay to be used for the analysis, either "counts" or "normalized"}
+\item{assays}{Type of assay to be used for the analysis, either "counts" or
+"normalized"}
 
 \item{gene_list}{A vector of gene names}
 }
@@ -23,11 +24,13 @@ A smoothed pseudotime matrix for the given gene list
 \description{
 This function takes in a monocle3 object and returns a smoothed pseudotime
 matrix for the
-given gene list, either in counts or normalized form. The function first matches
+given gene list, either in counts or normalized form. The function first
+matches
 the gene list
 with the rownames of the SummarizedExperiment object, and then orders the
 pseudotime information.
 The function then uses smooth.spline to apply smoothing to the data. Finally,
 the function normalizes
-the data by subtracting the mean and dividing by the standard deviation for each row.
+the data by subtracting the mean and dividing by the standard deviation for
+each row.
 }

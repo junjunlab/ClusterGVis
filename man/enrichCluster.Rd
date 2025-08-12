@@ -27,53 +27,73 @@ enrichCluster(
 }
 \arguments{
 \item{object}{An object containing clustering results.
-This is clusterData object. Alternatively, it can be a \code{CellDataSet} object, in which case the function can also visualize pseudotime data.}
+This is clusterData object. Alternatively, it can be a \code{CellDataSet}
+object, in which case the function can also visualize pseudotime data.}
 
-\item{type}{Character. The type of enrichment analysis to perform. Options include:
+\item{type}{Character. The type of enrichment analysis to perform. Options
+include:
 \itemize{
 \item \code{"BP"}: Biological Process (GO)
 \item \code{"MF"}: Molecular Function (GO)
 \item \code{"CC"}: Cellular Component (GO)
 \item \code{"KEGG"}: KEGG Pathway analysis
-\item \code{"ownSet"}: Custom gene set enrichment, requiring \code{TERM2GENE} and optionally \code{TERM2NAME}.
+\item \code{"ownSet"}: Custom gene set enrichment, requiring \code{TERM2GENE} and
+optionally \code{TERM2NAME}.
 }}
 
-\item{TERM2GENE}{A data frame containing mappings of terms to genes. Required when \code{type = "ownSet"}.
-This must be a two-column data frame, where the first column is the term and the second column is the gene.}
+\item{TERM2GENE}{A data frame containing mappings of terms to genes.
+Required when \code{type = "ownSet"}.
+This must be a two-column data frame, where the first column is the
+term and the second column is the gene.}
 
-\item{TERM2NAME}{A data frame containing term-to-name mappings. Optional when \code{type = "ownSet"}.
-This must also be a two-column data frame, where the first column is the term and the second column is the name.}
+\item{TERM2NAME}{A data frame containing term-to-name mappings. Optional
+when \code{type = "ownSet"}.
+This must also be a two-column data frame, where the first column is the
+term and the second column is the name.}
 
-\item{OrgDb}{An organism database object (e.g., \code{org.Hs.eg.db} for human or \code{org.Mm.eg.db} for mouse),
+\item{OrgDb}{An organism database object (e.g., \code{org.Hs.eg.db} for human or
+\code{org.Mm.eg.db} for mouse),
 used for GO or KEGG enrichment analysis.}
 
-\item{id.trans}{Logical. Whether to perform gene ID transformation. Default is \code{TRUE}.}
+\item{id.trans}{Logical. Whether to perform gene ID transformation. Default
+is \code{TRUE}.}
 
-\item{fromType}{Character. The type of the input gene IDs (e.g., \code{"SYMBOL"}, \code{"ENSEMBL"}). Default is \code{"SYMBOL"}.}
+\item{fromType}{Character. The type of the input gene IDs (e.g.,
+\code{"SYMBOL"}, \code{"ENSEMBL"}). Default is \code{"SYMBOL"}.}
 
-\item{toType}{Character. The target ID type for transformation using \code{clusterProfiler::bitr}
+\item{toType}{Character. The target ID type for transformation using
+\code{clusterProfiler::bitr}
 (e.g., \code{"ENTREZID"}). Default is \code{"ENTREZID"}.}
 
-\item{readable}{Logical. Whether to convert the enrichment result IDs back to a readable format (e.g., SYMBOL).
+\item{readable}{Logical. Whether to convert the enrichment result IDs back
+to a readable format (e.g., SYMBOL).
 Only applicable for GO and KEGG analysis. Default is \code{TRUE}.}
 
-\item{organism}{Character. The KEGG organism code (e.g., \code{"hsa"} for human, \code{"mmu"} for mouse). Required when
+\item{organism}{Character. The KEGG organism code (e.g., \code{"hsa"} for human,
+\code{"mmu"} for mouse). Required when
 performing KEGG enrichment. Default is \code{"hsa"}.}
 
-\item{pvalueCutoff}{Numeric. The p-value cutoff for enriched terms to be included in the results. Default is \code{0.05}.}
+\item{pvalueCutoff}{Numeric. The p-value cutoff for enriched terms to be
+included in the results. Default is \code{0.05}.}
 
-\item{topn}{Integer or vector. The number of top enrichment results to extract. If a single value, it is applied
-to all clusters. Otherwise, it should match the number of clusters. Default is \code{5}.}
+\item{topn}{Integer or vector. The number of top enrichment results to
+extract. If a single value, it is applied
+to all clusters. Otherwise, it should match the number of clusters.
+Default is \code{5}.}
 
-\item{seed}{Numeric. Seed for random operations to ensure reproducibility. Default is \code{5201314}.}
+\item{seed}{Numeric. Seed for random operations to ensure reproducibility.
+Default is \code{5201314}.}
 
-\item{add.gene}{Logical. Whether to include the list of genes associated with each enriched term in the results.
+\item{add.gene}{Logical. Whether to include the list of genes associated
+with each enriched term in the results.
 Default is \code{FALSE}.}
 
-\item{use_internal_data}{Logical, use KEGG.db or latest online KEGG data for enrichKEGG function.
+\item{use_internal_data}{Logical, use KEGG.db or latest online KEGG data for
+enrichKEGG function.
 Default is \code{FALSE}.}
 
-\item{heatmap.type}{Character. The type of heatmap visualization to use when input data is a \code{CellDataSet} object.
+\item{heatmap.type}{Character. The type of heatmap visualization to use when
+input data is a \code{CellDataSet} object.
 Options include:
 \itemize{
 \item \code{"plot_pseudotime_heatmap2"}
@@ -81,7 +101,8 @@ Options include:
 \item \code{"plot_multiple_branches_heatmap2"}
 }}
 
-\item{...}{Additional arguments passed to plot_pseudotime_heatmap2/plot_genes_branched_heatmap2/plot_multiple_branches_heatmap2 functions.}
+\item{...}{Additional arguments passed to plot_pseudotime_heatmap2/
+plot_genes_branched_heatmap2/plot_multiple_branches_heatmap2 functions.}
 }
 \value{
 a data.frame.
@@ -89,9 +110,37 @@ a data.frame.
 \description{
 Perform GO/KEGG Enrichment Analysis for Multiple Clusters
 }
+\examples{
+
+library(org.Mm.eg.db)
+
+data("exps")
+
+# kmeans
+ck <- clusterData(
+  obj = exps,
+  cluster.method = "kmeans",
+  cluster.num = 3
+)
+
+# enrich for clusters
+enrich <- enrichCluster(
+  object = ck,
+  OrgDb = org.Mm.eg.db,
+  type = "BP",
+  pvalueCutoff = 0.05,
+  topn = 5
+)
+
+# check
+head(enrich, 3)
+
+}
 \author{
 JunZhang
 
-This function performs Gene Ontology (GO) or KEGG enrichment analysis, or custom gene set enrichment,
-on clustered genes. It supports multiple clusters, incorporating cluster-specific results into its analysis.
+This function performs Gene Ontology (GO) or KEGG enrichment analysis, or
+custom gene set enrichment,
+on clustered genes. It supports multiple clusters, incorporating
+cluster-specific results into its analysis.
 }

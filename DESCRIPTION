@@ -2,25 +2,46 @@ Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
 Version: 0.99.0
 Authors@R: 
-  person("Jun", "Zhang", , "3219030654@stu.cpu.edu.cn", role = c("aut", "cre"),comment = c(ORCID = "0000-0001-7692-9105"))
-Description: Streamlining the clustering and visualization of time-series gene expression data from RNA-Seq experiments, this tool supports fuzzy c-means and k-means clustering algorithms. It is compatible with outputs from widely-used packages such as 'Seurat', 'Monocle', and 'WGCNA', enabling seamless downstream visualization and analysis. See Lokesh Kumar and Matthias E Futschik (2007) <doi:10.6026/97320630002005> for more details.
+  person(given = "Jun", 
+        family = "Zhang",    
+        email = "3219030654@stu.cpu.edu.cn", 
+        role  = c("aut", "cre", "cph"), 
+        comment = c(ORCID = "0000-0001-7692-9105"))
+Description: Streamlining the clustering and visualization of time-series gene 
+  expression data from RNA-Seq experiments, this tool supports fuzzy 
+  c-means and k-means clustering algorithms. It is compatible with outputs 
+  from widely-used packages such as 'Seurat', 'Monocle', and 'WGCNA', 
+  enabling seamless downstream visualization and analysis.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: xz
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 2.10)
-Imports: colorRamps,dplyr,e1071,
-    factoextra,ggplot2,grDevices,grid,magrittr,Matrix,methods,purrr,
-    reshape2,scales,stats,tibble,SingleCellExperiment
+    R (>= 4.5.0)
+Imports: colorRamps,
+  dplyr,
+  e1071,
+  factoextra,
+  ggplot2,
+  grDevices,
+  grid,
+  magrittr,
+  Matrix,
+  methods,
+  purrr,
+  reshape2,
+  scales,
+  stats,
+  tibble,
+  SingleCellExperiment
 Suggests: 
     Biobase,
     ComplexHeatmap,
     clusterProfiler,
     SummarizedExperiment,
     TCseq,
+    org.Mm.eg.db,
     circlize,
     igraph,
     knitr,
@@ -31,7 +52,8 @@ Suggests:
     WGCNA,
     utils,
     BiocManager
-biocViews: clusterProfiler,SummarizedExperiment,ComplexHeatmap,SingleCellExperiment,TCseq,Biobase
-URL: https://github.com/junjunlab/ClusterGVis/, https://junjunlab.github.io/ClusterGvis-manual/
+biocViews: RNASeq,Transcriptomics,Visualization,SingleCell,GeneExpression,Clustering
+URL: https://github.com/junjunlab/ClusterGVis/, 
+  https://junjunlab.github.io/ClusterGvis-manual/
 BugReports: https://github.com/junjunlab/ClusterGVis/issues
 VignetteBuilder: knitr
