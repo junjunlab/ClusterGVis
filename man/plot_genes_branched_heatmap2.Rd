@@ -108,7 +108,7 @@ genes
 that have similar lineage-dependent expression patterns.
 }
 \examples{
-data("HSMM")
+# data("HSMM")
 data("BEAM_res")
 
 

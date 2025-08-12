@@ -68,11 +68,4 @@ NULL
 NULL
 
 
-#' This is a test data for this package
-#'
-#' @name DataSet
-#' @aliases HSMM
-#' @docType data
-#' @keywords datasets
-#' @format A monocle object.
-NULL
+

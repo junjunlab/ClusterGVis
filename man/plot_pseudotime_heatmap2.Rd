@@ -87,7 +87,7 @@ Then, it clusters these genes and plots them using the pheatmap package.
 This allows you to visualize modules of genes that co-vary across pseudotime.
 }
 \examples{
-data("HSMM")
+# data("HSMM")
 data("BEAM_res")
 data("sig_gene_names")
 

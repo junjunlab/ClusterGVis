@@ -10,7 +10,6 @@
 \alias{termanno}
 \alias{termanno2}
 \alias{pbmc_subset}
-\alias{HSMM}
 \title{This is a test data for this package}
 \format{
 A data frame.
@@ -26,12 +25,8 @@ A data frame.
 A data frame.
 
 A seurat object.
-
-A monocle object.
 }
 \description{
-This is a test data for this package
-
 This is a test data for this package
 
 This is a test data for this package

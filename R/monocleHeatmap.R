@@ -89,7 +89,7 @@ traverseTree <- function(g, starting_cell, end_cells) {
 #' @return pheatmap plot or data frame.
 #'
 #' @examples
-#' data("HSMM")
+#' # data("HSMM")
 #' data("BEAM_res")
 #' data("sig_gene_names")
 #'
@@ -415,7 +415,7 @@ plot_pseudotime_heatmap2 <- function(cds_subset,
 #' @importFrom stats sd as.dist cor cutree
 #'
 #' @examples
-#' data("HSMM")
+#' # data("HSMM")
 #' data("BEAM_res")
 #'
 #'
