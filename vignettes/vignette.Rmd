@@ -7,8 +7,91 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-    Please go to <https://junjunlab.github.io/ClusterGvis-manual/> for the full 
-    vignette.
+# ClusterGVis
+
+To enhance clustering and visualization of time-series gene expression data from RNA-Seq experiments, we present the ClusterGVis package. This tool enables concise and elegant analysis of time-series gene expression data in a simple, one-step operation. Additionally, you can perform enrichment analysis for each cluster using the enrichCluster function, which integrates seamlessly with clusterProfiler. ClusterGVis empowers you to create publication-quality visualizations with ease.
+
+Comprehensive documentation can be found <https://junjunlab.github.io/ClusterGvis-manual>.
+
+## Installation
+
+```{r,eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ClusterGVis")
+```
+
+## Usage
+
+### Basic examples:
+
+```{r,eval=FALSE}
+library(ClusterGVis)
+data("exps")
+
+# using kemans for clustering
+ck <- clusterData(obj = exps,
+                  cluster.method = "kmeans",
+                  cluster.num = 8)
+
+# plot line only
+visCluster(object = cm,
+           plot.type = "line")
+
+# plot heatmap only
+visCluster(object = ck,
+           plot.type = "heatmap")
+```
+
+### Integration with seurat object:
+
+```{r,eval=FALSE}
+library(SeuratData)
+library(Seurat)
+
+data("pbmc3k.final")
+pbmc <- UpdateSeuratObject(object = pbmc3k.final)
+
+# find markers for every cluster compared to all remaining cells
+# report only the positive ones
+pbmc.markers.all <- Seurat::FindAllMarkers(pbmc,
+                                           only.pos = TRUE,
+                                           min.pct = 0.25,
+                                           logfc.threshold = 0.25)
+
+# get top 10 genes
+pbmc.markers <- pbmc.markers.all %>%
+  dplyr::group_by(cluster) %>%
+  dplyr::top_n(n = 20, wt = avg_log2FC)
+
+# check
+head(pbmc.markers)
+
+# prepare data from seurat object
+st.data <- prepareDataFromscRNA(object = pbmc,
+                                diffData = pbmc.markers,
+                                showAverage = TRUE)
+
+# check
+str(st.data)
+
+# line plot
+visCluster(object = st.data,
+           plot.type = "line")
+
+# add gene name
+markGenes = unique(pbmc.markers$gene)[sample(1:length(unique(pbmc.markers$gene)),40,
+                                             replace = F)]
+
+# heatmap plot
+pdf('sc1.pdf',height = 10,width = 6,onefile = F)
+visCluster(object = st.data,
+           plot.type = "heatmap",
+           column_names_rot = 45,
+           markGenes = markGenes,
+           cluster.order = c(1:9))
+dev.off()
+```
 
 # Session Info
 
