@@ -19,9 +19,6 @@ There are some R package to make sure have been installed for better installing 
 
 ``` r
 BiocManager::install("SingleCellExperiment")
-
-# install dependent packages
-check_dependency()
 ```
 
 ## Installation
@@ -29,9 +26,6 @@ check_dependency()
 You can install the development version of ClusterGVis like so:
 
 ``` r
-# install from cran
-install.packages("ClusterGVis")
-
 # Note: please update your ComplexHeatmap to the latest version!
 # install.packages("devtools")
 devtools::install_github("junjunlab/ClusterGVis")
