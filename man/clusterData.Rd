@@ -20,7 +20,8 @@ clusterData(
 \arguments{
 \item{obj}{An input object that can take one of two types:
 - A \strong{cell_data_set} object for trajectory analysis.
-- A \strong{matrix} or \strong{data.frame} containing expression data.}
+- A \strong{matrix} or \strong{data.frame} containing expression data
+, or SummarizedExperiment object.}
 
 \item{scaleData}{Logical. Whether to scale the data
 (e.g., z-score normalization).}

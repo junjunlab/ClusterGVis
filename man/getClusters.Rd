@@ -13,7 +13,7 @@ pseudotime data:
 \item If the input is a \code{cell_data_set} object (e.g., from \code{Monocle3}),
 the function preprocesses the data using \code{pre_pseudotime_matrix}.
 \item If the input is a numeric matrix or a \code{data.frame}, it directly uses
-this data.
+this data, or SummarizedExperiment object.
 Default is \code{NULL}.
 }}
 

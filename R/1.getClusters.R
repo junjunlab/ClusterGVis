@@ -14,7 +14,7 @@
 #'   - If the input is a `cell_data_set` object (e.g., from `Monocle3`),
 #'     the function preprocesses the data using `pre_pseudotime_matrix`.
 #'   - If the input is a numeric matrix or a `data.frame`, it directly uses
-#'   this data.
+#'   this data, or SummarizedExperiment object.
 #'   Default is `NULL`.
 #' @param ... Additional arguments passed to the preprocessing function
 #'   `pre_pseudotime_matrix` (e.g., `assays`, `normalize`, etc.).
@@ -44,6 +44,8 @@ getClusters <- function(obj = NULL, ...) {
     exp <- do.call(pre_pseudotime_matrix, extra_params)
   } else if ("matrix" %in% cls | "data.frame" %in% cls) {
     exp <- obj
+  } else if ("SummarizedExperiment" %in% cls){
+    exp <- SummarizedExperiment::assay(obj)
   }
 
   factoextra::fviz_nbclust(exp, stats::kmeans, method = "wss") +

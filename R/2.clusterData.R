@@ -18,7 +18,8 @@ globalVariables(c(
 #'
 #' @param obj An input object that can take one of two types:
 #'        - A **cell_data_set** object for trajectory analysis.
-#'        - A **matrix** or **data.frame** containing expression data.
+#'        - A **matrix** or **data.frame** containing expression data
+#'        , or SummarizedExperiment object.
 #' @param scaleData Logical. Whether to scale the data
 #'  (e.g., z-score normalization).
 #' @param cluster.method Character. Clustering method to use.
@@ -117,6 +118,8 @@ clusterData <- function(obj = NULL,
     exp <- do.call(pre_pseudotime_matrix, extra_params)
   } else if ("matrix" %in% cls | "data.frame" %in% cls) {
     exp <- obj
+  } else if ("SummarizedExperiment" %in% cls){
+    exp <- SummarizedExperiment::assay(obj)
   }
 
   # choose method

@@ -7,6 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
 # ClusterGVis
 
 To enhance clustering and visualization of time-series gene expression data from RNA-Seq experiments, we present the ClusterGVis package. This tool enables concise and elegant analysis of time-series gene expression data in a simple, one-step operation. Additionally, you can perform enrichment analysis for each cluster using the enrichCluster function, which integrates seamlessly with clusterProfiler. ClusterGVis empowers you to create publication-quality visualizations with ease.
@@ -15,7 +16,7 @@ Comprehensive documentation can be found <https://junjunlab.github.io/ClusterGvi
 
 ## Installation
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("ClusterGVis")
@@ -25,17 +26,39 @@ BiocManager::install("ClusterGVis")
 
 ### Basic examples:
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
+library(SummarizedExperiment)
+library(S4Vectors)
 library(ClusterGVis)
+
+# a data.frame or SummarizedExperiment object
 data("exps")
+
+head(exps)
 
 # using kemans for clustering
 ck <- clusterData(obj = exps,
                   cluster.method = "kmeans",
                   cluster.num = 8)
 
+# construct a SummarizedExperiment object
+sce <- SummarizedExperiment(assays = list(counts = exps),
+                            colData = S4Vectors::DataFrame(sample = colnames(exps),
+                                                           row.names = colnames(exps))
+                            )
+
+sce
+
+# check suitable cluster nmbers
+getClusters(obj = sce)
+
+# using kemans for clustering
+ck2 <- clusterData(obj = sce,
+                  cluster.method = "kmeans",
+                  cluster.num = 8)
+
 # plot line only
-visCluster(object = cm,
+visCluster(object = ck,
            plot.type = "line")
 
 # plot heatmap only
@@ -45,16 +68,14 @@ visCluster(object = ck,
 
 ### Integration with seurat object:
 
-```{r,eval=FALSE}
-library(SeuratData)
+```{r,eval=TRUE}
 library(Seurat)
 
-data("pbmc3k.final")
-pbmc <- UpdateSeuratObject(object = pbmc3k.final)
+data("pbmc_subset")
 
 # find markers for every cluster compared to all remaining cells
 # report only the positive ones
-pbmc.markers.all <- Seurat::FindAllMarkers(pbmc,
+pbmc.markers.all <- Seurat::FindAllMarkers(pbmc_subset,
                                            only.pos = TRUE,
                                            min.pct = 0.25,
                                            logfc.threshold = 0.25)
@@ -68,7 +89,7 @@ pbmc.markers <- pbmc.markers.all %>%
 head(pbmc.markers)
 
 # prepare data from seurat object
-st.data <- prepareDataFromscRNA(object = pbmc,
+st.data <- prepareDataFromscRNA(object = pbmc_subset,
                                 diffData = pbmc.markers,
                                 showAverage = TRUE)
 
