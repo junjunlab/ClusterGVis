@@ -13,6 +13,9 @@ traverseTree(g, starting_cell, end_cells)
 
 \item{end_cells}{NULL}
 }
+\value{
+A list
+}
 \description{
 traverseTree function
 }

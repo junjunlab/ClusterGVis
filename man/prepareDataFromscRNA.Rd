@@ -80,8 +80,8 @@ pbmc.markers.all <- Seurat::FindAllMarkers(pbmc_subset,
 )
 
 # get top 10 genes
-pbmc.markers <- pbmc.markers.all \%>\%
-  dplyr::group_by(cluster) \%>\%
+pbmc.markers <- pbmc.markers.all |>
+  dplyr::group_by(cluster) |>
   dplyr::top_n(n = 20, wt = avg_log2FC)
 
 

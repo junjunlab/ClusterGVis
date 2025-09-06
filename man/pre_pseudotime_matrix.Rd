@@ -34,3 +34,51 @@ the function normalizes
 the data by subtracting the mean and dividing by the standard deviation for
 each row.
 }
+\examples{
+
+# Load required library
+library(monocle3)
+
+# Load example data from monocle3 package
+cell_metadata <- readRDS(system.file('extdata',
+                                     'worm_embryo/worm_embryo_coldata.rds',
+                                     package='monocle3'))
+gene_metadata <- readRDS(system.file('extdata',
+                                     'worm_embryo/worm_embryo_rowdata.rds',
+                                     package='monocle3'))
+expression_matrix <- readRDS(
+ system.file('extdata',
+             'worm_embryo/worm_embryo_expression_matrix.rds',
+              package='monocle3'))
+
+# Create CDS object
+cds <- new_cell_data_set(expression_data = expression_matrix,
+                         cell_metadata = cell_metadata,
+                         gene_metadata = gene_metadata)
+
+# Standard monocle3 preprocessing workflow
+cds <- preprocess_cds(cds)
+cds <- align_cds(cds, alignment_group = "batch", 
+                 residual_model_formula_str = "~ bg.300.loading +
+                  bg.400.loading + bg.500.1.loading + bg.500.2.loading +
+                  bg.r17.loading + bg.b01.loading + bg.b02.loading")
+cds <- reduce_dimension(cds)
+cds <- cluster_cells(cds)
+cds <- learn_graph(cds)
+cds <- order_cells(cds, root_pr_nodes = 'Y_21')
+
+# Find genes that vary along pseudotime
+modulated_genes <- graph_test(cds, 
+  neighbor_graph = "principal_graph", cores = 4)
+genes <- row.names(subset(modulated_genes, q_value == 0 & morans_I > 0.25))
+
+# Extract pseudotime matrix for modulated genes
+pt_matrix <- pre_pseudotime_matrix(cds_obj = cds,
+                                   assays = "normalized",
+                                   gene_list = genes[1:10])  
+                                   # First 10 genes
+
+# Check the result
+head(pt_matrix[1:5, 1:5])
+
+}

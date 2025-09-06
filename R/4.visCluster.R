@@ -268,14 +268,14 @@ visCluster <- function(object = NULL,
     # }
 
     if (object$type %in% c("scRNAdata", "monocle", "wgcna")) {
-      data <- data.frame(object$long.res) %>%
+      data <- data.frame(object$long.res)|>
         dplyr::arrange(.data[["cluster"]])
     } else {
       if (object$type %in% c("mfuzz", "TCseq")) {
-        data <- data.frame(object$long.res) %>%
+        data <- data.frame(object$long.res)|>
           dplyr::arrange(.data[["cluster"]], .data[["membership"]])
       } else {
-        data <- data.frame(object$long.res) %>%
+        data <- data.frame(object$long.res)|>
           dplyr::arrange(.data[["cluster"]])
       }
     }
@@ -362,29 +362,29 @@ visCluster <- function(object = NULL,
   } else {
     # ==========================================================================
 
-    data <- data.frame(object$wide.res, check.names = FALSE) %>%
+    data <- data.frame(object$wide.res, check.names = FALSE)|>
       dplyr::arrange(as.numeric(as.character(cluster)))
 
     # prepare matrix
     if (object$type %in% c("mfuzz", "TCseq")) {
-      mat <- data %>%
-        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+      mat <- data|>
+        dplyr::arrange(as.numeric(as.character(cluster)))|>
         dplyr::select(-gene, -cluster, -membership)
     } else if (object$type == "wgcna") {
-      mat <- data %>%
-        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+      mat <- data|>
+        dplyr::arrange(as.numeric(as.character(cluster)))|>
         dplyr::select(-gene, -cluster, -modulecol)
     } else if (object$type == "scRNAdata") {
-      mat <- data %>%
-        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+      mat <- data|>
+        dplyr::arrange(as.numeric(as.character(cluster)))|>
         dplyr::select(-gene, -cluster)
     } else if (object$type == "monocle") {
-      mat <- data %>%
-        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+      mat <- data|>
+        dplyr::arrange(as.numeric(as.character(cluster)))|>
         dplyr::select(-gene, -cluster)
     } else {
-      mat <- data %>%
-        dplyr::arrange(as.numeric(as.character(cluster))) %>%
+      mat <- data|>
+        dplyr::arrange(as.numeric(as.character(cluster)))|>
         dplyr::select(-gene, -cluster)
     }
 
@@ -402,15 +402,15 @@ visCluster <- function(object = NULL,
     }
 
     # split info
-    cl.info <- data.frame(table(data$cluster)) %>%
-      dplyr::mutate(Var1 = as.numeric(as.character(Var1))) %>%
+    cl.info <- data.frame(table(data$cluster))|>
+      dplyr::mutate(Var1 = as.numeric(as.character(Var1)))|>
       dplyr::arrange(Var1)
     cluster.num <- nrow(cl.info)
 
     subgroup <- lapply(seq_len(nrow(cl.info)), function(x) {
       nm <- rep(as.character(cl.info$Var1[x]), cl.info$Freq[x])
       paste("C", nm, sep = "")
-    }) %>% unlist()
+    }) |> unlist()
 
     # cluster orders
     if (!is.null(cluster.order)) {
@@ -631,13 +631,13 @@ visCluster <- function(object = NULL,
       annoGene <- markGenes
 
       # add color for gene
-      gene.col <- data %>%
-        dplyr::select(gene, cluster) %>%
+      gene.col <- data|>
+        dplyr::select(gene, cluster)|>
         dplyr::filter(gene %in% annoGene)
 
       purrr::map_df(seq_len(cluster.num), function(x) {
-        tmp <- gene.col %>%
-          dplyr::filter(as.numeric(cluster) == x) %>%
+        tmp <- gene.col|>
+          dplyr::filter(as.numeric(cluster) == x)|>
           dplyr::mutate(col = colanno[x])
       }) -> gene.col
 
@@ -1035,8 +1035,8 @@ visCluster <- function(object = NULL,
           if (go.size == "pval") {
             # loop for re-scaling pvalue
             purrr::map_df(unique(termanno$id), function(x) {
-              tmp <- termanno %>%
-                dplyr::filter(id == x) %>%
+              tmp <- termanno|>
+                dplyr::filter(id == x)|>
                 dplyr::mutate(size = scales::rescale(-log10(pval),
                                                      to = term.text.limit))
             }) -> termanno.tmp
@@ -1048,8 +1048,8 @@ visCluster <- function(object = NULL,
         }
 
         # add to termanno
-        termanno <- termanno %>%
-          dplyr::ungroup() %>%
+        termanno <- termanno|>
+          dplyr::ungroup()|>
           dplyr::mutate(col = gocol, fontsize = gosize)
 
         # to list
@@ -1121,10 +1121,10 @@ visCluster <- function(object = NULL,
                                  ...) {
             # process data
             if (ncol(data) - 2 == 3) {
-              data <- data %>%
+              data <- data|>
                 dplyr::mutate(bary = -log10(pval))
             } else {
-              data <- data %>%
+              data <- data|>
                 dplyr::mutate(bary = ratio)
             }
 
@@ -1142,9 +1142,9 @@ visCluster <- function(object = NULL,
                 grid::grid.rect()
 
                 # sub data
-                tmp <- data %>%
+                tmp <- data|>
                   dplyr::filter(id == nm)
-                # %>% dplyr::arrange(bary)
+                # |>dplyr::arrange(bary)
 
                 # bar grobs
                 # grid::grid.rect(x = rep(0,nrow(tmp)),
@@ -1264,8 +1264,8 @@ visCluster <- function(object = NULL,
           if (kegg.size == "pval") {
             # loop for re-scaling pvalue
             purrr::map_df(unique(termanno$id), function(x) {
-              tmp <- termanno %>%
-                dplyr::filter(id == x) %>%
+              tmp <- termanno|>
+                dplyr::filter(id == x)|>
                 dplyr::mutate(size = scales::rescale(-log10(pval),
                                                      to = term.text.limit))
             }) -> termanno.tmp
@@ -1277,8 +1277,8 @@ visCluster <- function(object = NULL,
         }
 
         # add to termanno
-        termanno <- termanno %>%
-          dplyr::ungroup() %>%
+        termanno <- termanno|>
+          dplyr::ungroup()|>
           dplyr::mutate(col = gocol, fontsize = gosize)
 
         # to list
@@ -1330,10 +1330,10 @@ visCluster <- function(object = NULL,
                                    ...) {
             # process data
             if (ncol(data) - 2 == 3) {
-              data <- data %>%
+              data <- data|>
                 dplyr::mutate(bary = -log10(pval))
             } else {
-              data <- data %>%
+              data <- data|>
                 dplyr::mutate(bary = ratio)
             }
 
@@ -1351,9 +1351,9 @@ visCluster <- function(object = NULL,
                 grid::grid.rect()
 
                 # sub data
-                tmp <- data %>%
+                tmp <- data|>
                   dplyr::filter(id == nm)
-                # %>% dplyr::arrange(bary)
+                # |>dplyr::arrange(bary)
 
                 # bar grobs
                 grid::grid.segments(

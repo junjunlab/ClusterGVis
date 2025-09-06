@@ -169,29 +169,29 @@ clusterData <- function(obj = NULL,
       raw_cluster_anno <- cbind(mtx, cluster = mfuzz_res$cluster)
 
       # membership
-      mem <- cbind(mfuzz_res$membership, cluster2 = mfuzz_res$cluster) %>%
-        data.frame(check.names = FALSE) %>%
-        dplyr::mutate(gene = rownames(.))
+      mem <- cbind(mfuzz_res$membership, cluster2 = mfuzz_res$cluster) |>
+        data.frame(check.names = FALSE)
+      mem$gene <- rownames(mem)
 
       # get gene membership
       lapply(seq_len(cluster.num), function(x) {
-        ms <- mem %>% dplyr::filter(cluster2 == x)
+        ms <- mem |> dplyr::filter(cluster2 == x)
         res <- data.frame(
           membership = ms[[x]],
           gene = ms$gene,
           cluster2 = ms$cluster2,
           check.names = FALSE
         )
-      }) %>% do.call("rbind", .) -> membership_info
+      }) |> do.call(what = "rbind") -> membership_info
 
       # get normalized data
-      dnorm <- cbind(myset@assayData$exprs, cluster = mfuzz_res$cluster) %>%
-        data.frame(check.names = FALSE) %>%
-        dplyr::mutate(gene = rownames(.))
+      dnorm <- cbind(myset@assayData$exprs, cluster = mfuzz_res$cluster) |>
+        data.frame(check.names = FALSE)
+      dnorm$gene <- rownames(dnorm)
 
       # merge membership info and normalized data
-      final_res <- merge(dnorm, membership_info, by = "gene") %>%
-        dplyr::select(-cluster2) %>%
+      final_res <- merge(dnorm, membership_info, by = "gene") |>
+        dplyr::select(-cluster2) |>
         dplyr::arrange(cluster)
     } else if (cluster.method == "TCseq") {
       # ======================================================================
@@ -216,27 +216,27 @@ clusterData <- function(obj = NULL,
         TCseq_params_list
       ))
 
-      dt <- data.frame(tca@data) %>%
+      dt <- data.frame(tca@data) |>
         tibble::rownames_to_column(var = "gene")
 
-      cluster <- data.frame(cl = tca@cluster, check.names = FALSE) %>%
+      cluster <- data.frame(cl = tca@cluster, check.names = FALSE) |>
         tibble::rownames_to_column(var = "gene")
 
-      membership <- data.frame(tca@membership, check.names = FALSE) %>%
-        tibble::rownames_to_column(var = "gene") %>%
+      membership <- data.frame(tca@membership, check.names = FALSE) |>
+        tibble::rownames_to_column(var = "gene") |>
         reshape2::melt(
           id.vars = "gene",
           variable.name = "cl",
           value.name = "membership"
         )
 
-      anno <- cluster %>%
-        dplyr::left_join(y = membership, by = "gene") %>%
-        dplyr::filter(cl.x == cl.y) %>%
-        dplyr::select(-cl.y) %>%
+      anno <- cluster |>
+        dplyr::left_join(y = membership, by = "gene") |>
+        dplyr::filter(cl.x == cl.y) |>
+        dplyr::select(-cl.y) |>
         dplyr::rename(cluster = cl.x)
 
-      final_res <- dt %>%
+      final_res <- dt |>
         dplyr::left_join(y = anno, by = "gene")
     }
 
@@ -244,7 +244,7 @@ clusterData <- function(obj = NULL,
     # ========================================================================
     # whether subset clusters
     if (!is.null(subcluster)) {
-      final_res <- final_res %>% dplyr::filter(cluster %in% subcluster)
+      final_res <- final_res |> dplyr::filter(cluster %in% subcluster)
     }
 
     # wide to long
@@ -262,12 +262,12 @@ clusterData <- function(obj = NULL,
     cltn <- table(final_res$cluster)
     cl.info <- data.frame(table(final_res$cluster))
     purrr::map_df(unique(df$cluster_name), function(x) {
-      tmp <- df %>%
+      tmp <- df |>
         dplyr::filter(cluster_name == x)
 
       cn <- as.numeric(unlist(strsplit(as.character(x), split = "cluster "))[2])
 
-      tmp %>%
+      tmp |>
         dplyr::mutate(cluster_name = paste(cluster_name,
                                            " (", cltn[cn], ")", sep = ""))
     }) -> df
@@ -302,9 +302,9 @@ clusterData <- function(obj = NULL,
 
     # whether zsocre data
     if (scaleData == TRUE) {
-      hclust_matrix <- exp %>%
-        t() %>%
-        scale() %>%
+      hclust_matrix <- exp |>
+        t() |>
+        scale() |>
         t()
     } else {
       hclust_matrix <- exp
@@ -354,14 +354,14 @@ clusterData <- function(obj = NULL,
     m <- hclust_matrix[od.res$od, ]
 
     # add cluster and gene.name
-    wide.r <- m %>%
-      data.frame(check.names = FALSE) %>%
-      dplyr::mutate(gene = rownames(.), cluster = od.res$id) %>%
+    wide.r <- m |>
+      data.frame(check.names = FALSE) |>
+      dplyr::mutate(gene = rownames(m), cluster = od.res$id) |>
       dplyr::arrange(cluster)
 
     # whether subset clusters
     if (!is.null(subcluster)) {
-      wide.r <- wide.r %>% dplyr::filter(cluster %in% subcluster)
+      wide.r <- wide.r |> dplyr::filter(cluster %in% subcluster)
     }
 
     # wide to long
@@ -378,12 +378,12 @@ clusterData <- function(obj = NULL,
     # add gene number
     cltn <- table(wide.r$cluster)
     purrr::map_df(unique(df$cluster_name), function(x) {
-      tmp <- df %>%
+      tmp <- df |>
         dplyr::filter(cluster_name == x)
 
       cn <- as.numeric(unlist(strsplit(as.character(x), split = "cluster "))[2])
 
-      tmp %>%
+      tmp |>
         dplyr::mutate(cluster_name = paste(cluster_name,
                                            " (", cltn[cn], ")", sep = ""))
     }) -> df
@@ -420,12 +420,12 @@ clusterData <- function(obj = NULL,
 
     expm <- data.frame(t(scale(exp)))
     expm$gene <- rownames(expm)
-    final.res <- data.frame(cbind(expm, cinfo)) %>%
+    final.res <- data.frame(cbind(expm, cinfo)) |>
       dplyr::arrange(cluster)
 
     # whether subset clusters
     if (!is.null(subcluster)) {
-      final.res <- final.res %>% dplyr::filter(cluster %in% subcluster)
+      final.res <- final.res |> dplyr::filter(cluster %in% subcluster)
     }
 
     # =====================================
@@ -449,12 +449,12 @@ clusterData <- function(obj = NULL,
     # add gene number
     cltn <- table(final.res$cluster)
     purrr::map_df(unique(df$cluster_name), function(x) {
-      tmp <- df %>%
+      tmp <- df |>
         dplyr::filter(cluster_name == x)
 
       cn <- as.numeric(unlist(strsplit(as.character(x), split = "cluster "))[2])
 
-      tmp %>%
+      tmp |>
         dplyr::mutate(cluster_name = paste(
           cluster_name,
           " (",

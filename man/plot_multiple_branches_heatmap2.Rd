@@ -95,12 +95,13 @@ Create a heatmap to demonstrate the bifurcation of gene expression along
 multiple branches
 }
 \examples{
-data("HSMM")
+# data("HSMM")
 data("BEAM_res")
 
 
 # return plot
-# plot_multiple_branches_heatmap2(HSMM[row.names(subset(BEAM_res,qval < 1e-4)),],
+# plot_multiple_branches_heatmap2(HSMM[row.names(
+#  subset(BEAM_res,qval < 1e-4)),],
 #                                 branches = c(1,3,4,5),
 #                                 num_clusters = 4,
 #                                 cores = 1,

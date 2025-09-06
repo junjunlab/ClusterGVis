@@ -27,7 +27,6 @@ Imports:
     ggplot2,
     grDevices,
     grid,
-    magrittr,
     Matrix,
     methods,
     purrr,
@@ -36,7 +35,8 @@ Imports:
     stats,
     tibble,
     SingleCellExperiment,
-    SummarizedExperiment
+    SummarizedExperiment,
+    monocle3
 Suggests: 
     Biobase,
     ComplexHeatmap,
@@ -53,9 +53,11 @@ Suggests:
     WGCNA,
     utils,
     BiocManager,
-    S4Vectors
+    S4Vectors,
+    testthat (>= 3.0.0)
 biocViews: RNASeq,Transcriptomics,Visualization,SingleCell,GeneExpression,Clustering
 URL: https://github.com/junjunlab/ClusterGVis/, 
   https://junjunlab.github.io/ClusterGvis-manual/
 BugReports: https://github.com/junjunlab/ClusterGVis/issues
 VignetteBuilder: knitr
+Config/testthat/edition: 3

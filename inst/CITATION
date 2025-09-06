@@ -1,9 +1,11 @@
-bibentry("Article",
-         title       = "{Mfuzz: a software package for soft clustering of microarray data}",
-         author       = c(person("Kumar", "Lokesh"),
-                          person("E Futschik", "Matthias")),
-         journal     = "Bioinformation",
-         year        = "2007",
-         volume      = "2",
-         textVersion = "Kumar, L., & E Futschik, M. (2007). Mfuzz: a software package for soft clustering of microarray data. Bioinformation, 2(1), 5–7.",
-         doi         = "10.6026/97320630002005")
+bibentry(
+  bibtype  = "Article",
+  title    = "ClusterGVis: An Advanced Visualization and Clustering Tool for Gene Expression Analysis",
+  author   = "Jun Zhang, Hongyuan Li, Wenjun Tao, Jun Zhou",
+  journal  = "Genomics, Proteomics & Bioinformatics",
+  year     = "2025",
+  volume   = "",
+  number   = "",
+  pages    = "",
+  doi      = "1111"
+)

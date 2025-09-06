@@ -166,7 +166,7 @@ enrichCluster <- function(object = NULL,
     enrich.data$cluster
   ))), function(x) {
     # filter
-    tmp <- enrich.data %>%
+    tmp <- enrich.data |> 
       dplyr::filter(cluster == unique(enrich.data$cluster)[x])
 
     # =============================================
@@ -236,10 +236,10 @@ enrichCluster <- function(object = NULL,
     # to data.frame
     enrich_res <- data.frame(ego)
     if (nrow(enrich_res) > 0) {
-      df <- data.frame(ego) %>%
-        dplyr::filter(pvalue < pvalueCutoff) %>%
+      df <- data.frame(ego) |> 
+        dplyr::filter(pvalue < pvalueCutoff) |> 
         dplyr::mutate(group = paste("C", unique(enrich.data$cluster)[x],
-                                    sep = "")) %>%
+                                    sep = "")) |> 
         dplyr::arrange(pvalue)
 
       # whether save all res
@@ -251,8 +251,8 @@ enrichCluster <- function(object = NULL,
           top <- topn[x]
         }
 
-        df <- df %>%
-          # dplyr::select(group,Description,pvalue) %>%
+        df <- df |> 
+          # dplyr::select(group,Description,pvalue) |> 
           dplyr::slice_head(n = top)
 
         # add gene enrich ratio
@@ -265,17 +265,17 @@ enrichCluster <- function(object = NULL,
 
         # select columns
         if (add.gene == TRUE) {
-          df2 <- df1 %>% dplyr::select(group, Description, pvalue,
+          df2 <- df1 |>dplyr::select(group, Description, pvalue,
                                        ratio, geneID)
         } else {
-          df2 <- df1 %>% dplyr::select(group, Description, pvalue, ratio)
+          df2 <- df1 |>dplyr::select(group, Description, pvalue, ratio)
         }
       } else {
         df2 <- df
       }
 
       # remove no pass threshold terms
-      df2 <- df2 %>% stats::na.omit()
+      df2 <- df2 |>stats::na.omit()
 
       # results
       return(df2)

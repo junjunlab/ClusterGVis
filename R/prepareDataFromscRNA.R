@@ -49,8 +49,8 @@
 #' )
 #'
 #' # get top 10 genes
-#' pbmc.markers <- pbmc.markers.all %>%
-#'   dplyr::group_by(cluster) %>%
+#' pbmc.markers <- pbmc.markers.all |>
+#'   dplyr::group_by(cluster) |>
 #'   dplyr::top_n(n = 20, wt = avg_log2FC)
 #'
 #'
@@ -90,8 +90,8 @@ prepareDataFromscRNA <- function(object = NULL,
         group.by = group.by,
         assays = assays,
         layer = slot
-      ) %>%
-        data.frame() %>%
+      ) |>
+        data.frame() |>
         as.matrix()
     } else {
       mean_gene_exp <- Seurat::AverageExpression(
@@ -100,8 +100,8 @@ prepareDataFromscRNA <- function(object = NULL,
         group.by = group.by,
         assays = assays,
         slot = slot
-      ) %>%
-        data.frame() %>%
+      ) |>
+        data.frame() |>
         as.matrix()
     }
 
@@ -147,7 +147,7 @@ prepareDataFromscRNA <- function(object = NULL,
 
     # get all cells data
     getassy <- Seurat::GetAssayData(object = object, slot = slot)[
-      features = markerGene, cells = NULL, drop = FALSE] %>%
+      features = markerGene, cells = NULL, drop = FALSE] |>
       as.matrix()
 
     # reorder cells
@@ -172,8 +172,9 @@ prepareDataFromscRNA <- function(object = NULL,
   # prepare data
   # ============================================================================
   # add gene column
-  merMat <- data.frame(mean_gene_exp, check.names = FALSE) %>%
-    tibble::rownames_to_column(., var = "gene")
+  merMat <- data.frame(mean_gene_exp, check.names = FALSE)
+  merMat$gene <- rownames(merMat)
+   
 
   # count marker gene numbers for each cluster
   cinfo.gene <- diffData[, c("cluster", "gene")]
@@ -184,7 +185,7 @@ prepareDataFromscRNA <- function(object = NULL,
     tmp <- cinfo.gene[which(cinfo.gene$cluster == cn[x]), ]
 
     # filter data
-    tmp2 <- merMat[which(merMat$gene %in% tmp$gene), ] %>%
+    tmp2 <- merMat[which(merMat$gene %in% tmp$gene), ] |>
       dplyr::mutate(cluster = as.character(x))
 
     return(tmp2)
@@ -192,12 +193,19 @@ prepareDataFromscRNA <- function(object = NULL,
 
   # whether retain unique gene name
   if (keep.uniqGene == TRUE) {
-    wide.res <- wide.res %>% dplyr::distinct(., gene, .keep_all = TRUE)
-    geneType <- paste("unique", sep, sep = "|")
+    # wide.res <- wide.res |> dplyr::distinct(., gene, .keep_all = TRUE)
+    # geneType <- paste("unique", sep, sep = "|")
+    
+    duplicated_genes <- duplicated(wide.res$gene)
+    wide.res <- wide.res[!duplicated_genes, ]
+    geneType <- paste0("unique", "|", sep)
   } else {
-    wide.res <- wide.res %>% dplyr::mutate(.,
-                                           gene = make.unique(gene, sep = sep))
-    geneType <- paste("nounique", sep, sep = "|")
+    # wide.res <- wide.res |> dplyr::mutate(.,
+    #     gene = make.unique(gene, sep = sep))
+    # geneType <- paste("nounique", sep, sep = "|")
+    
+    wide.res$gene <- make.unique(wide.res$gene, sep = sep)
+    geneType <- paste0("nounique", "|", sep)
   }
 
   # wide to long
@@ -222,16 +230,16 @@ prepareDataFromscRNA <- function(object = NULL,
 
   # add gene number
   # cltn <- table(wide.res$cluster)
-  cl.info <- data.frame(table(wide.res$cluster)) %>%
-    dplyr::mutate(Var1 = as.numeric(as.character(Var1))) %>%
+  cl.info <- data.frame(table(wide.res$cluster)) |>
+    dplyr::mutate(Var1 = as.numeric(as.character(Var1))) |>
     dplyr::arrange(Var1)
 
   id <- unique(df$cluster_name)
   purrr::map_df(seq_along(id), function(x) {
-    tmp <- df %>%
+    tmp <- df |>
       dplyr::filter(cluster_name == id[x])
 
-    tmp %>%
+    tmp |>
       dplyr::mutate(cluster_name = paste(cluster_name,
                                          " (", cl.info$Freq[x], ")", sep = ""))
   }) -> df

@@ -1,17 +1,3 @@
-#' Pipe operator
-#'
-#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr placeholder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-NULL
 
 
 
@@ -109,7 +95,7 @@ setClass(
 #'   }
 #'
 #'
-#' @export
+#'
 setGeneric("pseudotime", function(x, reduction_method = "UMAP") {
   standardGeneric("pseudotime")
 })
@@ -117,7 +103,7 @@ setGeneric("pseudotime", function(x, reduction_method = "UMAP") {
 
 
 #' @rdname pseudotime
-#' @export
+#'
 setMethod("pseudotime", "cell_data_set",
           function(x, reduction_method = "UMAP") {
   value <- x@principal_graph_aux[[reduction_method]]$pseudotime[
@@ -146,7 +132,7 @@ setMethod("pseudotime", "cell_data_set",
 #'
 #' @return Count matrix.
 #'
-#' @export
+#'
 setGeneric("exprs", function(x) {
   standardGeneric("exprs")
 })
@@ -156,7 +142,7 @@ setGeneric("exprs", function(x) {
 #'
 #' @return Count matrix.
 #'
-#' @export
+#'
 setMethod("exprs", "cell_data_set", function(x) {
   if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
     stop("Package 'SummarizedExperiment' is required. Please install it.")

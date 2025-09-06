@@ -113,7 +113,8 @@ data("BEAM_res")
 
 
 # return plot
-# plot_genes_branched_heatmap2(HSMM[row.names(subset(BEAM_res,qval < 1e-4)),],
+# plot_genes_branched_heatmap2(HSMM[row.names(subset(
+# BEAM_res,qval < 1e-4)),],
 #                              branch_point = 1,
 #                              num_clusters = 4,
 #                              cores = 1,
