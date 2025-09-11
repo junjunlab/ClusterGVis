@@ -5,7 +5,7 @@
 \alias{filter.std}
 \title{using filter.std to filter low expression genes}
 \usage{
-\method{filter}{std}(eset, min.std, visu = TRUE, verbose = TRUE)
+filter.std(eset, min.std, visu = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{eset}{expression matrix, default NULL.}
