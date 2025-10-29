@@ -31,6 +31,14 @@ NULL
 #' This is a test data for this package
 #'
 #' @name DataSet
+#' @aliases HSMM
+#' @docType data
+#' @keywords datasets
+#' @format A data frame.
+NULL
+#' This is a test data for this package
+#'
+#' @name DataSet
 #' @aliases net
 #' @docType data
 #' @keywords datasets

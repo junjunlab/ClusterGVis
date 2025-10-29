@@ -1,16 +1,21 @@
 test_that("visCluster works", {
   data("exps")
-  
-  ck <- clusterData(
-    obj = exps,
-    cluster.method = "kmeans",
-    cluster.num = 8)
-  
-  
+
+  expect_true(is.data.frame(exps))
+
+  ck <- clusterData(obj = exps,
+                    clusterMethod = "kmeans",
+                    clusterNum = 8)
+
+  expect_true(is.list(ck), "clusterData should return a list")
+
+  p <- visCluster(object = ck,
+                  plotType = "line")
+
+  expect_s3_class(p, "ggplot")
+
   expect_no_error(
-    visCluster(
-      object = ck,
-      plot.type = "line"
-    )
+    visCluster(object = ck,
+               plotType = "line")
   )
 })

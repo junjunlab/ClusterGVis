@@ -3,51 +3,72 @@ title: "vignette"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vignette}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
-
 
 # ClusterGVis
 
-To enhance clustering and visualization of time-series gene expression data 
-from RNA-Seq experiments, we present the ClusterGVis package. This tool enables 
-concise and elegant analysis of time-series gene expression data in a simple, 
-one-step operation. Additionally, you can perform enrichment analysis for each
-cluster using the enrichCluster function, which integrates seamlessly with
-clusterProfiler. ClusterGVis empowers you to create publication-quality 
-visualizations with ease.
+To enhance clustering and visualization of time-series gene expression
+data from RNA-Seq experiments, we present the ClusterGVis package. This
+tool enables concise and elegant analysis of time-series gene expression
+data in a simple, one-step operation. Additionally, you can perform
+enrichment analysis for each cluster using the enrichCluster function,
+which integrates seamlessly with clusterProfiler. ClusterGVis empowers
+you to create publication-quality visualizations with ease.
 
-Comprehensive documentation can be found 
+Comprehensive documentation can be found
 <https://junjunlab.github.io/ClusterGvis-manual>.
-
-## Installation
-
-```{r,eval=TRUE}
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#     install.packages("BiocManager")
-# BiocManager::install("ClusterGVis")
-```
 
 ## Usage
 
 ### Basic examples:
 
-```{r,eval=TRUE}
-library(SummarizedExperiment)
-library(S4Vectors)
+Here we load the built-in RNA-seq expression matrix, where each column
+represents transcriptome gene expression information from different
+differentiation stages: zygote, two-cell, four-cell, eight-cell, morula,
+and blastocyst:
+
+```{r,eval=TRUE, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(SummarizedExperiment))
+suppressPackageStartupMessages(library(S4Vectors))
 library(ClusterGVis)
 
 # a data.frame or SummarizedExperiment object
 data("exps")
 
 head(exps)
+```
 
+The **getClusters** function employs the elbow method to help users
+pre-determine the appropriate number of clusters for their analysis:
+
+```{r,eval=TRUE,fig.width=5, message=FALSE, warning=FALSE}
+# check suitable cluster nmbers
+getClusters(obj = exps)
+```
+
+To investigate gene expression modules that exhibit distinct expression
+patterns across different differentiation stages, we employ k-means
+clustering to group genes, with the number of clusters set to 8:
+
+```{r,eval=TRUE, message=FALSE, warning=FALSE}
 # using kemans for clustering
 ck <- clusterData(obj = exps,
-                  cluster.method = "kmeans",
-                  cluster.num = 8)
+                  clusterMethod = "kmeans",
+                  clusterNum = 8)
 
+
+```
+
+Besides standard gene expression matrices (in data.frame or matrix
+format), users can also directly pass **SummarizedExperiment** objects
+as input data:
+
+```{r,eval=TRUE, message=FALSE, warning=FALSE}
 # construct a SummarizedExperiment object
 sce <- SummarizedExperiment(assays = list(counts = exps),
                             colData = S4Vectors::DataFrame(
@@ -57,27 +78,49 @@ sce <- SummarizedExperiment(assays = list(counts = exps),
 
 sce
 
-# check suitable cluster nmbers
-getClusters(obj = sce)
-
 # using kemans for clustering
 ck2 <- clusterData(obj = sce,
-                  cluster.method = "kmeans",
-                  cluster.num = 8)
+                  clusterMethod = "kmeans",
+                  clusterNum = 8)
+```
 
+We can then visualize the clustering results. The **visCluster**
+function supports various visualization methods, including line plots,
+heatmaps, and complex composite graphics, to demonstrate the expression
+trend patterns of genes across different modules:
+
+Line plot:
+
+```{r,eval=TRUE,fig.width=10,fig.height=6, message=FALSE, warning=FALSE}
 # plot line only
 visCluster(object = ck,
-           plot.type = "line")
+           plotType = "line")
+```
 
+Heatmap plot:
+
+```{r,eval=TRUE,fig.width=5,fig.height=10, message=FALSE, warning=FALSE}
 # plot heatmap only
 visCluster(object = ck,
-           plot.type = "heatmap")
+           plotType = "heatmap")
+```
+
+Complex heatmap with line plot annotation:
+
+```{r,eval=TRUE,fig.width=6,fig.height=10, message=FALSE, warning=FALSE}
+# plot heatmap only
+visCluster(object = ck,
+           plotType = "both")
 ```
 
 ### Integration with seurat object:
 
-```{r,eval=TRUE}
-library(Seurat)
+ClusterGVis is compatible with outputs from single-cell analysis
+pipelines, such as Seurat objects. Here we demonstrate the visualization
+of marker genes discovered for distinct cell subpopulations:
+
+```{r,eval=TRUE,fig.width=10,fig.height=9, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(Seurat))
 
 data("pbmc_subset")
 
@@ -106,21 +149,54 @@ str(st.data)
 
 # line plot
 visCluster(object = st.data,
-           plot.type = "line")
+           plotType = "line")
+```
 
+Heatmap plot:
+
+```{r,eval=TRUE,fig.width=6,fig.height=10, message=FALSE, warning=FALSE}
 # add gene name
-markGenes = unique(pbmc.markers$gene)[
-  sample(1:length(unique(pbmc.markers$gene)),40,
-                                             replace = FALSE)]
+markGenes <- unique(pbmc.markers$gene)[
+  sample(1:length(unique(pbmc.markers$gene)),40,replace = FALSE)]
 
 # heatmap plot
-pdf('sc1.pdf',height = 10,width = 6,onefile = FALSE)
-visCluster(object = st.data,
-           plot.type = "heatmap",
+# pdf('sc1.pdf',height = 10,width = 6,onefile = FALSE)
+p <- visCluster(object = st.data,
+           plotType = "heatmap",
            column_names_rot = 45,
            markGenes = markGenes,
-           cluster.order = c(1:9))
-dev.off()
+           clusterOrder = c(1:9))
+# dev.off()
+```
+
+### Integration with SingleCellExperiment object:
+
+If you are working with a `SingleCellExperiment` object, you can use
+**ClusterGVis** to easily extract data and generate plots:
+
+```{r,eval=TRUE,fig.width=10,fig.height=8, message=FALSE, warning=FALSE}
+library(Seurat)
+data("pbmc_subset")
+
+# transform into SingleCellExperiment 
+sce <- as.SingleCellExperiment(pbmc_subset)
+
+pbmc.markers.all <- Seurat::FindAllMarkers(pbmc_subset,
+                                           only.pos = TRUE,
+                                           min.pct = 0.25,
+                                           logfc.threshold = 0.25)
+
+# get top 10 genes
+pbmc.markers <- pbmc.markers.all |>
+  dplyr::group_by(cluster) |>
+  dplyr::top_n(n = 20, wt = avg_log2FC)
+
+st.data <- prepareDataFromscRNA(object = sce,
+                                diffData = pbmc.markers[,c("cluster","gene")],
+                                showAverage = TRUE)
+
+visCluster(object = st.data,
+           plotType = "line")
 ```
 
 # Session Info

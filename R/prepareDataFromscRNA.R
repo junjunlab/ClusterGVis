@@ -15,16 +15,16 @@
 #' expression across all cells.
 #' @param cells a vector of cell names to extract from the Seurat object. If
 #' NULL, all cells will be used.
-#' @param group.by a string specifying the grouping variable for differential
+#' @param groupBy a string specifying the grouping variable for differential
 #' expression analysis. Default is 'ident', which groups cells by their
 #' assigned clusters.
 #' @param assays a string or vector of strings specifying the assay(s) to
 #' extract from the Seurat object. Default is 'RNA'.
 #' @param slot a string specifying the slot name where the assay data is stored
 #' in the Seurat object. Default is 'data'.
-#' @param scale.data whether do Z-score for expression data, default TRUE.
-#' @param cluster.order the celltype orders.
-#' @param keep.uniqGene a logical indicating whether to keep only unique gene
+#' @param scaleData whether do Z-score for expression data, default TRUE.
+#' @param clusterOrder the celltype orders.
+#' @param keepUniqGene a logical indicating whether to keep only unique gene
 #' names. Default is TRUE.
 #' @param sep a character string to separate gene and cell names in the output
 #' dataframe. Default is "_".
@@ -32,6 +32,10 @@
 #' @return a dataframe containing the expression data for the specified genes
 #' and cells,
 #' organized in a format suitable for differential gene expression analysis.
+#'
+#' @importFrom SingleCellExperiment logcounts
+#' @importFrom scuttle aggregateAcrossCells
+#'
 #'
 #' @examples
 #'
@@ -66,12 +70,12 @@ prepareDataFromscRNA <- function(object = NULL,
                                  diffData = NULL,
                                  showAverage = TRUE,
                                  cells = NULL,
-                                 group.by = "ident",
+                                 groupBy = "ident",
                                  assays = "RNA",
                                  slot = "data",
-                                 scale.data = TRUE,
-                                 cluster.order = NULL,
-                                 keep.uniqGene = TRUE,
+                                 scaleData = TRUE,
+                                 clusterOrder = NULL,
+                                 keepUniqGene = TRUE,
                                  sep = "_") {
   # ============================================================================
   # get data form object
@@ -81,87 +85,126 @@ prepareDataFromscRNA <- function(object = NULL,
   # choose mode
   if (showAverage == TRUE) {
     # get cells mean gene expression
-    vr <- utils::compareVersion(
-      as.character(utils::packageVersion("Seurat")), "5")
-    if (vr == 1) {
-      mean_gene_exp <- Seurat::AverageExpression(
-        object,
-        features = markerGene,
-        group.by = group.by,
-        assays = assays,
-        layer = slot
-      ) |>
-        data.frame() |>
-        as.matrix()
-    } else {
-      mean_gene_exp <- Seurat::AverageExpression(
-        object,
-        features = markerGene,
-        group.by = group.by,
-        assays = assays,
-        slot = slot
-      ) |>
-        data.frame() |>
-        as.matrix()
+    if(inherits(object,"Seurat")){
+
+      vr <- utils::compareVersion(
+        as.character(utils::packageVersion("Seurat")), "5")
+      if (vr == 1) {
+        mean_gene_exp <- Seurat::AverageExpression(
+          object,
+          features = markerGene,
+          group.by = groupBy,
+          assays = assays,
+          layer = slot
+        ) |>
+          data.frame() |>
+          as.matrix()
+      } else {
+        mean_gene_exp <- Seurat::AverageExpression(
+          object,
+          features = markerGene,
+          group.by = groupBy,
+          assays = assays,
+          slot = slot
+        ) |>
+          data.frame(check.names = FALSE) |>
+          as.matrix()
+      }
+
+      # assign colnames
+      colnames(mean_gene_exp) <- levels(Seurat::Idents(object))
+    }else if(inherits(object,"SingleCellExperiment")){
+
+      cts <- scuttle::aggregateAcrossCells(x = object,
+                                           ids = object$ident,
+                                           statistics = "mean",
+                                           use.assay.type = "logcounts",
+                                           subset.row = markerGene)
+
+      mean_gene_exp <- SingleCellExperiment::logcounts(cts)
     }
 
-
-    # add colnames
-    name1 <- gsub(
-      pattern = paste0(assays, ".", sep = ""),
-      replacement = "",
-      colnames(mean_gene_exp)
-    )
-    colnames(mean_gene_exp) <- gsub(pattern = "\\.", replacement = " ", name1)
-
-    # assign colnames
-    colnames(mean_gene_exp) <- levels(Seurat::Idents(object))
-
     # whether do zscore
-    if (scale.data == TRUE) {
+    if (scaleData == TRUE) {
       mean_gene_exp <- t(scale(t(mean_gene_exp)))
     }
 
     # cell type orders
-    if (!is.null(cluster.order)) {
-      mean_gene_exp <- mean_gene_exp[, cluster.order]
+    if (!is.null(clusterOrder)) {
+      mean_gene_exp <- mean_gene_exp[, clusterOrder]
     }
 
     geneMode <- "average"
   } else {
-    # cell inro
-    cell.order <- data.frame(
-      cell.id = names(Seurat::Idents(object)),
-      cell.ident = Seurat::Idents(object)
-    )
+    if(inherits(object,"Seurat")){
+      # cell inro
+      cell.order <- data.frame(
+        cell.id = names(Seurat::Idents(object)),
+        cell.ident = Seurat::Idents(object)
+      )
 
-    # order cell type
-    if (is.null(cluster.order)) {
-      cell.order$cell.ident <- factor(cell.order$cell.ident,
-                                      levels = levels(Seurat::Idents(object)))
-    } else {
-      cell.order$cell.ident <- factor(cell.order$cell.ident,
-                                      levels = cluster.order)
+      # order cell type
+      if (is.null(clusterOrder)) {
+        cell.order$cell.ident <- factor(cell.order$cell.ident,
+                                        levels = levels(Seurat::Idents(object)))
+      } else {
+        cell.order$cell.ident <- factor(cell.order$cell.ident,
+                                        levels = clusterOrder)
+      }
+      cell.order <- cell.order[order(cell.order$cell.ident), ]
+
+      # get all cells data
+      getassy <- Seurat::GetAssayData(object = object, slot = slot)[
+        features = markerGene, cells = NULL, drop = FALSE] |>
+        as.matrix()
+
+      # reorder cells
+      id.order <- match(cell.order$cell.id, colnames(getassy))
+      getassy <- getassy[, id.order]
+
+      # re-assign colnames
+      colnames(getassy) <- paste(colnames(getassy),
+                                 cell.order$cell.ident, sep = "|")
+
+      mean_gene_exp <- getassy
+    }else if(inherits(object,"SingleCellExperiment")){
+      meta <- SummarizedExperiment::colData(object)
+
+      # cell inro
+      cell.order <- data.frame(
+        cell.id = rownames(meta),
+        cell.ident = object$ident
+      )
+
+      # order cell type
+      if (is.null(clusterOrder)) {
+        cell.order$cell.ident <- factor(cell.order$cell.ident,
+                                        levels = levels(meta$ident))
+      } else {
+        cell.order$cell.ident <- factor(cell.order$cell.ident,
+                                        levels = clusterOrder)
+      }
+      cell.order <- cell.order[order(cell.order$cell.ident), ]
+
+      # get all cells data
+      getassy <- SingleCellExperiment::logcounts(object)[markerGene,] |>
+        as.matrix()
+
+      # reorder cells
+      id.order <- match(cell.order$cell.id, colnames(getassy))
+      getassy <- getassy[, id.order]
+
+      # re-assign colnames
+      colnames(getassy) <- paste(colnames(getassy),
+                                 cell.order$cell.ident, sep = "|")
+
+      mean_gene_exp <- getassy
+
     }
-    cell.order <- cell.order[order(cell.order$cell.ident), ]
 
-    # get all cells data
-    getassy <- Seurat::GetAssayData(object = object, slot = slot)[
-      features = markerGene, cells = NULL, drop = FALSE] |>
-      as.matrix()
-
-    # reorder cells
-    id.order <- match(cell.order$cell.id, colnames(getassy))
-    getassy <- getassy[, id.order]
-
-    # re-assign colnames
-    colnames(getassy) <- paste(colnames(getassy),
-                               cell.order$cell.ident, sep = "|")
-
-    mean_gene_exp <- getassy
 
     # whether do zscore
-    if (scale.data == TRUE) {
+    if (scaleData == TRUE) {
       mean_gene_exp <- t(scale(t(mean_gene_exp)))
     }
 
@@ -174,10 +217,11 @@ prepareDataFromscRNA <- function(object = NULL,
   # add gene column
   merMat <- data.frame(mean_gene_exp, check.names = FALSE)
   merMat$gene <- rownames(merMat)
-   
+
 
   # count marker gene numbers for each cluster
   cinfo.gene <- diffData[, c("cluster", "gene")]
+
 
   # loop
   cn <- unique(cinfo.gene$cluster)
@@ -192,10 +236,10 @@ prepareDataFromscRNA <- function(object = NULL,
   }) -> wide.res
 
   # whether retain unique gene name
-  if (keep.uniqGene == TRUE) {
+  if (keepUniqGene == TRUE) {
     # wide.res <- wide.res |> dplyr::distinct(., gene, .keep_all = TRUE)
     # geneType <- paste("unique", sep, sep = "|")
-    
+
     duplicated_genes <- duplicated(wide.res$gene)
     wide.res <- wide.res[!duplicated_genes, ]
     geneType <- paste0("unique", "|", sep)
@@ -203,7 +247,7 @@ prepareDataFromscRNA <- function(object = NULL,
     # wide.res <- wide.res |> dplyr::mutate(.,
     #     gene = make.unique(gene, sep = sep))
     # geneType <- paste("nounique", sep, sep = "|")
-    
+
     wide.res$gene <- make.unique(wide.res$gene, sep = sep)
     geneType <- paste0("nounique", "|", sep)
   }
@@ -224,8 +268,8 @@ prepareDataFromscRNA <- function(object = NULL,
     # split = "\\|"),"[",2)
     df$cell_type <- vapply(strsplit(as.character(df$cell_type), split = "\\|"),
                            function(x) {
-      x[2]
-    }, character(1))
+                             x[2]
+                           }, character(1))
   }
 
   # add gene number
@@ -246,7 +290,7 @@ prepareDataFromscRNA <- function(object = NULL,
 
   # cluster order
   df$cluster_name <- factor(df$cluster_name,
-    levels = paste("cluster ", cl.info$Var1, " (", cl.info$Freq, ")", sep = "")
+                            levels = paste("cluster ", cl.info$Var1, " (", cl.info$Freq, ")", sep = "")
   )
 
   # return

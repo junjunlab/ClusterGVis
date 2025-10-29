@@ -2,12 +2,12 @@
 #' @title using filter.std to filter low expression genes
 #'
 #' @param eset expression matrix, default NULL.
-#' @param min.std min stand error, default 0.
+#' @param minStd min stand error, default 0.
 #' @param visu whether plot, default FALSE.
 #' @param verbose show filter information.
 #'
 #' @return matrix.
-filter.std <- function(eset, min.std, visu = TRUE, verbose = TRUE) {
+filter.std <- function(eset, minStd, visu = TRUE, verbose = TRUE) {
   # index <- logical(dim(exprs(eset))[1])
 
   if ("matrix" %in% class(eset) | "data.frame" %in% class(eset)) {
@@ -16,18 +16,21 @@ filter.std <- function(eset, min.std, visu = TRUE, verbose = TRUE) {
     tmp <- logical(dim(Biobase::exprs(eset))[1])
   }
 
-  if (is.numeric(min.std)) {
+  if (is.numeric(minStd)) {
     if ("data.frame" %in% class(eset) | "matrix" %in% class(eset)) {
       data <- eset
     } else {
       data <- Biobase::exprs(eset)
     }
 
-    for (i in seq_len(length(tmp))) {
-      tmp[i] <- sd(data[i, ], na.rm = TRUE)
-      #   index[i]  <- ( tmp[i] > min.std)
-    }
-    index <- tmp > min.std
+    # for (i in seq_len(length(tmp))) {
+    #   tmp[i] <- sd(data[i, ], na.rm = TRUE)
+    #   #   index[i]  <- ( tmp[i] > minStd)
+    # }
+
+    tmp <- apply(data, 1, sd, na.rm = TRUE)
+
+    index <- tmp > minStd
     index[is.na(index)] <- TRUE
     if (verbose) {
       methods::show(paste(sum(!index), "genes excluded.\n"))

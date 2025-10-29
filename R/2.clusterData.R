@@ -22,19 +22,18 @@ globalVariables(c(
 #'        , or SummarizedExperiment object.
 #' @param scaleData Logical. Whether to scale the data
 #'  (e.g., z-score normalization).
-#' @param cluster.method Character. Clustering method to use.
+#' @param clusterMethod Character. Clustering method to use.
 #'        Options are one of `"mfuzz"`, `"TCseq"`, `"kmeans"`, or `"wgcna"`.
-#' @param TCseq_params_list A list of additional parameters passed to the
+#' @param TCseqParamsList A list of additional parameters passed to the
 #' `TCseq::timeclust` function.
 #' @param object A pre-calculated object required when using `"wgcna"` as
 #' the clustering method.
-#' @param min.std Numeric. Minimum standard deviation for filtering
+#' @param minStd Numeric. Minimum standard deviation for filtering
 #' expression data.
-#' @param cluster.num Integer. The number of clusters to identify.
+#' @param clusterNum Integer. The number of clusters to identify.
 #' @param subcluster A numeric vector of specific cluster IDs to include
 #' in the results.
 #'        If `NULL`, all clusters are included.
-#' @param seed An integer seed for reproducibility in clustering operations.
 #' @param ... Additional arguments passed to internal functions such as
 #' `pre_pseudotime_matrix`.
 #'
@@ -52,7 +51,7 @@ globalVariables(c(
 #'   - **geneType**: Currently set to `"none"` (reserved for future use).
 #'
 #' @details
-#' Depending on the selected `cluster.method`, different clustering
+#' Depending on the selected `clusterMethod`, different clustering
 #' algorithms are used:
 #'   - **`"mfuzz"`**: Applies Mfuzz soft clustering method, suitable for
 #'   identifying overlapping clusters.
@@ -64,7 +63,7 @@ globalVariables(c(
 #'    Co-expression Network Analysis) networks.
 #'
 #' The function is designed to be flexible, allowing preprocessing (e.g.,
-#' filtering by `min.std`),
+#' filtering by `minStd`),
 #' scaling the data (`scaleData = TRUE`), and generating results compatible
 #' with data visualization pipelines.
 #'
@@ -90,19 +89,18 @@ globalVariables(c(
 #' # kmeans
 #' ck <- clusterData(
 #'   obj = exps,
-#'   cluster.method = "kmeans",
-#'   cluster.num = 8
+#'   clusterMethod = "kmeans",
+#'   clusterNum = 8
 #' )
 #'
 clusterData <- function(obj = NULL,
                         scaleData = TRUE,
-                        cluster.method = c("mfuzz", "TCseq", "kmeans", "wgcna"),
-                        TCseq_params_list = list(),
+                        clusterMethod = c("mfuzz", "TCseq", "kmeans", "wgcna"),
+                        TCseqParamsList = list(),
                         object = NULL,
-                        min.std = 0,
-                        cluster.num = NULL,
+                        minStd = 0,
+                        clusterNum = NULL,
                         subcluster = NULL,
-                        seed = 5201314,
                         ...) {
   if (!requireNamespace("Biobase", quietly = TRUE)) {
     stop("Package 'Biobase' is required. Please install it.")
@@ -120,21 +118,24 @@ clusterData <- function(obj = NULL,
     exp <- obj
   } else if ("SummarizedExperiment" %in% cls){
     exp <- SummarizedExperiment::assay(obj)
+  } else{
+    stop("Please supply a data format with cell_data_set object,
+         SummarizedExperiment object, matrix or data.frame!")
   }
 
   # choose method
-  cluster.method <- match.arg(cluster.method)
+  clusterMethod <- match.arg(clusterMethod)
 
   # check clusting method
-  if (cluster.method %in% c("mfuzz", "TCseq")) {
-    if (cluster.method == "mfuzz") {
+  if (clusterMethod %in% c("mfuzz", "TCseq")) {
+    if (clusterMethod == "mfuzz") {
       # ======================================================================
       # mfuzz
       # ======================================================================
       # cluster data
       # myset <- methods::new("ExpressionSet",exprs = as.matrix(exp))
       myset <- Biobase::ExpressionSet(assayData = as.matrix(exp))
-      myset <- filter.std(myset, min.std = min.std, visu = FALSE)
+      myset <- filter.std(myset, minStd = minStd, visu = FALSE)
 
       # whether zsocre data
       if (scaleData == TRUE) {
@@ -143,11 +144,10 @@ clusterData <- function(obj = NULL,
         myset <- myset
       }
 
-      cluster_number <- cluster.num
+      cluster_number <- clusterNum
       m <- mestimate(myset)
 
       # cluster step
-      # set.seed(seed)
       # mfuzz_res <- Mfuzz::mfuzz(myset, c = cluster_number, m = m)
 
       # user define mfuzz
@@ -174,7 +174,7 @@ clusterData <- function(obj = NULL,
       mem$gene <- rownames(mem)
 
       # get gene membership
-      lapply(seq_len(cluster.num), function(x) {
+      lapply(seq_len(clusterNum), function(x) {
         ms <- mem |> dplyr::filter(cluster2 == x)
         res <- data.frame(
           membership = ms[[x]],
@@ -193,7 +193,7 @@ clusterData <- function(obj = NULL,
       final_res <- merge(dnorm, membership_info, by = "gene") |>
         dplyr::select(-cluster2) |>
         dplyr::arrange(cluster)
-    } else if (cluster.method == "TCseq") {
+    } else if (clusterMethod == "TCseq") {
       # ======================================================================
       # TCseq
       # ======================================================================
@@ -201,19 +201,19 @@ clusterData <- function(obj = NULL,
         stop("Package 'TCseq' is required. Please install it.")
       }
 
-      exp <- filter.std(exp, min.std = min.std, visu = FALSE)
+      exp <- filter.std(exp, minStd = minStd, visu = FALSE)
 
       # tca <- TCseq::timeclust(x = as.matrix(exp), algo = "cm",
-      #                         k = cluster.num, standardize = scaleData)
+      #                         k = clusterNum, standardize = scaleData)
 
       tca <- do.call(TCseq::timeclust, modifyList(
         list(
           x = as.matrix(exp),
           algo = "cm",
-          k = cluster.num,
+          k = clusterNum,
           standardize = scaleData
         ),
-        TCseq_params_list
+        TCseqParamsList
       ))
 
       dt <- data.frame(tca@data) |>
@@ -290,15 +290,15 @@ clusterData <- function(obj = NULL,
         wide.res = final_res,
         long.res = df,
         cluster.list = cluster.list,
-        type = cluster.method,
+        type = clusterMethod,
         geneMode = "none",
         geneType = "none"
       )
     )
-  } else if (cluster.method == "kmeans") {
+  } else if (clusterMethod == "kmeans") {
     # ========================================================================
     # using complexheatmap cluster genes
-    exp <- filter.std(exp, min.std = min.std, visu = FALSE)
+    exp <- filter.std(exp, minStd = minStd, visu = FALSE)
 
     # whether zsocre data
     if (scaleData == TRUE) {
@@ -311,19 +311,18 @@ clusterData <- function(obj = NULL,
     }
 
     # plot
-    # set.seed(seed)
     # ht <- ComplexHeatmap::Heatmap(hclust_matrix,
     #                               show_row_names = F,
     #                               show_row_dend = F,
     #                               show_column_names = F,
-    #                               row_km = cluster.num)
+    #                               row_km = clusterNum)
     #
     # # gene order
     # ht = ComplexHeatmap::draw(ht)
     # row.order = ComplexHeatmap::row_order(ht)
     #
     # # get index
-    # if(is.null(cluster.num) | cluster.num == 1){
+    # if(is.null(clusterNum) | clusterNum == 1){
     #   od.res <- data.frame(od = row.order,id = 1)
     # }else{
     #   # get index
@@ -337,7 +336,7 @@ clusterData <- function(obj = NULL,
     # add kmeans func n stats
     km <- stats::kmeans(
       x = hclust_matrix,
-      centers = cluster.num,
+      centers = clusterNum,
       nstart = 10
     )
 
@@ -404,12 +403,12 @@ clusterData <- function(obj = NULL,
         wide.res = wide.r,
         long.res = df,
         cluster.list = cluster.list,
-        type = cluster.method,
+        type = clusterMethod,
         geneMode = "none",
         geneType = "none"
       )
     )
-  } else if (cluster.method == "wgcna") {
+  } else if (clusterMethod == "wgcna") {
     # =====================================
     net <- object
     cinfo <- data.frame(
@@ -496,7 +495,7 @@ clusterData <- function(obj = NULL,
         wide.res = final.res,
         long.res = df,
         cluster.list = cluster.list,
-        type = cluster.method,
+        type = clusterMethod,
         geneMode = "none",
         geneType = "none"
       )

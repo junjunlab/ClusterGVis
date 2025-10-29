@@ -13,14 +13,6 @@ Thanks for the contributions for [**clusterProfiler**](https://bioconductor.org/
 
 <img src="vignettes/clusterGvis_graphic_abstract.jpg" align="center" height="auto" width="100%" />
 
-## Requirements
-
-There are some R package to make sure have been installed for better installing **ClusterGVis**：
-
-``` r
-BiocManager::install("SingleCellExperiment")
-```
-
 ## Installation
 
 You can install the development version of ClusterGVis like so:

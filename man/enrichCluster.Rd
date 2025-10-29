@@ -10,17 +10,16 @@ enrichCluster(
   TERM2GENE = NULL,
   TERM2NAME = NULL,
   OrgDb = NULL,
-  id.trans = TRUE,
+  idTrans = TRUE,
   fromType = "SYMBOL",
   toType = c("ENTREZID"),
   readable = TRUE,
   organism = "hsa",
   pvalueCutoff = 0.05,
   topn = 5,
-  seed = 5201314,
-  add.gene = FALSE,
-  use_internal_data = FALSE,
-  heatmap.type = c("plot_pseudotime_heatmap2", "plot_genes_branched_heatmap2",
+  addGene = FALSE,
+  useInternalData = FALSE,
+  heatmapType = c("plot_pseudotime_heatmap2", "plot_genes_branched_heatmap2",
     "plot_multiple_branches_heatmap2"),
   ...
 )
@@ -55,7 +54,7 @@ term and the second column is the name.}
 \code{org.Mm.eg.db} for mouse),
 used for GO or KEGG enrichment analysis.}
 
-\item{id.trans}{Logical. Whether to perform gene ID transformation. Default
+\item{idTrans}{Logical. Whether to perform gene ID transformation. Default
 is \code{TRUE}.}
 
 \item{fromType}{Character. The type of the input gene IDs (e.g.,
@@ -81,18 +80,15 @@ extract. If a single value, it is applied
 to all clusters. Otherwise, it should match the number of clusters.
 Default is \code{5}.}
 
-\item{seed}{Numeric. Seed for random operations to ensure reproducibility.
-Default is \code{5201314}.}
-
-\item{add.gene}{Logical. Whether to include the list of genes associated
+\item{addGene}{Logical. Whether to include the list of genes associated
 with each enriched term in the results.
 Default is \code{FALSE}.}
 
-\item{use_internal_data}{Logical, use KEGG.db or latest online KEGG data for
+\item{useInternalData}{Logical, use KEGG.db or latest online KEGG data for
 enrichKEGG function.
 Default is \code{FALSE}.}
 
-\item{heatmap.type}{Character. The type of heatmap visualization to use when
+\item{heatmapType}{Character. The type of heatmap visualization to use when
 input data is a \code{CellDataSet} object.
 Options include:
 \itemize{
@@ -119,8 +115,8 @@ data("exps")
 # kmeans
 ck <- clusterData(
   obj = exps,
-  cluster.method = "kmeans",
-  cluster.num = 3
+  clusterMethod = "kmeans",
+  clusterNum = 3
 )
 
 # enrich for clusters

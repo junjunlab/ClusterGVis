@@ -9,12 +9,12 @@ prepareDataFromscRNA(
   diffData = NULL,
   showAverage = TRUE,
   cells = NULL,
-  group.by = "ident",
+  groupBy = "ident",
   assays = "RNA",
   slot = "data",
-  scale.data = TRUE,
-  cluster.order = NULL,
-  keep.uniqGene = TRUE,
+  scaleData = TRUE,
+  clusterOrder = NULL,
+  keepUniqGene = TRUE,
   sep = "_"
 )
 }
@@ -31,7 +31,7 @@ expression across all cells.}
 \item{cells}{a vector of cell names to extract from the Seurat object. If
 NULL, all cells will be used.}
 
-\item{group.by}{a string specifying the grouping variable for differential
+\item{groupBy}{a string specifying the grouping variable for differential
 expression analysis. Default is 'ident', which groups cells by their
 assigned clusters.}
 
@@ -41,11 +41,11 @@ extract from the Seurat object. Default is 'RNA'.}
 \item{slot}{a string specifying the slot name where the assay data is stored
 in the Seurat object. Default is 'data'.}
 
-\item{scale.data}{whether do Z-score for expression data, default TRUE.}
+\item{scaleData}{whether do Z-score for expression data, default TRUE.}
 
-\item{cluster.order}{the celltype orders.}
+\item{clusterOrder}{the celltype orders.}
 
-\item{keep.uniqGene}{a logical indicating whether to keep only unique gene
+\item{keepUniqGene}{a logical indicating whether to keep only unique gene
 names. Default is TRUE.}
 
 \item{sep}{a character string to separate gene and cell names in the output

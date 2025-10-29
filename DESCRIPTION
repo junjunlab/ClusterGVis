@@ -1,24 +1,28 @@
 Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
-Version: 0.99.1
+Version: 0.99.5
 Authors@R: 
   person(given = "Jun", 
         family = "Zhang",    
-        email = "3219030654@stu.cpu.edu.cn", 
+        email = "1138976957@qq.com", 
         role  = c("aut", "cre", "cph"), 
         comment = c(ORCID = "0000-0001-7692-9105"))
-Description: Streamlining the clustering and visualization of time-series gene 
-  expression data from RNA-Seq experiments, this tool supports fuzzy 
-  c-means and k-means clustering algorithms. It is compatible with outputs 
-  from widely-used packages such as 'Seurat', 'Monocle', and 'WGCNA', 
-  enabling seamless downstream visualization and analysis.
+Description: Provides a streamlined workflow for clustering and visualizing 
+  gene expression patterns, particularly from time-series RNA-Seq and 
+  single-cell experiments. The package is designed to integrate seamlessly 
+  within the Bioconductor ecosystem by operating directly on standard data 
+  classes such as `SummarizedExperiment` and `SingleCellExperiment`. It 
+  implements common clustering algorithms (e.g., k-means, fuzzy c-means) 
+  and generates a suite of publication-ready visualizations to explore 
+  co-expressed gene modules. Functions are also included to facilitate 
+  the visualization of clustering results derived from other popular tools.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
-    R (>= 4.5.0)
+    R (>= 4.5)
 Imports: 
     colorRamps,
     dplyr,
@@ -36,7 +40,9 @@ Imports:
     tibble,
     SingleCellExperiment,
     SummarizedExperiment,
-    monocle3
+    igraph,
+    VGAM,
+    scuttle
 Suggests: 
     Biobase,
     ComplexHeatmap,
@@ -44,7 +50,6 @@ Suggests:
     TCseq,
     org.Mm.eg.db,
     circlize,
-    igraph,
     knitr,
     monocle,
     pheatmap,
@@ -54,6 +59,7 @@ Suggests:
     utils,
     BiocManager,
     S4Vectors,
+    pheatmap,
     testthat (>= 3.0.0)
 biocViews: RNASeq,Transcriptomics,Visualization,SingleCell,GeneExpression,Clustering
 URL: https://github.com/junjunlab/ClusterGVis/, 

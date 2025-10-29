@@ -7,13 +7,12 @@
 clusterData(
   obj = NULL,
   scaleData = TRUE,
-  cluster.method = c("mfuzz", "TCseq", "kmeans", "wgcna"),
-  TCseq_params_list = list(),
+  clusterMethod = c("mfuzz", "TCseq", "kmeans", "wgcna"),
+  TCseqParamsList = list(),
   object = NULL,
-  min.std = 0,
-  cluster.num = NULL,
+  minStd = 0,
+  clusterNum = NULL,
   subcluster = NULL,
-  seed = 5201314,
   ...
 )
 }
@@ -26,25 +25,23 @@ clusterData(
 \item{scaleData}{Logical. Whether to scale the data
 (e.g., z-score normalization).}
 
-\item{cluster.method}{Character. Clustering method to use.
+\item{clusterMethod}{Character. Clustering method to use.
 Options are one of \code{"mfuzz"}, \code{"TCseq"}, \code{"kmeans"}, or \code{"wgcna"}.}
 
-\item{TCseq_params_list}{A list of additional parameters passed to the
+\item{TCseqParamsList}{A list of additional parameters passed to the
 \code{TCseq::timeclust} function.}
 
 \item{object}{A pre-calculated object required when using \code{"wgcna"} as
 the clustering method.}
 
-\item{min.std}{Numeric. Minimum standard deviation for filtering
+\item{minStd}{Numeric. Minimum standard deviation for filtering
 expression data.}
 
-\item{cluster.num}{Integer. The number of clusters to identify.}
+\item{clusterNum}{Integer. The number of clusters to identify.}
 
 \item{subcluster}{A numeric vector of specific cluster IDs to include
 in the results.
 If \code{NULL}, all clusters are included.}
-
-\item{seed}{An integer seed for reproducibility in clustering operations.}
 
 \item{...}{Additional arguments passed to internal functions such as
 \code{pre_pseudotime_matrix}.}
@@ -69,7 +66,7 @@ or \code{"wgcna"}).
 Cluster Data Based on Different Methods
 }
 \details{
-Depending on the selected \code{cluster.method}, different clustering
+Depending on the selected \code{clusterMethod}, different clustering
 algorithms are used:
 \itemize{
 \item \strong{\code{"mfuzz"}}: Applies Mfuzz soft clustering method, suitable for
@@ -83,7 +80,7 @@ Co-expression Network Analysis) networks.
 }
 
 The function is designed to be flexible, allowing preprocessing (e.g.,
-filtering by \code{min.std}),
+filtering by \code{minStd}),
 scaling the data (\code{scaleData = TRUE}), and generating results compatible
 with data visualization pipelines.
 }
@@ -108,8 +105,8 @@ data("exps")
 # kmeans
 ck <- clusterData(
   obj = exps,
-  cluster.method = "kmeans",
-  cluster.num = 8
+  clusterMethod = "kmeans",
+  clusterNum = 8
 )
 
 }

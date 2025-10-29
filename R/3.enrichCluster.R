@@ -30,7 +30,7 @@ globalVariables(c("Description", "group", "pvalue", "geneID"))
 #' @param OrgDb An organism database object (e.g., `org.Hs.eg.db` for human or
 #' `org.Mm.eg.db` for mouse),
 #'   used for GO or KEGG enrichment analysis.
-#' @param id.trans Logical. Whether to perform gene ID transformation. Default
+#' @param idTrans Logical. Whether to perform gene ID transformation. Default
 #'  is `TRUE`.
 #' @param fromType Character. The type of the input gene IDs (e.g.,
 #' `"SYMBOL"`, `"ENSEMBL"`). Default is `"SYMBOL"`.
@@ -49,15 +49,13 @@ globalVariables(c("Description", "group", "pvalue", "geneID"))
 #' extract. If a single value, it is applied
 #'   to all clusters. Otherwise, it should match the number of clusters.
 #'    Default is `5`.
-#' @param seed Numeric. Seed for random operations to ensure reproducibility.
-#'  Default is `5201314`.
-#' @param add.gene Logical. Whether to include the list of genes associated
+#' @param addGene Logical. Whether to include the list of genes associated
 #'  with each enriched term in the results.
 #'   Default is `FALSE`.
-#' @param use_internal_data Logical, use KEGG.db or latest online KEGG data for
+#' @param useInternalData Logical, use KEGG.db or latest online KEGG data for
 #'  enrichKEGG function.
 #' Default is `FALSE`.
-#' @param heatmap.type Character. The type of heatmap visualization to use when
+#' @param heatmapType Character. The type of heatmap visualization to use when
 #' input data is a `CellDataSet` object.
 #'   Options include:
 #'   - `"plot_pseudotime_heatmap2"`
@@ -75,8 +73,8 @@ globalVariables(c("Description", "group", "pvalue", "geneID"))
 #' # kmeans
 #' ck <- clusterData(
 #'   obj = exps,
-#'   cluster.method = "kmeans",
-#'   cluster.num = 3
+#'   clusterMethod = "kmeans",
+#'   clusterNum = 3
 #' )
 #'
 #' # enrich for clusters
@@ -99,7 +97,7 @@ enrichCluster <- function(object = NULL,
                           TERM2GENE = NULL,
                           TERM2NAME = NULL,
                           OrgDb = NULL,
-                          id.trans = TRUE,
+                          idTrans = TRUE,
                           fromType = "SYMBOL",
                           toType = c("ENTREZID"),
                           readable = TRUE,
@@ -107,10 +105,9 @@ enrichCluster <- function(object = NULL,
                           organism = "hsa",
                           pvalueCutoff = 0.05,
                           topn = 5,
-                          seed = 5201314,
-                          add.gene = FALSE,
-                          use_internal_data = FALSE,
-                          heatmap.type = c(
+                          addGene = FALSE,
+                          useInternalData = FALSE,
+                          heatmapType = c(
                             "plot_pseudotime_heatmap2",
                             "plot_genes_branched_heatmap2",
                             "plot_multiple_branches_heatmap2"
@@ -121,21 +118,17 @@ enrichCluster <- function(object = NULL,
   }
 
   type <- match.arg(type, c("BP", "MF", "CC", "KEGG", "ownSet"))
-  heatmap.type <- match.arg(
-    heatmap.type,
-    c(
-      "plot_pseudotime_heatmap2",
-      "plot_genes_branched_heatmap2",
-      "plot_multiple_branches_heatmap2"
-    )
-  )
+  heatmapType <- match.arg(heatmapType,
+                           c("plot_pseudotime_heatmap2",
+                             "plot_genes_branched_heatmap2",
+                             "plot_multiple_branches_heatmap2"))
 
   # check datatype
   cls <- class(object)
 
-  # check heatmap.type
+  # check heatmapType
   if (cls == "CellDataSet") {
-    if (heatmap.type %in% c(
+    if (heatmapType %in% c(
       "plot_pseudotime_heatmap2",
       "plot_genes_branched_heatmap2"
     )) {
@@ -145,6 +138,9 @@ enrichCluster <- function(object = NULL,
       extra_params <- list(cds = object, ...)
       object <- do.call(plot_pseudotime_heatmap2, extra_params)
     }
+  }else if(!inherits(object,"list")){
+    stop("Please check object format should be clusterData output
+         or CellDataSet obejct!")
   }
 
   # get data
@@ -157,8 +153,8 @@ enrichCluster <- function(object = NULL,
     # split = split),"[",1)
     enrich.data$gene <- vapply(strsplit(as.character(enrich.data$gene),
                                         split = split), function(x) {
-      x[1]
-    }, character(1))
+                                          x[1]
+                                        }, character(1))
   }
 
   # loop for enrich
@@ -166,16 +162,16 @@ enrichCluster <- function(object = NULL,
     enrich.data$cluster
   ))), function(x) {
     # filter
-    tmp <- enrich.data |> 
+    tmp <- enrich.data |>
       dplyr::filter(cluster == unique(enrich.data$cluster)[x])
 
     # =============================================
     # enrich
 
     # entriz id transformation
-    # id.trans <- ifelse(type == "ownSet",FALSE,TRUE)
+    # idTrans <- ifelse(type == "ownSet",FALSE,TRUE)
 
-    if (id.trans == TRUE) {
+    if (idTrans == TRUE) {
       gene.ent <- clusterProfiler::bitr(
         tmp$gene,
         fromType = fromType,
@@ -190,7 +186,6 @@ enrichCluster <- function(object = NULL,
 
     # GO enrich
     if (type %in% c("BP", "MF", "CC")) {
-      # set.seed(seed)
       ego <- clusterProfiler::enrichGO(
         gene          = tartget.gene,
         keyType       = toType,
@@ -202,7 +197,6 @@ enrichCluster <- function(object = NULL,
         readable      = readable
       )
     } else if (type == "ownSet") {
-      # set.seed(seed)
       ego <- clusterProfiler::enricher(
         gene = tartget.gene,
         TERM2GENE = TERM2GENE,
@@ -212,7 +206,6 @@ enrichCluster <- function(object = NULL,
         qvalueCutoff = 1
       )
     } else {
-      # set.seed(seed)
       ego <- clusterProfiler::enrichKEGG(
         gene = tartget.gene,
         keyType = "kegg",
@@ -221,7 +214,7 @@ enrichCluster <- function(object = NULL,
         pvalueCutoff = 1,
         pAdjustMethod = "BH",
         qvalueCutoff = 1,
-        use_internal_data = use_internal_data
+        useInternalData = useInternalData
       )
 
       # transform gene id
@@ -236,10 +229,10 @@ enrichCluster <- function(object = NULL,
     # to data.frame
     enrich_res <- data.frame(ego)
     if (nrow(enrich_res) > 0) {
-      df <- data.frame(ego) |> 
-        dplyr::filter(pvalue < pvalueCutoff) |> 
+      df <- data.frame(ego) |>
+        dplyr::filter(pvalue < pvalueCutoff) |>
         dplyr::mutate(group = paste("C", unique(enrich.data$cluster)[x],
-                                    sep = "")) |> 
+                                    sep = "")) |>
         dplyr::arrange(pvalue)
 
       # whether save all res
@@ -251,8 +244,8 @@ enrichCluster <- function(object = NULL,
           top <- topn[x]
         }
 
-        df <- df |> 
-          # dplyr::select(group,Description,pvalue) |> 
+        df <- df |>
+          # dplyr::select(group,Description,pvalue) |>
           dplyr::slice_head(n = top)
 
         # add gene enrich ratio
@@ -264,9 +257,9 @@ enrichCluster <- function(object = NULL,
         })
 
         # select columns
-        if (add.gene == TRUE) {
+        if (addGene == TRUE) {
           df2 <- df1 |>dplyr::select(group, Description, pvalue,
-                                       ratio, geneID)
+                                     ratio, geneID)
         } else {
           df2 <- df1 |>dplyr::select(group, Description, pvalue, ratio)
         }

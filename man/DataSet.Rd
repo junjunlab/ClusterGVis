@@ -6,6 +6,7 @@
 \alias{exps}
 \alias{BEAM_res}
 \alias{sig_gene_names}
+\alias{HSMM}
 \alias{net}
 \alias{termanno}
 \alias{termanno2}
@@ -24,9 +25,13 @@ A data frame.
 
 A data frame.
 
+A data frame.
+
 A seurat object.
 }
 \description{
+This is a test data for this package
+
 This is a test data for this package
 
 This is a test data for this package

@@ -108,18 +108,17 @@ genes
 that have similar lineage-dependent expression patterns.
 }
 \examples{
-# data("HSMM")
-data("BEAM_res")
-
+data("HSMM")
+library(pheatmap)
+library(VGAM)
 
 # return plot
-# plot_genes_branched_heatmap2(HSMM[row.names(subset(
-# BEAM_res,qval < 1e-4)),],
-#                              branch_point = 1,
-#                              num_clusters = 4,
-#                              cores = 1,
-#                              use_gene_short_name = T,
-#                              show_rownames = T,
-#                              return_heatmap = T)
+plot_genes_branched_heatmap2(HSMM,
+                             branch_point = 1,
+                             num_clusters = 4,
+                             cores = 1,
+                             use_gene_short_name = TRUE,
+                             show_rownames = TRUE,
+                             return_heatmap = TRUE)
 
 }

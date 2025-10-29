@@ -46,6 +46,9 @@ getClusters <- function(obj = NULL, ...) {
     exp <- obj
   } else if ("SummarizedExperiment" %in% cls){
     exp <- SummarizedExperiment::assay(obj)
+  } else{
+    stop("Please supply a data format with cell_data_set object,
+         SummarizedExperiment object, matrix or data.frame!")
   }
 
   factoextra::fviz_nbclust(exp, stats::kmeans, method = "wss") +

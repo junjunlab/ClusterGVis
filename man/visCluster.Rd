@@ -7,229 +7,228 @@ enrichCluster output}
 \usage{
 visCluster(
   object = NULL,
-  ht.col.list = list(col_range = c(-2, 0, 2), col_color = c("#08519C", "white",
-    "#A50F15")),
+  htColList = list(col_range = c(-2, 0, 2), col_color = c("#08519C", "white", "#A50F15")),
   border = TRUE,
-  plot.type = c("line", "heatmap", "both"),
-  ms.col = c("#0099CC", "grey90", "#CC3333"),
-  line.size = 0.1,
-  line.col = "grey90",
-  add.mline = TRUE,
-  mline.size = 2,
-  mline.col = "#CC3333",
+  plotType = c("line", "heatmap", "both"),
+  msCol = c("#0099CC", "grey90", "#CC3333"),
+  lineSize = 0.1,
+  lineCol = "grey90",
+  addMline = TRUE,
+  mlineSize = 2,
+  mlineCol = "#CC3333",
   ncol = 4,
-  ctAnno.col = NULL,
-  set.md = "median",
-  textbox.pos = c(0.5, 0.8),
-  textbox.size = 8,
-  panel.arg = c(2, 0.25, 4, "grey90", NA),
-  ggplot.panel.arg = c(2, 0.25, 4, "grey90", NA),
-  annoTerm.data = NULL,
-  annoTerm.mside = "right",
-  termAnno.arg = c("grey95", "grey50"),
-  add.bar = FALSE,
-  bar.width = 8,
-  textbar.pos = c(0.8, 0.8),
-  go.col = NULL,
-  go.size = NULL,
-  by.go = "anno_link",
-  annoKegg.data = NULL,
-  annoKegg.mside = "right",
-  keggAnno.arg = c("grey95", "grey50"),
-  add.kegg.bar = FALSE,
-  kegg.col = NULL,
-  kegg.size = NULL,
-  by.kegg = "anno_link",
-  word_wrap = TRUE,
-  add_new_line = TRUE,
-  add.box = FALSE,
-  boxcol = NULL,
-  box.arg = c(0.1, "grey50"),
-  add.point = FALSE,
-  point.arg = c(19, "orange", "orange", 1),
-  add.line = TRUE,
-  line.side = "right",
+  ctAnnoCol = NULL,
+  setMd = "median",
+  textboxPos = c(0.5, 0.8),
+  textboxSize = 8,
+  panelArg = c(2, 0.25, 4, "grey90", NA),
+  ggplotPanelArg = c(2, 0.25, 4, "grey90", NA),
+  annoTermData = NULL,
+  annoTermMside = "right",
+  termAnnoArg = c("grey95", "grey50"),
+  addBar = FALSE,
+  barWidth = 8,
+  textbarPos = c(0.8, 0.8),
+  goCol = NULL,
+  goSize = NULL,
+  byGo = "anno_link",
+  annoKeggData = NULL,
+  annoKeggMside = "right",
+  keggAnnoArg = c("grey95", "grey50"),
+  addKeggBar = FALSE,
+  keggCol = NULL,
+  keggSize = NULL,
+  byKegg = "anno_link",
+  wordWrap = TRUE,
+  addNewLine = TRUE,
+  addBox = FALSE,
+  boxCol = NULL,
+  boxArg = c(0.1, "grey50"),
+  addPoint = FALSE,
+  pointArg = c(19, "orange", "orange", 1),
+  addLine = TRUE,
+  lineSide = "right",
   markGenes = NULL,
-  markGenes.side = "right",
-  genes.gp = c("italic", 10, NA),
-  term.text.limit = c(10, 18),
+  markGenesSide = "right",
+  genesGp = c("italic", 10, NA),
+  termTextLimit = c(10, 18),
   mulGroup = NULL,
-  lgd.label = NULL,
-  show_row_names = FALSE,
-  subgroup.anno = NULL,
-  annnoblock.text = TRUE,
-  annnoblock.gp = c("white", 8),
-  add.sampleanno = TRUE,
-  sample.group = NULL,
-  sample.col = NULL,
-  sample.order = NULL,
-  cluster.order = NULL,
-  sample.cell.order = NULL,
-  HeatmapAnnotation = NULL,
-  column.split = NULL,
-  cluster_columns = FALSE,
-  pseudotime_col = NULL,
+  lgdLabel = NULL,
+  showRowNames = FALSE,
+  subgroupAnno = NULL,
+  annnoblockText = TRUE,
+  annnoblockGp = c("white", 8),
+  addSampleAnno = TRUE,
+  sampleGroup = NULL,
+  sampleCol = NULL,
+  sampleOrder = NULL,
+  clusterOrder = NULL,
+  sampleCellOrder = NULL,
+  heatmapAnnotation = NULL,
+  columnSplit = NULL,
+  clusterColumns = FALSE,
+  pseudotimeCol = NULL,
   gglist = NULL,
-  row_annotation_obj = NULL,
+  rowAnnotationObj = NULL,
   ...
 )
 }
 \arguments{
 \item{object}{clusterData object, default NULL.}
 
-\item{ht.col.list}{list of heatmap col_range and col_color, default
+\item{htColList}{list of heatmap col_range and col_color, default
 list(col_range = c(-2, 0, 2),col_color = c("#08519C", "white", "#A50F15")).}
 
 \item{border}{whether add border for heatmap, default TRUE.}
 
-\item{plot.type}{the plot type to choose which incuding "line","heatmap"
+\item{plotType}{the plot type to choose which incuding "line","heatmap"
 and "both".}
 
-\item{ms.col}{membership line color form Mfuzz cluster method results,
+\item{msCol}{membership line color form Mfuzz cluster method results,
 default c('#0099CC','grey90','#CC3333').}
 
-\item{line.size}{line size for line plot, default 0.1.}
+\item{lineSize}{line size for line plot, default 0.1.}
 
-\item{line.col}{line color for line plot, default "grey90".}
+\item{lineCol}{line color for line plot, default "grey90".}
 
-\item{add.mline}{whether add median line on plot, default TRUE.}
+\item{addMline}{whether add median line on plot, default TRUE.}
 
-\item{mline.size}{median line size, default 2.}
+\item{mlineSize}{median line size, default 2.}
 
-\item{mline.col}{median line color, default "#CC3333".}
+\item{mlineCol}{median line color, default "#CC3333".}
 
 \item{ncol}{the columns for facet plot with line plot, default 4.}
 
-\item{ctAnno.col}{the heatmap cluster annotation bar colors, default NULL.}
+\item{ctAnnoCol}{the heatmap cluster annotation bar colors, default NULL.}
 
-\item{set.md}{the represent line method on heatmap-line plot(mean/median),
+\item{setMd}{the represent line method on heatmap-line plot(mean/median),
 default "median".}
 
-\item{textbox.pos}{the relative position of text in left-line plot,
+\item{textboxPos}{the relative position of text in left-line plot,
 default c(0.5,0.8).}
 
-\item{textbox.size}{the text size of the text in left-line plot, default 8.}
+\item{textboxSize}{the text size of the text in left-line plot, default 8.}
 
-\item{panel.arg}{the settings for the left-line panel which are
+\item{panelArg}{the settings for the left-line panel which are
 panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
 
-\item{ggplot.panel.arg}{the settings for the ggplot2 object plot panel
+\item{ggplotPanelArg}{the settings for the ggplot2 object plot panel
 which are
 panel size,gap,width,fill and col, default c(2,0.25,4,"grey90",NA).}
 
-\item{annoTerm.data}{the GO term annotation for the clusters, default NULL.}
+\item{annoTermData}{the GO term annotation for the clusters, default NULL.}
 
-\item{annoTerm.mside}{the wider GO term annotation box side, default "right".}
+\item{annoTermMside}{the wider GO term annotation box side, default "right".}
 
-\item{termAnno.arg}{the settings for GO term panel annotations which
+\item{termAnnoArg}{the settings for GO term panel annotations which
 are fill and col,
 default c("grey95","grey50").}
 
-\item{add.bar}{whether add bar plot for GO enrichment, default FALSE.}
+\item{addBar}{whether add bar plot for GO enrichment, default FALSE.}
 
-\item{bar.width}{the GO enrichment bar width, default 8.}
+\item{barWidth}{the GO enrichment bar width, default 8.}
 
-\item{textbar.pos}{the barplot text relative position, default c(0.8,0.8).}
+\item{textbarPos}{the barplot text relative position, default c(0.8,0.8).}
 
-\item{go.col}{the GO term text colors, default NULL.}
+\item{goCol}{the GO term text colors, default NULL.}
 
-\item{go.size}{the GO term text size(numeric or "pval"), default NULL.}
+\item{goSize}{the GO term text size(numeric or "pval"), default NULL.}
 
-\item{by.go}{the GO term text box style("anno_link" or "anno_block"),
+\item{byGo}{the GO term text box style("anno_link" or "anno_block"),
 default "anno_link".}
 
-\item{annoKegg.data}{the KEGG term annotation for the clusters, default NULL.}
+\item{annoKeggData}{the KEGG term annotation for the clusters, default NULL.}
 
-\item{annoKegg.mside}{the wider KEGG term annotation box side, default
+\item{annoKeggMside}{the wider KEGG term annotation box side, default
 "right".}
 
-\item{keggAnno.arg}{the settings for KEGG term panel annotations which are
+\item{keggAnnoArg}{the settings for KEGG term panel annotations which are
 fill and col,
 default c("grey95","grey50").}
 
-\item{add.kegg.bar}{whether add bar plot for KEGG enrichment, default FALSE.}
+\item{addKeggBar}{whether add bar plot for KEGG enrichment, default FALSE.}
 
-\item{kegg.col}{the KEGG term text colors, default NULL.}
+\item{keggCol}{the KEGG term text colors, default NULL.}
 
-\item{kegg.size}{the KEGG term text size(numeric or "pval"), default NULL.}
+\item{keggSize}{the KEGG term text size(numeric or "pval"), default NULL.}
 
-\item{by.kegg}{the KEGG term text box style("anno_link" or "anno_block"),
+\item{byKegg}{the KEGG term text box style("anno_link" or "anno_block"),
 default "anno_link".}
 
-\item{word_wrap}{whether wrap the text, default TRUE.}
+\item{wordWrap}{whether wrap the text, default TRUE.}
 
-\item{add_new_line}{whether add new line when text is long, default TRUE.}
+\item{addNewLine}{whether add new line when text is long, default TRUE.}
 
-\item{add.box}{whether add boxplot, default FALSE.}
+\item{addBox}{whether add boxplot, default FALSE.}
 
-\item{boxcol}{the box fill colors, default NULL.}
+\item{boxCol}{the box fill colors, default NULL.}
 
-\item{box.arg}{this is related to boxplot width and border color, default
+\item{boxArg}{this is related to boxplot width and border color, default
 c(0.1,"grey50").}
 
-\item{add.point}{whether add point, default FALSE.}
+\item{addPoint}{whether add point, default FALSE.}
 
-\item{point.arg}{this is related to point shape,fill,color and size,
+\item{pointArg}{this is related to point shape,fill,color and size,
 default c(19,"orange","orange",1).}
 
-\item{add.line}{whether add line, default TRUE.}
+\item{addLine}{whether add line, default TRUE.}
 
-\item{line.side}{the line annotation side, default "right".}
+\item{lineSide}{the line annotation side, default "right".}
 
 \item{markGenes}{the gene names to be added on plot, default NULL.}
 
-\item{markGenes.side}{the gene label side, default "right".}
+\item{markGenesSide}{the gene label side, default "right".}
 
-\item{genes.gp}{gene labels graphics settings, default c('italic',10,NA).}
+\item{genesGp}{gene labels graphics settings, default c('italic',10,NA).}
 
-\item{term.text.limit}{the GO term text size limit, default c(10,18).}
+\item{termTextLimit}{the GO term text size limit, default c(10,18).}
 
 \item{mulGroup}{to draw multiple lines annotation, supply the groups numbers
 with vector, default NULL.}
 
-\item{lgd.label}{the lines annotation legend labels, default NULL.}
+\item{lgdLabel}{the lines annotation legend labels, default NULL.}
 
-\item{show_row_names}{whether to show row names, default FALSE.}
+\item{showRowNames}{whether to show row names, default FALSE.}
 
-\item{subgroup.anno}{the sub-cluster for annotation, supply sub-cluster id,
+\item{subgroupAnno}{the sub-cluster for annotation, supply sub-cluster id,
 default NULL.}
 
-\item{annnoblock.text}{whether add cluster numbers on right block
+\item{annnoblockText}{whether add cluster numbers on right block
 annotation, default TRUE.}
 
-\item{annnoblock.gp}{right block annotation text color and size,
+\item{annnoblockGp}{right block annotation text color and size,
 default c("white",8).}
 
-\item{add.sampleanno}{whether add column annotation, default TRUE.}
+\item{addSampleAnno}{whether add column annotation, default TRUE.}
 
-\item{sample.group}{the column sample groups, default NULL.}
+\item{sampleGroup}{the column sample groups, default NULL.}
 
-\item{sample.col}{column annotation colors, default NULL.}
+\item{sampleCol}{column annotation colors, default NULL.}
 
-\item{sample.order}{the orders for column samples, default NULL.}
+\item{sampleOrder}{the orders for column samples, default NULL.}
 
-\item{cluster.order}{the row cluster orders for user's own defination,
+\item{clusterOrder}{the row cluster orders for user's own defination,
 default NULL.}
 
-\item{sample.cell.order}{the celltype order when input is scRNA data and
+\item{sampleCellOrder}{the celltype order when input is scRNA data and
 "showAverage = FALSE"
 for prepareDataFromscRNA.}
 
-\item{HeatmapAnnotation}{the 'HeatmapAnnotation' object from 'ComplexHeatmap'
+\item{heatmapAnnotation}{the 'heatmapAnnotation' object from 'ComplexHeatmap'
 when you have multiple annotations, default NULL.}
 
-\item{column.split}{how to split the columns when supply multiple column
+\item{columnSplit}{how to split the columns when supply multiple column
 annotations, default NULL.}
 
-\item{cluster_columns}{whether cluster the columns, default FALSE.}
+\item{clusterColumns}{whether cluster the columns, default FALSE.}
 
-\item{pseudotime_col}{the branch color control for monocle input data.}
+\item{pseudotimeCol}{the branch color control for monocle input data.}
 
 \item{gglist}{a list of ggplot object to annotate each cluster, default NULL.}
 
-\item{row_annotation_obj}{Row annotation for heatmap, it is a
+\item{rowAnnotationObj}{Row annotation for heatmap, it is a
 \code{ComplexHeatmap::rowAnnotation()} object
-when "markGenes.side" or ”line.side“ is "right". Otherwise is a list of
+when "markGenesSide" or ”lineSide“ is "right". Otherwise is a list of
 named vectors.}
 
 \item{...}{othe aruguments passed by Heatmap fuction.}
@@ -256,14 +255,14 @@ data("exps")
 # mfuzz
 cm <- clusterData(
   obj = exps,
-  cluster.method = "kmeans",
-  cluster.num = 8
+  clusterMethod = "kmeans",
+  clusterNum = 8
 )
 
 # plot
 visCluster(
   object = cm,
-  plot.type = "line"
+  plotType = "line"
 )
 
 }
