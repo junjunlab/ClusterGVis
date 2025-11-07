@@ -60,8 +60,6 @@ clustering to group genes, with the number of clusters set to 8:
 ck <- clusterData(obj = exps,
                   clusterMethod = "kmeans",
                   clusterNum = 8)
-
-
 ```
 
 Besides standard gene expression matrices (in data.frame or matrix
