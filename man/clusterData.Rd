@@ -9,6 +9,7 @@ clusterData(
   scaleData = TRUE,
   clusterMethod = c("mfuzz", "TCseq", "kmeans", "wgcna"),
   TCseqParamsList = list(),
+  kmeansParamsList = list(),
   object = NULL,
   minStd = 0,
   clusterNum = NULL,
@@ -30,6 +31,9 @@ Options are one of \code{"mfuzz"}, \code{"TCseq"}, \code{"kmeans"}, or \code{"wg
 
 \item{TCseqParamsList}{A list of additional parameters passed to the
 \code{TCseq::timeclust} function.}
+
+\item{kmeansParamsList}{A list of additional parameters passed to the
+\code{stats::kmeans} function.}
 
 \item{object}{A pre-calculated object required when using \code{"wgcna"} as
 the clustering method.}

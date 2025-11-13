@@ -26,6 +26,8 @@ globalVariables(c(
 #'        Options are one of `"mfuzz"`, `"TCseq"`, `"kmeans"`, or `"wgcna"`.
 #' @param TCseqParamsList A list of additional parameters passed to the
 #' `TCseq::timeclust` function.
+#' @param kmeansParamsList A list of additional parameters passed to the
+#' `stats::kmeans` function.
 #' @param object A pre-calculated object required when using `"wgcna"` as
 #' the clustering method.
 #' @param minStd Numeric. Minimum standard deviation for filtering
@@ -97,6 +99,7 @@ clusterData <- function(obj = NULL,
                         scaleData = TRUE,
                         clusterMethod = c("mfuzz", "TCseq", "kmeans", "wgcna"),
                         TCseqParamsList = list(),
+                        kmeansParamsList = list(),
                         object = NULL,
                         minStd = 0,
                         clusterNum = NULL,
@@ -334,11 +337,17 @@ clusterData <- function(obj = NULL,
     # }
 
     # add kmeans func n stats
-    km <- stats::kmeans(
-      x = hclust_matrix,
-      centers = clusterNum,
-      nstart = 10
-    )
+    # km <- stats::kmeans(
+    #   x = hclust_matrix,
+    #   centers = clusterNum,
+    #   nstart = 10
+    # )
+
+    km <- do.call(stats::kmeans,
+                  modifyList(list(x = hclust_matrix,
+                                  centers = clusterNum,
+                                  nstart = 10),
+                             kmeansParamsList))
 
     od.res <- data.frame(
       od = match(names(km$cluster), rownames(hclust_matrix)),

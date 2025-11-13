@@ -1,6 +1,6 @@
 Package: ClusterGVis
 Title: One-Step to Cluster and Visualize Gene Expression Data
-Version: 0.99.7
+Version: 0.99.9
 Authors@R: 
   person(given = "Jun", 
         family = "Zhang",    

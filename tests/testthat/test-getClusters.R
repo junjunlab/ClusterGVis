@@ -3,9 +3,11 @@ test_that("getClusters works", {
 
   expect_true(is.data.frame(exps))
 
+  expect_true(is.numeric(unlist(exps)))
+
   result <- getClusters(obj = exps)
 
-  expect_s3_class(result, "ggplot")
+  expect_true(ggplot2::is.ggplot(result))
 
   expect_no_error(
     getClusters(obj = exps)

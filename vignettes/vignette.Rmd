@@ -144,10 +144,6 @@ st.data <- prepareDataFromscRNA(object = pbmc_subset,
 
 # check
 str(st.data)
-
-# line plot
-visCluster(object = st.data,
-           plotType = "line")
 ```
 
 Heatmap plot:
@@ -172,7 +168,7 @@ p <- visCluster(object = st.data,
 If you are working with a `SingleCellExperiment` object, you can use
 **ClusterGVis** to easily extract data and generate plots:
 
-```{r,eval=TRUE,fig.width=10,fig.height=8, message=FALSE, warning=FALSE}
+```{r,eval=TRUE,fig.width=6,fig.height=8, message=FALSE, warning=FALSE}
 library(Seurat)
 data("pbmc_subset")
 
@@ -194,7 +190,10 @@ st.data <- prepareDataFromscRNA(object = sce,
                                 showAverage = TRUE)
 
 visCluster(object = st.data,
-           plotType = "line")
+           plotType = "heatmap",
+           column_names_rot = 45,
+           markGenes = markGenes,
+           clusterOrder = c(1:9))
 ```
 
 # Session Info
