@@ -297,7 +297,7 @@ visCluster <- function(object = NULL,
     if (object$type %in% c("mfuzz", "TCseq")) {
       line <- line +
         ggplot2::geom_line(ggplot2::aes(color = membership, group = gene),
-                           size = lineSize) +
+                           linewidth = lineSize) +
         ggplot2::scale_color_gradient2(
           low = msCol[1],
           mid = msCol[2],
@@ -308,7 +308,7 @@ visCluster <- function(object = NULL,
       line <- line +
         ggplot2::geom_line(ggplot2::aes(group = gene),
                            color = lineCol,
-                           size = lineSize
+                           linewidth = lineSize
         )
     }
 
@@ -324,7 +324,7 @@ visCluster <- function(object = NULL,
             stat = "summary",
             fun = "median",
             # colour = "brown",
-            size = mlineSize,
+            linewidth = mlineSize,
             ggplot2::aes(group = 1, color = modulecol)
           ) +
           ggplot2::scale_color_manual(values = linec)
@@ -335,7 +335,7 @@ visCluster <- function(object = NULL,
             stat = "summary",
             fun = "median",
             colour = mlineCol,
-            size = mlineSize,
+            linewidth = mlineSize,
             ggplot2::aes(group = 1)
           )
       }
@@ -936,7 +936,7 @@ visCluster <- function(object = NULL,
               grid::grid.points(
                 x = scales::rescale(seq_len(ncol(
                   tmpmat
-                )), to = panel_scale),
+                )), to = c(0.1, 0.9)),
                 y = scales::rescale(
                   mdia,
                   to = c(0, 1),
@@ -953,7 +953,7 @@ visCluster <- function(object = NULL,
               grid::grid.lines(
                 x = scales::rescale(seq_len(ncol(
                   tmpmat
-                )), to = panel_scale),
+                )), to = c(0.1, 0.9)),
                 y = scales::rescale(
                   mdia,
                   to = c(0, 1),
@@ -1089,8 +1089,8 @@ visCluster <- function(object = NULL,
         textbox <- ComplexHeatmap::anno_textbox(
           align_to2,
           term.list,
-          wordWrap = wordWrap,
-          addNewLine = addNewLine,
+          word_wrap = wordWrap,
+          add_new_line = addNewLine,
           side = annoTermMside,
           background_gp = grid::gpar(fill = termAnnoArg[1],
                                      col = termAnnoArg[2]),
@@ -1312,8 +1312,8 @@ visCluster <- function(object = NULL,
         textbox.kegg <- ComplexHeatmap::anno_textbox(
           align_to2,
           term.list,
-          wordWrap = wordWrap,
-          addNewLine = addNewLine,
+          word_wrap  = wordWrap,
+          add_new_line  = addNewLine,
           side = annoKeggMside,
           background_gp = grid::gpar(fill = keggAnnoArg[1],
                                      col = keggAnnoArg[2]),

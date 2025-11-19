@@ -214,7 +214,7 @@ enrichCluster <- function(object = NULL,
         pvalueCutoff = 1,
         pAdjustMethod = "BH",
         qvalueCutoff = 1,
-        useInternalData = useInternalData
+        use_internal_data  = useInternalData
       )
 
       # transform gene id
