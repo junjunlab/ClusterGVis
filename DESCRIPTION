@@ -22,7 +22,7 @@ LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends: 
-    R (>= 4.5)
+    R (>= 4.0)
 Imports: 
     colorRamps,
     dplyr,
