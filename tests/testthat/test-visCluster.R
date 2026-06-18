@@ -24,6 +24,11 @@ test_that("visCluster works", {
                plotType = "line")
   )
 
+  expect_no_error(
+    visCluster(object = ck,
+               plot.type = "line")
+  )
+
   p2 <- visCluster(object = ck,
                    plotType = "heatmap")
 
@@ -32,5 +37,14 @@ test_that("visCluster works", {
   expect_no_error(
     visCluster(object = ck,
                plotType = "heatmap")
+  )
+
+  expect_no_error(
+    visCluster(object = ck,
+               plot.type = "heatmap",
+               column_names_rot = 45,
+               markGenes.side = "left",
+               cluster.order = c(1:8),
+               show_column_names = FALSE)
   )
 })

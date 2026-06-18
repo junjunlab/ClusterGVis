@@ -12,4 +12,8 @@ test_that("getClusters works", {
   expect_no_error(
     getClusters(obj = exps)
   )
+
+  expect_no_error(
+    getClusters(exp = exps)
+  )
 })

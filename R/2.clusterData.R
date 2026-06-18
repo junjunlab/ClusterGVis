@@ -105,6 +105,21 @@ clusterData <- function(obj = NULL,
                         clusterNum = NULL,
                         subcluster = NULL,
                         ...) {
+  dots <- list(...)
+  legacy_arg <- pop_legacy_arg(obj, dots, "exp", missing(obj))
+  obj <- legacy_arg$value
+  dots <- legacy_arg$dots
+
+  legacy_arg <- pop_legacy_arg(clusterMethod, dots, "cluster.method",
+                               missing(clusterMethod))
+  clusterMethod <- legacy_arg$value
+  dots <- legacy_arg$dots
+
+  legacy_arg <- pop_legacy_arg(clusterNum, dots, "cluster.num",
+                               missing(clusterNum))
+  clusterNum <- legacy_arg$value
+  dots <- legacy_arg$dots
+
   if (!requireNamespace("Biobase", quietly = TRUE)) {
     stop("Package 'Biobase' is required. Please install it.")
   }
@@ -114,7 +129,7 @@ clusterData <- function(obj = NULL,
   # pkg <- attr(cls,"package")
 
   if ("cell_data_set" %in% cls) {
-    extra_params <- list(cds_obj = obj, assays = "counts", ...)
+    extra_params <- c(list(cds_obj = obj, assays = "counts"), dots)
 
     exp <- do.call(pre_pseudotime_matrix, extra_params)
   } else if ("matrix" %in% cls | "data.frame" %in% cls) {
