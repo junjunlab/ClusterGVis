@@ -36,11 +36,16 @@
 #' @export
 #'
 getClusters <- function(obj = NULL, ...) {
+  dots <- list(...)
+  legacy_arg <- pop_legacy_arg(obj, dots, "exp", missing(obj))
+  obj <- legacy_arg$value
+  dots <- legacy_arg$dots
+
   # check datatype
   cls <- class(obj)
 
   if ("cell_data_set" %in% cls) {
-    extra_params <- list(cds_obj = obj, assays = "counts", ...)
+    extra_params <- c(list(cds_obj = obj, assays = "counts"), dots)
     exp <- do.call(pre_pseudotime_matrix, extra_params)
   } else if ("matrix" %in% cls | "data.frame" %in% cls) {
     exp <- obj

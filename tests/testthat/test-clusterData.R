@@ -20,4 +20,11 @@ test_that("clusterData works", {
       clusterMethod = "kmeans",
       clusterNum = 8)
   )
+
+  expect_no_error(
+    clusterData(
+      exp = exps,
+      cluster.method = "kmeans",
+      cluster.num = 8)
+  )
 })

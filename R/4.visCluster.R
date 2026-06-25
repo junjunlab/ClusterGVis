@@ -232,6 +232,94 @@ visCluster <- function(object = NULL,
                        gglist = NULL,
                        rowAnnotationObj = NULL,
                        ...) {
+  dots <- list(...)
+  call_names <- names(match.call(expand.dots = FALSE))
+  showColumnNames <- NULL
+
+  legacy_args <- c(
+    "plot.type" = "plotType",
+    "line.size" = "lineSize",
+    "line.col" = "lineCol",
+    "add.mline" = "addMline",
+    "mline.size" = "mlineSize",
+    "mline.col" = "mlineCol",
+    "ct.anno.col" = "ctAnnoCol",
+    "set.md" = "setMd",
+    "textbox.pos" = "textboxPos",
+    "textbox.size" = "textboxSize",
+    "panel.arg" = "panelArg",
+    "ggplot.panel.arg" = "ggplotPanelArg",
+    "annoTerm.data" = "annoTermData",
+    "annoTerm.mside" = "annoTermMside",
+    "term.anno.arg" = "termAnnoArg",
+    "add.bar" = "addBar",
+    "bar.width" = "barWidth",
+    "textbar.pos" = "textbarPos",
+    "go.col" = "goCol",
+    "go.size" = "goSize",
+    "by.go" = "byGo",
+    "annoKegg.data" = "annoKeggData",
+    "annoKegg.mside" = "annoKeggMside",
+    "kegg.anno.arg" = "keggAnnoArg",
+    "add.kegg.bar" = "addKeggBar",
+    "kegg.col" = "keggCol",
+    "kegg.size" = "keggSize",
+    "by.kegg" = "byKegg",
+    "word.wrap" = "wordWrap",
+    "add.new.line" = "addNewLine",
+    "add.box" = "addBox",
+    "box.col" = "boxCol",
+    "box.arg" = "boxArg",
+    "add.point" = "addPoint",
+    "point.arg" = "pointArg",
+    "add.line" = "addLine",
+    "line.side" = "lineSide",
+    "markGenes.side" = "markGenesSide",
+    "genes.gp" = "genesGp",
+    "term.text.limit" = "termTextLimit",
+    "mul.group" = "mulGroup",
+    "lgd.label" = "lgdLabel",
+    "show.row.names" = "showRowNames",
+    "subgroup.anno" = "subgroupAnno",
+    "annnoblock.text" = "annnoblockText",
+    "annnoblock.gp" = "annnoblockGp",
+    "add.sampleanno" = "addSampleAnno",
+    "sample.group" = "sampleGroup",
+    "sample.col" = "sampleCol",
+    "sample.order" = "sampleOrder",
+    "cluster.order" = "clusterOrder",
+    "sample.cell.order" = "sampleCellOrder",
+    "column.split" = "columnSplit",
+    "cluster.columns" = "clusterColumns",
+    "pseudotime.col" = "pseudotimeCol",
+    "row.annotation.obj" = "rowAnnotationObj"
+  )
+
+  if ("show_column_names" %in% names(dots)) {
+    showColumnNames <- dots[["show_column_names"]]
+    dots[["show_column_names"]] <- NULL
+  }
+
+  if ("show_row_names" %in% names(dots)) {
+    if (!("showRowNames" %in% call_names)) {
+      showRowNames <- dots[["show_row_names"]]
+    }
+    dots[["show_row_names"]] <- NULL
+  }
+
+  for (legacy_name in names(legacy_args)) {
+    if (!(legacy_name %in% names(dots))) {
+      next
+    }
+
+    current_name <- legacy_args[[legacy_name]]
+    if (!(current_name %in% call_names)) {
+      assign(current_name, dots[[legacy_name]])
+    }
+
+    dots[[legacy_name]] <- NULL
+  }
+
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
     stop("Package 'ComplexHeatmap' is required. Please install it.")
   }
@@ -681,6 +769,10 @@ visCluster <- function(object = NULL,
       show_column_names <- TRUE
     }
 
+    if (!is.null(showColumnNames)) {
+      show_column_names <- showColumnNames
+    }
+
     # legend for monocle heatmap
     if (object$geneType == "non-branched") {
       rg <- range(as.numeric(as.character(sample.info)))
@@ -720,26 +812,30 @@ visCluster <- function(object = NULL,
       }
 
       # draw HT
-      htf <-
-        ComplexHeatmap::Heatmap(
-          as.matrix(mat),
-          name = "Z-score",
-          cluster_columns = clusterColumns,
-          show_row_names = showRowNames,
-          border = border,
-          column_split = column_split,
-          row_split = subgroup,
-          cluster_row_slices = cluster_row_slices,
-          column_names_side = "top",
-          show_column_names = show_column_names,
-          # border = TRUE,
-          top_annotation = topanno,
-          left_annotation = left_annotation_ht,
-          right_annotation = right_annotation,
-          col = col_fun,
-          use_raster = use_raster,
-          ...
+      htf <- do.call(
+        ComplexHeatmap::Heatmap,
+        c(
+          list(
+            matrix = as.matrix(mat),
+            name = "Z-score",
+            cluster_columns = clusterColumns,
+            show_row_names = showRowNames,
+            border = border,
+            column_split = column_split,
+            row_split = subgroup,
+            cluster_row_slices = cluster_row_slices,
+            column_names_side = "top",
+            show_column_names = show_column_names,
+            # border = TRUE,
+            top_annotation = topanno,
+            left_annotation = left_annotation_ht,
+            right_annotation = right_annotation,
+            col = col_fun,
+            use_raster = use_raster
+          ),
+          dots
         )
+      )
 
       # draw
       ComplexHeatmap::draw(htf,
@@ -974,7 +1070,7 @@ visCluster <- function(object = NULL,
           text,
           x = textboxPos[1],
           y = textboxPos[2],
-          gp = grid::gpar(fontsize = textboxSize, fontface = "italic", ...)
+          gp = grid::gpar(fontsize = textboxSize, fontface = "italic")
         )
 
         grid::popViewport()
@@ -1526,24 +1622,33 @@ visCluster <- function(object = NULL,
         show_column_names <- TRUE
       }
 
+      if (!is.null(showColumnNames)) {
+        show_column_names <- showColumnNames
+      }
+
       # pdf('test.pdf',height = 10,width = 10)
-      htf <- ComplexHeatmap::Heatmap(
-        as.matrix(mat),
-        name = "Z-score",
-        cluster_columns = clusterColumns,
-        show_row_names = showRowNames,
-        border = border,
-        column_split = column_split,
-        top_annotation = topanno,
-        right_annotation = right_annotation2,
-        left_annotation = left_annotation,
-        column_names_side = "top",
-        show_column_names = show_column_names,
-        row_split = subgroup,
-        cluster_row_slices = cluster_row_slices,
-        col = col_fun,
-        use_raster = use_raster,
-        ...
+      htf <- do.call(
+        ComplexHeatmap::Heatmap,
+        c(
+          list(
+            matrix = as.matrix(mat),
+            name = "Z-score",
+            cluster_columns = clusterColumns,
+            show_row_names = showRowNames,
+            border = border,
+            column_split = column_split,
+            top_annotation = topanno,
+            right_annotation = right_annotation2,
+            left_annotation = left_annotation,
+            column_names_side = "top",
+            show_column_names = show_column_names,
+            row_split = subgroup,
+            cluster_row_slices = cluster_row_slices,
+            col = col_fun,
+            use_raster = use_raster
+          ),
+          dots
+        )
       )
 
       # draw lines legend
